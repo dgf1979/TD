@@ -1,0 +1,22 @@
+﻿function PathTest2() {
+
+    var grid: number[][] = [
+        [0, 0, 1, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 0, 0, 0, 0]]; // demo grid
+
+    var myMap: TDMap = new TDMap();
+    myMap.LoadWalkable(grid);
+    myMap.SetCreepSpawnLocation(0, 0);
+    myMap.SetCreepExitLocation(4, 0);
+
+    var mapPath: PathHelper = new PathHelper(myMap);
+
+    mapPath.AsyncCalculatePath(myMap.CreepSpawn);
+
+    if (mapPath.ProcessingComplete && mapPath.DebugPathString) {
+        document.getElementById("game").innerHTML = mapPath.DebugPathString();
+    }
+} 
