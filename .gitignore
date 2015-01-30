@@ -38,6 +38,7 @@ local.properties
 
 *.map
 *.png
+*.dat
 
 # User-specific files
 *.suo
