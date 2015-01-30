@@ -45,7 +45,6 @@ var TDGame;
             this.load.setPreloadSprite(this.preloadBar);
             // this.load.image('creep0', 'img/tilemap0/creeps/creep0.png');
             // this.load.image('background', 'img/tilemap0/background0.png');
-            // this.load.image('grid', 'img/tilemap0/grid0.png');
             // this.load.image('tileIMG', 'img/tilemap0/tileset0.png');
             // this.load.tilemap('tileDEF', 'img/tilemap0/tilemap0.csv', null, Phaser.Tilemap.CSV);
         };
@@ -143,7 +142,7 @@ var Creep = (function (_super) {
     function Creep(ThisGame, CreepType, StartPath) {
         _super.call(this, ThisGame, 0, 0, CreepType, 0);
 
-        this.scale = new Phaser.Point(2, 2);
+        //this.scale = new Phaser.Point(2, 2);
         this.anchor.setTo(0.5, 0.5);
 
         this.health = 10;
@@ -151,6 +150,8 @@ var Creep = (function (_super) {
         this._payout = 10;
         this._velocity = 1000;
         this._path = StartPath;
+        this.animations.add('walk');
+        this.animations.play('walk', 4, true);
 
         ThisGame.add.existing(this);
 
@@ -178,6 +179,40 @@ var Creep = (function (_super) {
     };
     return Creep;
 })(Phaser.Sprite);
+var GameObjectClasses;
+(function (GameObjectClasses) {
+    // a campaign, consisting of multiple waves
+    var Campaign = (function () {
+        function Campaign() {
+        }
+        return Campaign;
+    })();
+    GameObjectClasses.Campaign = Campaign;
+
+    // a wave, each consisting of a number of creeps ofa  specific type
+    var Wave = (function () {
+        function Wave() {
+        }
+        return Wave;
+    })();
+    GameObjectClasses.Wave = Wave;
+
+    // a tileset, with URLs to each asset
+    var Tileset = (function () {
+        function Tileset() {
+        }
+        return Tileset;
+    })();
+    GameObjectClasses.Tileset = Tileset;
+
+    // asset URLs for a partucular type of creep
+    var CreepAssets = (function () {
+        function CreepAssets() {
+        }
+        return CreepAssets;
+    })();
+    GameObjectClasses.CreepAssets = CreepAssets;
+})(GameObjectClasses || (GameObjectClasses = {}));
 var TDGame;
 (function (TDGame) {
     TDGame.currentCampaign = '';
@@ -213,33 +248,6 @@ var Helper;
     }
     Helper.Array2D = Array2D;
 
-    // extremely basic vector2 implementation
-    // effectively a struct (does TS have an emulation for structs? research later)
-    // to contain a node, or a lazy Vector2
-    var Vector2 = (function () {
-        function Vector2(X, Y) {
-            this._x = X;
-            this._y = Y;
-        }
-        Object.defineProperty(Vector2.prototype, "X", {
-            // accessors
-            get: function () {
-                return this._x;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(Vector2.prototype, "Y", {
-            get: function () {
-                return this._y;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        return Vector2;
-    })();
-    Helper.Vector2 = Vector2;
-
     // debugging text writer
     function WriteDebugText(Text, CurrentGame, AtCanvasX, AtCanvasY) {
         var style = { fill: "blue" };
@@ -247,15 +255,6 @@ var Helper;
         txt.anchor.set(0.5, 0.5);
     }
     Helper.WriteDebugText = WriteDebugText;
-
-    // scaling enum
-    (function (Scaler) {
-        Scaler[Scaler["x16"] = 4] = "x16";
-        Scaler[Scaler["x32"] = 2] = "x32";
-        Scaler[Scaler["x64"] = 1] = "x64";
-    })(Helper.Scaler || (Helper.Scaler = {}));
-    var Scaler = Helper.Scaler;
-    ;
 })(Helper || (Helper = {}));
 var TDGame;
 (function (TDGame) {
@@ -265,10 +264,77 @@ var TDGame;
             _super.apply(this, arguments);
         }
         LoadCampaignAssets.prototype.preload = function () {
+            // progbar
+            this.preloadBar = this.add.sprite(200, 250, 'progbar');
+            this.load.setPreloadSprite(this.preloadBar);
+
             console.log('Value in LCA State: ' + TDGame.currentCampaign);
+
+            // query asset server for the selected campaigns deatils
+            var oCampaign;
+            $(document).ready(function () {
+                $.ajax({
+                    url: 'http://localhost:1337/campaign/' + TDGame.currentCampaign,
+                    dataType: 'json',
+                    async: false,
+                    success: function (json) {
+                        oCampaign = json;
+                        console.log('AJAX campaign ID: ' + oCampaign.ID);
+                    }
+                });
+            });
+
+            // query asset server for the tileset used in this campaign
+            var oTileset;
+            $(document).ready(function () {
+                $.ajax({
+                    url: 'http://localhost:1337/tileset/' + oCampaign.TilesetID,
+                    dataType: 'json',
+                    async: false,
+                    success: function (json) {
+                        oTileset = json;
+                        console.log("Tileset: " + oTileset);
+                    }
+                });
+            });
+
+            // query asset server for every creep
+            // var oCreep: GameObjectClasses.CreepAssets;
+            var oCreeps = [];
+            $(document).ready(function () {
+                $.ajax({
+                    url: 'http://localhost:1337/tileset/' + oCampaign.TilesetID + '/creeps',
+                    dataType: 'json',
+                    async: false,
+                    success: function (json) {
+                        oCreeps = json;
+
+                        // console.log("AJAX success returned: " + JSON.stringify(json));
+                        // console.log("creep list length: " + oCreeps.length);
+                        console.log("WalkAnimationURL prop: " + oCreeps[oCreeps.length].WalkAnimationURL);
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert(xhr.status);
+                        alert(thrownError);
+                    }
+                });
+            });
+
+            // this.load.image('creep0', oCreeps[0].WalkAnimationURL);
+            this.load.spritesheet('creep0', oCreeps[0].WalkAnimationURL, 64, 64);
+            this.load.image('background', oTileset.BackgroundURL);
+            this.load.image('tileIMG', oTileset.WallURL);
+            this.load.tilemap('tileDEF', oCampaign.MapURL, null, Phaser.Tilemap.CSV);
+            // console.log("CSV: " + oCampaign.MapURL);
         };
 
+        // phaser.create()
         LoadCampaignAssets.prototype.create = function () {
+            var _this = this;
+            var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
+            tween.onComplete.add(function () {
+                return _this.game.state.start('Proto1', true, false);
+            });
         };
         return LoadCampaignAssets;
     })(Phaser.State);
@@ -354,7 +420,7 @@ var PathHelper = (function () {
     };
 
     // use EasyStar.js to generate a path
-    PathHelper.prototype.AsyncCalculatePath = function (StartNode, TileSize, Scale) {
+    PathHelper.prototype.AsyncCalculatePath = function (StartNode, TileSize) {
         var _this = this;
         this._asyncComplete = false;
         var grid = this._map.WalkableGrid;
@@ -421,19 +487,17 @@ var TDGame;
             this.background = this.add.sprite(0, 0, "background");
 
             // var map: TDMap = new TDMap(this.game);
-            // map scalefactor
-            this.ScaleFactor = 2 /* x32 */;
-
             // set up the map
             console.log("about to try adding the tilemap..");
-            var map = this.game.add.tilemap("tileDEF", 32, 32, 10, 10);
+            var map = this.game.add.tilemap("tileDEF", 64, 64, 10, 10);
             map.addTilesetImage("tileIMG");
             map.setCollisionBetween(0, 99);
             var layer = map.createLayer(0);
-            layer.scale = new Phaser.Point(this.ScaleFactor, this.ScaleFactor);
-            layer.resizeWorld();
-            console.log("made it!");
 
+            // layer.scale = new Phaser.Point(this.ScaleFactor, this.ScaleFactor);
+            layer.resizeWorld();
+
+            //console.log("made it!");
             //
             this.tdmap = new TDMap(this.game);
 
@@ -445,7 +509,8 @@ var TDGame;
 
             for (var i = 0; i < tiles.length; i++) {
                 var tile = tiles[i];
-                console.log(tile.x + "," + tile.y + "collides=" + tile.canCollide);
+
+                // console.log(tile.x + "," + tile.y + "collides=" + tile.canCollide);
                 if (tile.canCollide) {
                     tmp[tile.y][tile.x] = 1;
                 }
@@ -458,7 +523,7 @@ var TDGame;
 
             // use the path wrapper to run the A* pathfinding algorythm
             this.pather = new PathHelper(this.tdmap);
-            this.pather.AsyncCalculatePath(this.tdmap.CreepSpawn, 16, this.ScaleFactor);
+            this.pather.AsyncCalculatePath(this.tdmap.CreepSpawn, 32);
 
             // debug helper - show each element of the map path
             var path = this.pather.Path;
@@ -466,7 +531,7 @@ var TDGame;
             for (var i = 0; i < path.length; i++) {
                 var tile = map.getTile(path[i].x, path[i].y, 0, true);
                 if (tile != null) {
-                    extendedPath[i] = new Phaser.Point(tile.worldX * this.ScaleFactor + tile.centerX * this.ScaleFactor, tile.worldY * this.ScaleFactor + tile.centerY * this.ScaleFactor);
+                    extendedPath[i] = new Phaser.Point(tile.worldX + tile.centerX, tile.worldY + tile.centerY);
                     Helper.WriteDebugText("P" + i, this.game, extendedPath[i].x, extendedPath[i].y);
                 }
             }

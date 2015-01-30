@@ -1,4 +1,4 @@
-﻿// a campaign, consisting of multiple waves, which consist of set of creeps
+﻿// a campaign, consisting of multiple waves
 var Campaign = (function () {
     function Campaign() {
     }
@@ -6,17 +6,15 @@ var Campaign = (function () {
 })();
 exports.Campaign = Campaign;
 
+// a wave, each consisting of a number of creeps ofa  specific type
 var Wave = (function () {
     function Wave() {
-        this.SpawnDelay = 1;
-        this.CreepIndex = 0;
-        this.CreepCount = 1;
-        this.CreepSpeed = 1000;
     }
     return Wave;
 })();
 exports.Wave = Wave;
 
+// a tileset, with URLs to each asset
 var Tileset = (function () {
     function Tileset() {
     }
@@ -24,11 +22,9 @@ var Tileset = (function () {
 })();
 exports.Tileset = Tileset;
 
+// asset URLs for a partucular type of creep
 var CreepAssets = (function () {
     function CreepAssets() {
-        this.GameObjectID = '';
-        this.WalkAnimationURL = '';
-        this.DieAnimationURL = '';
     }
     return CreepAssets;
 })();

@@ -5,25 +5,22 @@
         background: Phaser.Sprite;
         tdmap: TDMap;
         pather: PathHelper;
-        ScaleFactor: Helper.Scaler;
 
         // run-up
         create() {
             this.background = this.add.sprite(0, 0, "background");
 
             // var map: TDMap = new TDMap(this.game);
-            // map scalefactor
-            this.ScaleFactor = Helper.Scaler.x32;
 
             // set up the map
             console.log("about to try adding the tilemap..");
-            var map = this.game.add.tilemap("tileDEF", 32, 32, 10, 10);
+            var map = this.game.add.tilemap("tileDEF", 64, 64, 10, 10);
             map.addTilesetImage("tileIMG");
             map.setCollisionBetween(0, 99);
             var layer = map.createLayer(0);
-            layer.scale = new Phaser.Point(this.ScaleFactor, this.ScaleFactor);
+            // layer.scale = new Phaser.Point(this.ScaleFactor, this.ScaleFactor);
             layer.resizeWorld();
-            console.log("made it!");
+            //console.log("made it!");
 
             //
             this.tdmap = new TDMap(this.game);
@@ -35,7 +32,7 @@
             // flip any unwalkable tile to 1
             for (var i = 0; i < tiles.length; i++) {
                 var tile: Phaser.Tile = tiles[i];
-                console.log(tile.x + "," + tile.y + "collides=" + tile.canCollide);
+                // console.log(tile.x + "," + tile.y + "collides=" + tile.canCollide);
                 if (tile.canCollide) {
                     tmp[tile.y][tile.x] = 1;
                 }
@@ -48,7 +45,7 @@
 
             // use the path wrapper to run the A* pathfinding algorythm
             this.pather = new PathHelper(this.tdmap);
-            this.pather.AsyncCalculatePath(this.tdmap.CreepSpawn, 16, this.ScaleFactor);
+            this.pather.AsyncCalculatePath(this.tdmap.CreepSpawn, 32);
 
             // debug helper - show each element of the map path
             var path: Phaser.Point[] = this.pather.Path;
@@ -57,8 +54,8 @@
                 var tile: Phaser.Tile = map.getTile(path[i].x, path[i].y,0,true);
                 if (tile != null) {
                     extendedPath[i] = new Phaser.Point
-                        (tile.worldX * this.ScaleFactor + tile.centerX * this.ScaleFactor,
-                        tile.worldY * this.ScaleFactor + tile.centerY * this.ScaleFactor);
+                        (tile.worldX + tile.centerX,
+                        tile.worldY + tile.centerY);
                     Helper.WriteDebugText("P" + i, this.game, extendedPath[i].x, extendedPath[i].y);
                 }
             }

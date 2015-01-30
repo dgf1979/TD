@@ -7,7 +7,7 @@
     constructor(ThisGame: Phaser.Game, CreepType: string, StartPath: Phaser.Point[]) {
         super(ThisGame, 0, 0, CreepType, 0);
 
-        this.scale = new Phaser.Point(2, 2);
+        //this.scale = new Phaser.Point(2, 2);
         this.anchor.setTo(0.5, 0.5);
 
         this.health = 10;
@@ -15,6 +15,8 @@
         this._payout = 10;
         this._velocity = 1000;
         this._path = StartPath;
+        this.animations.add('walk');
+        this.animations.play('walk',4,true);
 
         ThisGame.add.existing(this);
 

@@ -41,9 +41,9 @@
     <TypeScriptCompile Include="BootState.ts" />
     <TypeScriptCompile Include="campaignListState.ts" />
     <TypeScriptCompile Include="CreepClass.ts" />
+    <TypeScriptCompile Include="GameObjectClasses.ts" />
     <TypeScriptCompile Include="gameStates.ts" />
     <TypeScriptCompile Include="Helpers.ts" />
-    <None Include="pathDemo2.ts.exclude" />
     <TypeScriptCompile Include="loadCampaignAssetsState.ts" />
     <TypeScriptCompile Include="menuState.ts" />
     <TypeScriptCompile Include="Proto1.ts" />
@@ -55,7 +55,6 @@
     <TypeScriptCompile Include="js\phaser\pixi.d.ts" />
     <Content Include="img\tilemap0\tilemap0.json" />
     <Content Include="img\tilemap0\tilemap0.csv" />
-    <None Include="pathDemo.ts.exclude" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="js\phaser\phaser.map" />

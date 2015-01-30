@@ -1,6 +1,6 @@
 ﻿
 
-// a campaign, consisting of multiple waves, which consist of set of creeps 
+// a campaign, consisting of multiple waves
 export class Campaign {
     ID: string;
     TilesetID: string;
@@ -8,23 +8,25 @@ export class Campaign {
     Waves: Wave[];
 }
 
+// a wave, each consisting of a number of creeps ofa  specific type
 export class Wave {
-    SpawnDelay: number = 1;
-    CreepIndex: number = 0;
-    CreepCount: number = 1;
-    CreepSpeed: number = 1000;
+    SpawnDelay: number;
+    CreepIndex: number;
+    CreepCount: number;
+    CreepSpeed: number;
 }
 
+// a tileset, with URLs to each asset
 export class Tileset {
     WallURL: string;
     BackgroundURL: string;
-    Creeps: CreepAssets[];
 }
 
+// asset URLs for a partucular type of creep
 export class CreepAssets {
-    GameObjectID: string = '';
-    WalkAnimationURL: string = '';
-    DieAnimationURL: string = '';
+    GameObjectID: string;
+    WalkAnimationURL: string;
+    DieAnimationURL: string;
 }
 
 

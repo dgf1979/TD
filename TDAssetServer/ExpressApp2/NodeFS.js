@@ -1,7 +1,8 @@
-﻿var fs = require('fs');
+﻿var fs = require("fs");
 
 // return subfolders of a given folder
 function SubDirsOf(ThisDir) {
+    "use strict";
     var rootdir = fs.readdirSync(ThisDir);
     var subfolders = [];
     rootdir.forEach(function (item) {
@@ -30,11 +31,21 @@ exports.SubFilesOf = SubFilesOf;
 
 // check if object exists
 function Exists(FileOrFolderPath) {
+    "use strict";
     return fs.existsSync(FileOrFolderPath);
 }
 exports.Exists = Exists;
 
+// read JSON file
+function TextIntoJSON(FilePath) {
+    "use strict";
+    var obj = JSON.parse(fs.readFileSync(FilePath, 'utf8'));
+    return obj;
+}
+exports.TextIntoJSON = TextIntoJSON;
+
 function SaveObjectAsJSONFile(FilePathAndName, JSObject) {
+    "use strict";
     fs.writeFileSync(FilePathAndName, JSON.stringify(JSObject));
 }
 exports.SaveObjectAsJSONFile = SaveObjectAsJSONFile;

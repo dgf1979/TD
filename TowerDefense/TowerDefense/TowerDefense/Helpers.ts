@@ -11,22 +11,6 @@
         return a;
     }
 
-    // extremely basic vector2 implementation
-    // effectively a struct (does TS have an emulation for structs? research later)
-    // to contain a node, or a lazy Vector2
-    export class Vector2 {
-        private _x: number;
-        private _y: number;
-
-        constructor(X: number, Y: number) {
-            this._x = X;
-            this._y = Y;
-        }
-        // accessors
-        get X(): number { return this._x; }
-        get Y(): number { return this._y; }
-    }
-
     // debugging text writer
     export function WriteDebugText(Text: string, CurrentGame: Phaser.Game, AtCanvasX: number, AtCanvasY: number) {
         var style: PIXI.TextStyle = { fill: "blue" };
@@ -34,10 +18,4 @@
         txt.anchor.set(0.5, 0.5);
     }
 
-    // scaling enum
-    export enum Scaler {
-        x16 = 4,
-        x32 = 2,
-        x64 = 1
-    };
-} 
+}

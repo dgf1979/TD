@@ -42,7 +42,7 @@ class PathHelper {
     }
 
     // use EasyStar.js to generate a path
-    AsyncCalculatePath(StartNode: Phaser.Point, TileSize: number, Scale: Helper.Scaler) {
+    AsyncCalculatePath(StartNode: Phaser.Point, TileSize: number) {
         this._asyncComplete = false;
         var grid = this._map.WalkableGrid;
         // easyStar

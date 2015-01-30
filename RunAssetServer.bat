@@ -1,1 +1,3 @@
-"C:\Program Files\nodejs\node.exe" "D:\HTML5\TDAssetServer\ExpressApp2\app.js"
+"C:\Program Files\nodejs\node.exe" "%~dp0\TDAssetServer\ExpressApp2\app.js"
+
+PAUSE

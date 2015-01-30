@@ -1,41 +1,39 @@
-﻿import express = require('express');
-import routes = require('./routes/td');
-import http = require('http');
-import path = require('path');
-import url = require('url');
+﻿import express = require("express");
+import routes = require("./routes/td");
+import http = require("http");
+import path = require("path");
 
 var app = express();
 
 // all environments
-app.set('port', process.env.PORT || 1337);
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set("port", process.env.PORT || 1337);
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "jade");
 app.use(express.favicon());
-app.use(express.logger('dev'));
+app.use(express.logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
 
-//dumb middlewear
-app.use(function (req, res, next) {
+// dumb middlewear
+app.use(function (req: express.Request, res: express.Response, next: any) {
     if (global.ASSETURL === undefined) {
-        global.ASSETURL = req.protocol + '://' + req.get('host');
-        console.log('added ASSETURL: ' + global.ASSETURL);
+        global.ASSETURL = req.protocol + "://" + req.get("host");
+        console.log("added ASSETURL: " + global.ASSETURL);
     }
     next();
 });
 
-//more dumb middlewear
-var allowCrossDomain = function (req, res, next) {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+// allow requests from other domains
+var allowCrossDomain = function (req: express.Request, res: express.Response, next: any) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
     // intercept OPTIONS method
-    if ('OPTIONS' == req.method) {
+    if ("OPTIONS" === req.method) {
         res.send(200);
-    }
-    else {
+    } else {
         next();
     }
 };
@@ -49,26 +47,33 @@ global.ASSETPATH = __dirname + "\\ASSETS";
 app.use("/TILESETS", express.static(global.ASSETPATH + "\\TILESETS"));
 app.use("/CAMPAIGNS", express.static(global.ASSETPATH + "\\CAMPAIGNS"));
 
-import stylus = require('stylus'); 
-app.use(stylus.middleware(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'public')));
+import stylus = require("stylus"); 
+app.use(stylus.middleware(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "public")));
 
 // development only
-if ('development' === app.get('env')) {
+if ("development" === app.get("env")) {
     app.use(express.errorHandler());
 }
 
-// route maps
-app.get('/assetpath', routes.AssetPath);
-app.get('/', routes.AssetPath);
-app.get('/tileset', routes.TileSetList);
-app.get('/tileset/:id', routes.TileSetGetByID);
-app.get('/campaign', routes.CampaignList);
-app.get('/demo', routes.CreateDemoCampaign); 
+// route map
+app.get("/assetpath", routes.AssetPath);
+app.get("/demo", routes.CreateDemoCampaign); 
+app.get("/", routes.AssetPath);
+// tileset routes
+app.get("/tileset", routes.TileSetList);
+app.get("/tileset/:id", routes.TileSetGetByID);
+app.get("/tileset/:id/creeps", routes.TileSetCreepsByID);
+// campaign routes
+app.get("/campaign", routes.CampaignList);
+app.get("/campaign/:id", routes.CampaignGetByID);
 
 
-http.createServer(app).listen(app.get('port'), function () {
-    console.log('Express server listening on port ' + app.get('port'));
+
+
+
+http.createServer(app).listen(app.get("port"), function () {
+    console.log("Express server listening on port " + app.get("port"));
 
 
 });

@@ -1,8 +1,9 @@
-﻿var nodefs = require('../NodeFS');
-var goc = require('../GameObjectClasses');
+﻿var nodefs = require("../NodeFS");
+var goc = require("../GameObjectClasses");
 
 // asset path for verification
 function AssetPath(req, res) {
+    "use strict";
     res.json(global.ASSETPATH + " (" + global.ASSETURL + ")");
 }
 exports.AssetPath = AssetPath;
@@ -10,9 +11,10 @@ exports.AssetPath = AssetPath;
 
 // /tileset LIST (GET)
 function TileSetList(req, res) {
-    res.setHeader('Content-Type', 'application/json');
+    "use strict";
+    res.setHeader("Content-Type", "application/json");
 
-    //res.json(SubDirsOf(global.ASSETPATH + "\\TILESETS"));
+    // res.json(SubDirsOf(global.ASSETPATH + "\\TILESETS"));
     res.json(NamesAndIDsOf(global.ASSETPATH + "\\TILESETS"));
 }
 exports.TileSetList = TileSetList;
@@ -20,21 +22,43 @@ exports.TileSetList = TileSetList;
 
 // /tileset/:id GET (GET)
 function TileSetGetByID(req, res) {
+    "use strict";
     var id = req.params.id;
-    var tilesetURL = global.ASSETURL + "/TILESETS/" + id;
-    res.send(tilesetURL);
+    var ts = new goc.Tileset;
+    ts.BackgroundURL = global.ASSETURL + "/TILESETS/" + id + "/background.png";
+    ts.WallURL = global.ASSETURL + "/TILESETS/" + id + "/walls.png";
+    res.json(ts);
 }
 exports.TileSetGetByID = TileSetGetByID;
 
+// /tileset/:id/creeps GET[] (get)
+function TileSetCreepsByID(req, res) {
+    "use strict";
+    var id = req.params.id;
+    res.json(CreepAssetLoader(id));
+}
+exports.TileSetCreepsByID = TileSetCreepsByID;
+
 // /campaign LIST (GET)
 function CampaignList(req, res) {
-    res.json(nodefs.SubDirsOf('D:\\HTML5\\TDAssetServer\\ExpressApp2\\ASSETS\\CAMPAIGNS'));
+    "use strict";
+    res.json(nodefs.SubDirsOf(global.ASSETPATH + "\\CAMPAIGNS"));
 }
 exports.CampaignList = CampaignList;
 ;
 
-// return names and ID's of campaign or tileset folders
+// /campaign/:id GET (GET)
+function CampaignGetByID(req, res) {
+    "use strict";
+    var id = req.params.id;
+    var campaignJSON = global.ASSETPATH + "\\CAMPAIGNS\\" + id + "\\campaign.json";
+    res.json(nodefs.TextIntoJSON(campaignJSON));
+}
+exports.CampaignGetByID = CampaignGetByID;
+
+// return names and ID"s of campaign or tileset folders
 function NamesAndIDsOf(ThisDir) {
+    "use strict";
     var rootdir = nodefs.SubDirsOf(ThisDir);
     var namesAndIDs = [];
     for (var i = 0; i < rootdir.length; i++) {
@@ -47,13 +71,14 @@ function NamesAndIDsOf(ThisDir) {
 
 // generate a demo campaign and save to folder
 function CreateDemoCampaign() {
-    var saveAs = "D:\\HTML5\\TDAssetServer\\ExpressApp2\\ASSETS\\CAMPAIGNS\\C_00000\\campaign.json";
+    "use strict";
+    var saveAs = global.ASSETPATH + "\\CAMPAIGNS\\C_00000\\campaign.json";
 
     var demoCampaign = new goc.Campaign();
-    console.log("did we get this far?");
-    demoCampaign.ID = 'C_00000';
-    demoCampaign.MapURL = 'http://localhost/CAMPAIGNS/' + demoCampaign.ID + '/map.csv';
-    demoCampaign.TilesetID = 'TS_00000';
+
+    demoCampaign.ID = "C_00000";
+    demoCampaign.MapURL = global.ASSETURL + "/CAMPAIGNS/" + demoCampaign.ID + "/map.csv";
+    demoCampaign.TilesetID = "TS_00000";
 
     var wave1 = new goc.Wave;
     wave1.CreepCount = 1;
@@ -65,56 +90,35 @@ function CreateDemoCampaign() {
     demoCampaign.Waves.push(wave1);
 
     nodefs.SaveObjectAsJSONFile(saveAs, demoCampaign);
+
+    console.log("Demo campaign should now exist at:" + saveAs);
 }
 exports.CreateDemoCampaign = CreateDemoCampaign;
 
-var TilesetBuilder = (function () {
-    // build an object to represent the tileset that can be used to convey the asset URL's
-    function TilesetBuilder(ID, TileSetURL, BaseAssetFilePath) {
-        this._ID = ID;
-        this._baseFilePath = BaseAssetFilePath;
-        this._baseURL = TileSetURL;
-        this._creepAssets = [];
-    }
-    TilesetBuilder.prototype.Generate = function () {
-        // set background asset object properties
-        this._backgroundURL = this._baseURL + '/' + this._ID + '/background.png';
+function CreepAssetLoader(TilesetID) {
+    var creeps = [];
 
-        // set wall asset object properties
-        this._wallURL = this._baseURL + '/' + this._ID + '/walls.png';
+    var searchPath = global.ASSETPATH + "\\TILESETS\\" + TilesetID + "\\CREEPS";
+    var subfld = nodefs.SubDirsOf(searchPath);
+    console.log("found " + subfld.length + " subfolders");
+    for (var i = 0; i < subfld.length; i++) {
+        // a valid walk_anim.png means a valid creep
+        var creepID = subfld[i];
+        var walkPNG = searchPath + "\\" + creepID + "\\walk_anim.png";
+        console.log("looking in: " + creepID);
+        if (nodefs.Exists(walkPNG)) {
+            console.log("found: " + walkPNG);
+            var creep = new goc.CreepAssets;
+            creep.GameObjectID = creepID;
+            creep.WalkAnimationURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/CREEPS/" + creepID + "/walk_anim.png";
 
-        // set creep asset object properties
-        this.CreepAssetLoader();
-
-        var ts;
-        ts.BackgroundURL = this._backgroundURL;
-        ts.Creeps = this._creepAssets;
-        ts.WallURL = this._wallURL;
-
-        return ts;
-    };
-
-    TilesetBuilder.prototype.CreepAssetLoader = function () {
-        var searchPath = this._baseFilePath + '\\CREEPS';
-        var subfld = nodefs.SubDirsOf(searchPath);
-        for (var i = 0; i < subfld.length; i++) {
-            // a valid walk_anim.png means a valid creep
-            var creepID = subfld[i];
-            var walkPNG = searchPath + '\\' + creepID + '\\walk_anim.png';
-            if (nodefs.Exists(walkPNG)) {
-                var creep;
-                creep.GameObjectID = creepID;
-                creep.WalkAnimationURL = this._baseURL = '/' + creepID + '/walk_anim.png';
-
-                var diePNG = searchPath + '\\' + creepID + '\\die_anim.png';
-                if (nodefs.Exists(diePNG)) {
-                    creep.DieAnimationURL = this._baseURL = '/' + creepID + '/die_anim.png';
-                }
-
-                this._creepAssets.push(creep);
+            var diePNG = searchPath + "\\" + creepID + "\\die_anim.png";
+            if (nodefs.Exists(diePNG)) {
+                creep.DieAnimationURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/CREEPS/" + creepID + "/die_anim.png";
             }
+            creeps.push(creep);
         }
-    };
-    return TilesetBuilder;
-})();
+    }
+    return creeps;
+}
 //# sourceMappingURL=td.js.map
