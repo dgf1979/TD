@@ -60,6 +60,9 @@
     <Content Include="js\phaser\phaser.map" />
     <Content Include="game.js.map" />
     <Content Include="js\jquery\jquery-2.1.3.min.map" />
+    <Content Include="js\phaser\phaser.min.js.map">
+      <DependentUpon>phaser.min.js</DependentUpon>
+    </Content>
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

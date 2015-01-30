@@ -65,7 +65,10 @@
 
             // this.load.image('creep0', oCreeps[0].WalkAnimationURL);
 
-            this.load.spritesheet('creep0', oCreeps[0].WalkAnimationURL, 64, 64);
+            var walk = this.load.spritesheet(oCreeps[0].GameObjectID + '.walk', oCreeps[0].WalkAnimationURL, 64, 64);
+            if (oCreeps[0].DieAnimationURL !== undefined) {
+                var die = this.load.spritesheet(oCreeps[0].GameObjectID + '.die', oCreeps[0].DieAnimationURL, 64, 64);
+            }
             this.load.image('background', oTileset.BackgroundURL);
             this.load.image('tileIMG', oTileset.WallURL);
             this.load.tilemap('tileDEF', oCampaign.MapURL, null, Phaser.Tilemap.CSV);

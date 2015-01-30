@@ -62,7 +62,7 @@
 
             // drop a creep
             var creep0: Creep;
-            creep0 = new Creep(this.game, "creep0", extendedPath);
+            creep0 = new Creep(this.game, "CREEP000", extendedPath);
 
         }
     }

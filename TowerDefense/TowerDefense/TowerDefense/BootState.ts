@@ -16,7 +16,7 @@
                 // todo
             }
 
-            this.game.state.start('PreloadState', true, false);
+            this.game.state.start('StartMenu', true, false);
 
             // Phaser.Canvas.setSmoothingEnabled(this.game.context, false);
         }

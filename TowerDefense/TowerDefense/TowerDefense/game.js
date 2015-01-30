@@ -26,7 +26,7 @@ var TDGame;
                 // todo
             }
 
-            this.game.state.start('PreloadState', true, false);
+            this.game.state.start('StartMenu', true, false);
             // Phaser.Canvas.setSmoothingEnabled(this.game.context, false);
         };
         return BootState;
@@ -140,7 +140,10 @@ var TDGame;
 var Creep = (function (_super) {
     __extends(Creep, _super);
     function Creep(ThisGame, CreepType, StartPath) {
-        _super.call(this, ThisGame, 0, 0, CreepType, 0);
+        this._walkTextureKey = CreepType + ".walk";
+        this._dieTextureKey = CreepType + ".die";
+
+        _super.call(this, ThisGame, 0, 0, this._walkTextureKey, 0);
 
         //this.scale = new Phaser.Point(2, 2);
         this.anchor.setTo(0.5, 0.5);
@@ -148,12 +151,12 @@ var Creep = (function (_super) {
         this.health = 10;
         this._id = CreepType;
         this._payout = 10;
-        this._velocity = 1000;
+        this._velocity = 300;
         this._path = StartPath;
         this.animations.add('walk');
         this.animations.play('walk', 4, true);
 
-        ThisGame.add.existing(this);
+        this.game.add.existing(this);
 
         this.position = this._path[0];
         var lookat = this._path[1];
@@ -174,7 +177,32 @@ var Creep = (function (_super) {
                 this.rotation = angle;
                 this.game.add.tween(this.position).to(nextPos, this._velocity, Phaser.Easing.Linear.None, true);
                 this._path.shift();
+            } else {
+                this.Exit();
             }
+        }
+    };
+
+    // exit map
+    Creep.prototype.Exit = function () {
+        var _this = this;
+        var fadeOut = this.game.add.tween(this).to({ alpha: 0 }, 500, Phaser.Easing.Linear.None, true);
+        fadeOut.onComplete.add(function () {
+            _this.kill;
+        });
+    };
+
+    // die
+    Creep.prototype.Die = function () {
+        // todo: add value to global payout
+        this.animations.stop('walk');
+        if (!this.game.cache.checkImageKey(this._dieTextureKey)) {
+            this.Exit();
+        } else {
+            var test = this.loadTexture(this._dieTextureKey, 0, true);
+            var die_anim = this.animations.add('die');
+            die_anim.play(15, false); // no loop, kill on complete
+            this.Exit();
         }
     };
     return Creep;
@@ -321,7 +349,10 @@ var TDGame;
             });
 
             // this.load.image('creep0', oCreeps[0].WalkAnimationURL);
-            this.load.spritesheet('creep0', oCreeps[0].WalkAnimationURL, 64, 64);
+            var walk = this.load.spritesheet(oCreeps[0].GameObjectID + '.walk', oCreeps[0].WalkAnimationURL, 64, 64);
+            if (oCreeps[0].DieAnimationURL !== undefined) {
+                var die = this.load.spritesheet(oCreeps[0].GameObjectID + '.die', oCreeps[0].DieAnimationURL, 64, 64);
+            }
             this.load.image('background', oTileset.BackgroundURL);
             this.load.image('tileIMG', oTileset.WallURL);
             this.load.tilemap('tileDEF', oCampaign.MapURL, null, Phaser.Tilemap.CSV);
@@ -538,7 +569,7 @@ var TDGame;
 
             // drop a creep
             var creep0;
-            creep0 = new Creep(this.game, "creep0", extendedPath);
+            creep0 = new Creep(this.game, "CREEP000", extendedPath);
         };
         return Proto1;
     })(Phaser.State);
