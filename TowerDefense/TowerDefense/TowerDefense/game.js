@@ -292,6 +292,47 @@ var Helper;
     }
     Helper.WriteDebugText = WriteDebugText;
 })(Helper || (Helper = {}));
+var BitmapLine = (function () {
+    function BitmapLine(ThisGame) {
+        this._bmd = ThisGame.add.bitmapData(640, 640);
+        this._sprite = ThisGame.add.sprite(0, 0, this._bmd);
+        this._color = 'green';
+        this._width = 5;
+    }
+    Object.defineProperty(BitmapLine.prototype, "Color", {
+        set: function (value) {
+            this._color = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(BitmapLine.prototype, "Width", {
+        set: function (value) {
+            this._width = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    BitmapLine.prototype.Draw = function (From, To) {
+        this._bmd.clear();
+        this._bmd.ctx.beginPath();
+        this._bmd.ctx.strokeStyle = this._color;
+        this._bmd.ctx.fill();
+        this._bmd.ctx.lineWidth = this._width;
+        this._bmd.ctx.moveTo(From.x, From.y);
+        this._bmd.ctx.lineTo(To.x, To.y);
+        this._bmd.ctx.stroke();
+        this._bmd.ctx.closePath();
+        this._bmd.render();
+    };
+
+    BitmapLine.prototype.NoDraw = function () {
+        this._bmd.clear();
+    };
+    return BitmapLine;
+})();
 var TDGame;
 (function (TDGame) {
     var LoadCampaignAssets = (function (_super) {
@@ -612,6 +653,7 @@ var TDGame;
 
             //drop a tower
             var tower0 = new Tower(this.game, "TOWER000", new Phaser.Point(3, 3), creepGroup);
+            tower0.Range = 320;
         };
         return Proto1;
     })(Phaser.State);
@@ -688,6 +730,14 @@ var Tower = (function (_super) {
         this.Range = 128; // default range
         this._targetCreep = null;
         this._hasTurret = this.game.cache.checkImageKey(this._rotatorTextureKey);
+
+        if (this._hasTurret) {
+            this._turret = this.game.add.sprite(this.position.x, this.position.y, this._rotatorTextureKey);
+            this._turret.anchor.setTo(0.5, 0.5);
+        }
+
+        //laser line
+        this._laserLine = new BitmapLine(this.game);
     }
     Object.defineProperty(Tower.prototype, "Range", {
         set: function (Dist) {
@@ -709,10 +759,12 @@ var Tower = (function (_super) {
             }
 
             // pew pew pew!
-            var line = new Phaser.Line(this.x, this.y, this._targetCreep.x, this._targetCreep.y);
-            console.log(line.angle);
+            // var line: Phaser.Line = new Phaser.Line(this.x, this.y, this._targetCreep.x, this._targetCreep.y);
+            // console.log(line.angle);
+            this._laserLine.Draw(this.position, this._targetCreep.position);
         } else {
             // console.log("No target creep, or creep is out of range.");
+            this._laserLine.NoDraw();
             this._targetCreep = null;
             if (this._creepList.countLiving() > 0) {
                 this.targetNearestInRangeCreep();
@@ -722,6 +774,7 @@ var Tower = (function (_super) {
 
     // rotate turret to tract targeted creep
     Tower.prototype.rotateTurretToTarget = function () {
+        this._turret.rotation = Phaser.Point.angle(this._targetCreep.position, this.position);
     };
 
     // set the nearest in-range creep as target

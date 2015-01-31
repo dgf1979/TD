@@ -71,6 +71,7 @@
 
             //drop a tower
             var tower0 = new Tower(this.game, "TOWER000", new Phaser.Point(3, 3), creepGroup);
+            tower0.Range = 320;
 
         }
     }

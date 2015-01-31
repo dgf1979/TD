@@ -45,6 +45,7 @@
     <TypeScriptCompile Include="gameStates.ts" />
     <TypeScriptCompile Include="Helpers.ts" />
     <TypeScriptCompile Include="js\easystar\easystarjs.d.ts" />
+    <TypeScriptCompile Include="Line.ts" />
     <TypeScriptCompile Include="loadCampaignAssetsState.ts" />
     <TypeScriptCompile Include="menuState.ts" />
     <TypeScriptCompile Include="Proto1.ts" />
