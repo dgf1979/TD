@@ -1,5 +1,5 @@
 ﻿module TDGame {
-    //BOOT STATE
+    // BOOT STATE
     export class BootState extends Phaser.State {
 
         preload() {

@@ -12,7 +12,7 @@
 
         super(ThisGame, 0, 0, this._walkTextureKey, 0);
 
-        //this.scale = new Phaser.Point(2, 2);
+        // this.scale = new Phaser.Point(2, 2);
         this.anchor.setTo(0.5, 0.5);
 
         this.health = 10;
@@ -20,8 +20,8 @@
         this._payout = 10;
         this._velocity = 300;
         this._path = StartPath;
-        this.animations.add('walk');
-        this.animations.play('walk',4,true);
+        this.animations.add("walk");
+        this.animations.play("walk",4,true);
 
         this.game.add.existing(this);
 
@@ -54,19 +54,18 @@
     // exit map
     private Exit() {
         var fadeOut: Phaser.Tween = this.game.add.tween(this).to({ alpha: 0 }, 500, Phaser.Easing.Linear.None, true);
-        fadeOut.onComplete.add(() => { this.kill; });
+        fadeOut.onComplete.add(() => { this.kill(); this.destroy(); });
     }
 
     // die
     private Die() {
         // todo: add value to global payout
 
-        this.animations.stop('walk');
+        this.animations.stop("walk");
         if (!this.game.cache.checkImageKey(this._dieTextureKey)) {
             this.Exit();
         } else {
-            var test = this.loadTexture(this._dieTextureKey, 0, true);
-            var die_anim = this.animations.add('die');
+            var die_anim = this.animations.add("die");
             die_anim.play(15, false);  // no loop, kill on complete
             this.Exit();
         }

@@ -60,9 +60,17 @@
                 }
             }
 
+            // make a creep group
+            var creepGroup: Phaser.Group = this.game.add.group();
+
+            creepGroup.name = "creeps";
             // drop a creep
             var creep0: Creep;
             creep0 = new Creep(this.game, "CREEP000", extendedPath);
+            creepGroup.add(creep0);
+
+            //drop a tower
+            var tower0 = new Tower(this.game, "TOWER000", new Phaser.Point(3, 3), creepGroup);
 
         }
     }

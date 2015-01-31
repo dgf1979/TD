@@ -11,7 +11,7 @@
 
             console.log('Value in LCA State: ' + TDGame.currentCampaign);
 
-            // query asset server for the selected campaigns deatils
+            // query asset server for the selected campaigns details
             var oCampaign: GameObjectClasses.Campaign;
             $(document).ready(() => {
                 $.ajax(
@@ -63,12 +63,38 @@
                     })
             });
 
-            // this.load.image('creep0', oCreeps[0].WalkAnimationURL);
+            // query asset server for every tower
+            var oTowers: GameObjectClasses.TowerAssets[] = [];
+            $(document).ready(() => {
+                $.ajax(
+                    {
+                        url: 'http://localhost:1337/tileset/' + oCampaign.TilesetID + '/towers',
+                        dataType: 'json',
+                        async: false,
+                        success: (json: GameObjectClasses.TowerAssets[]) => {
+                            oTowers = json;
+                        },
+                        error: (xhr: any, ajaxOptions: any, thrownError: any) => {
+                            alert(xhr.status);
+                            alert(thrownError);
+                        }
+                    })
+            });
 
+
+            // load test tower
+            var base = this.load.spritesheet(oTowers[0].GameObjectID + ".base", oTowers[0].BaseURL, 64, 64);
+            if (oTowers[0].RotatorURL !== undefined) {
+                var rotator = this.load.spritesheet(oTowers[0].GameObjectID + ".rotator", oTowers[0].RotatorURL, 64, 64);
+            }
+
+            // load test creep
             var walk = this.load.spritesheet(oCreeps[0].GameObjectID + '.walk', oCreeps[0].WalkAnimationURL, 64, 64);
             if (oCreeps[0].DieAnimationURL !== undefined) {
                 var die = this.load.spritesheet(oCreeps[0].GameObjectID + '.die', oCreeps[0].DieAnimationURL, 64, 64);
             }
+
+            // load background, tileset, and CSV map
             this.load.image('background', oTileset.BackgroundURL);
             this.load.image('tileIMG', oTileset.WallURL);
             this.load.tilemap('tileDEF', oCampaign.MapURL, null, Phaser.Tilemap.CSV);

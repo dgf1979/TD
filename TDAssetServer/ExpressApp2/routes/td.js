@@ -39,6 +39,14 @@ function TileSetCreepsByID(req, res) {
 }
 exports.TileSetCreepsByID = TileSetCreepsByID;
 
+// /tileset/:id/towers GET[] (get)
+function TileSetTowersByID(req, res) {
+    "use strict";
+    var id = req.params.id;
+    res.json(TowerAssetLoader(id));
+}
+exports.TileSetTowersByID = TileSetTowersByID;
+
 // /campaign LIST (GET)
 function CampaignList(req, res) {
     "use strict";
@@ -120,5 +128,32 @@ function CreepAssetLoader(TilesetID) {
         }
     }
     return creeps;
+}
+
+function TowerAssetLoader(TilesetID) {
+    var towers = [];
+
+    var searchPath = global.ASSETPATH + "\\TILESETS\\" + TilesetID + "\\TOWERS";
+    var subfld = nodefs.SubDirsOf(searchPath);
+    console.log("found " + subfld.length + " subfolders");
+    for (var i = 0; i < subfld.length; i++) {
+        // a valid base.png means a valid tower
+        var towerID = subfld[i];
+        var basePNG = searchPath + "\\" + towerID + "\\base.png";
+        console.log("looking in: " + towerID);
+        if (nodefs.Exists(basePNG)) {
+            console.log("found: " + basePNG);
+            var tower = new goc.TowerAssets;
+            tower.GameObjectID = towerID;
+            tower.BaseURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/TOWERS/" + towerID + "/base.png";
+
+            var rotatorPNG = searchPath + "\\" + towerID + "\\rotator.png";
+            if (nodefs.Exists(rotatorPNG)) {
+                tower.RotatorURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/TOWERS/" + towerID + "/rotator.png";
+            }
+            towers.push(tower);
+        }
+    }
+    return towers;
 }
 //# sourceMappingURL=td.js.map

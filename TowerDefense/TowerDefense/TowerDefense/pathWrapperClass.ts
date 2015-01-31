@@ -1,7 +1,7 @@
 ﻿// wrap some EasyStar functionality into typescript for simpler (to me) usage
 class PathHelper {
     // easystar
-    private _easystar: any = new EasyStar.js();
+    private _easystar: EasyStar.js = new EasyStar.js();
     private _pathFound: boolean;
     private _asyncComplete: boolean;
     private _map: TDMap;
@@ -49,7 +49,7 @@ class PathHelper {
         this._easystar.setGrid(grid);
         this._easystar.setAcceptableTiles([0]);
         this._easystar.findPath(StartNode.x, StartNode.y, this._map.CreepExit.x, this._map.CreepExit.y,
-            path => {
+            (path: any) => {
             if (path == null) {
                 // alert("Path not found.");
                 this._pathFound = false;

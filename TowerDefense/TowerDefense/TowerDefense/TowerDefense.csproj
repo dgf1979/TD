@@ -44,6 +44,7 @@
     <TypeScriptCompile Include="GameObjectClasses.ts" />
     <TypeScriptCompile Include="gameStates.ts" />
     <TypeScriptCompile Include="Helpers.ts" />
+    <TypeScriptCompile Include="js\easystar\easystarjs.d.ts" />
     <TypeScriptCompile Include="loadCampaignAssetsState.ts" />
     <TypeScriptCompile Include="menuState.ts" />
     <TypeScriptCompile Include="Proto1.ts" />
@@ -55,6 +56,7 @@
     <TypeScriptCompile Include="js\phaser\pixi.d.ts" />
     <Content Include="img\tilemap0\tilemap0.json" />
     <Content Include="img\tilemap0\tilemap0.csv" />
+    <TypeScriptCompile Include="TowerClass.ts" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="js\phaser\phaser.map" />

@@ -29,6 +29,13 @@
         DieAnimationURL: string;
     }
 
+    // asset URLs for a partucular type of creep
+    export class TowerAssets {
+        GameObjectID: string;
+        BaseURL: string;
+        RotatorURL: string;
+    }
+
 }
 
 

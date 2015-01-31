@@ -66,6 +66,7 @@ app.get("/", routes.AssetPath);
 app.get("/tileset", routes.TileSetList);
 app.get("/tileset/:id", routes.TileSetGetByID);
 app.get("/tileset/:id/creeps", routes.TileSetCreepsByID);
+app.get("/tileset/:id/towers", routes.TileSetTowersByID);
 
 // campaign routes
 app.get("/campaign", routes.CampaignList);

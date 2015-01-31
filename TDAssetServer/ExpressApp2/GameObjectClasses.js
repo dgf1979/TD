@@ -29,4 +29,12 @@ var CreepAssets = (function () {
     return CreepAssets;
 })();
 exports.CreepAssets = CreepAssets;
+
+// asset URLs for a partucular type of creep
+var TowerAssets = (function () {
+    function TowerAssets() {
+    }
+    return TowerAssets;
+})();
+exports.TowerAssets = TowerAssets;
 //# sourceMappingURL=GameObjectClasses.js.map

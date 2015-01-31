@@ -6,7 +6,7 @@
 };
 var TDGame;
 (function (TDGame) {
-    //BOOT STATE
+    // BOOT STATE
     var BootState = (function (_super) {
         __extends(BootState, _super);
         function BootState() {
@@ -145,7 +145,7 @@ var Creep = (function (_super) {
 
         _super.call(this, ThisGame, 0, 0, this._walkTextureKey, 0);
 
-        //this.scale = new Phaser.Point(2, 2);
+        // this.scale = new Phaser.Point(2, 2);
         this.anchor.setTo(0.5, 0.5);
 
         this.health = 10;
@@ -153,8 +153,8 @@ var Creep = (function (_super) {
         this._payout = 10;
         this._velocity = 300;
         this._path = StartPath;
-        this.animations.add('walk');
-        this.animations.play('walk', 4, true);
+        this.animations.add("walk");
+        this.animations.play("walk", 4, true);
 
         this.game.add.existing(this);
 
@@ -188,19 +188,19 @@ var Creep = (function (_super) {
         var _this = this;
         var fadeOut = this.game.add.tween(this).to({ alpha: 0 }, 500, Phaser.Easing.Linear.None, true);
         fadeOut.onComplete.add(function () {
-            _this.kill;
+            _this.kill();
+            _this.destroy();
         });
     };
 
     // die
     Creep.prototype.Die = function () {
         // todo: add value to global payout
-        this.animations.stop('walk');
+        this.animations.stop("walk");
         if (!this.game.cache.checkImageKey(this._dieTextureKey)) {
             this.Exit();
         } else {
-            var test = this.loadTexture(this._dieTextureKey, 0, true);
-            var die_anim = this.animations.add('die');
+            var die_anim = this.animations.add("die");
             die_anim.play(15, false); // no loop, kill on complete
             this.Exit();
         }
@@ -240,6 +240,14 @@ var GameObjectClasses;
         return CreepAssets;
     })();
     GameObjectClasses.CreepAssets = CreepAssets;
+
+    // asset URLs for a partucular type of creep
+    var TowerAssets = (function () {
+        function TowerAssets() {
+        }
+        return TowerAssets;
+    })();
+    GameObjectClasses.TowerAssets = TowerAssets;
 })(GameObjectClasses || (GameObjectClasses = {}));
 var TDGame;
 (function (TDGame) {
@@ -298,7 +306,7 @@ var TDGame;
 
             console.log('Value in LCA State: ' + TDGame.currentCampaign);
 
-            // query asset server for the selected campaigns deatils
+            // query asset server for the selected campaigns details
             var oCampaign;
             $(document).ready(function () {
                 $.ajax({
@@ -348,11 +356,36 @@ var TDGame;
                 });
             });
 
-            // this.load.image('creep0', oCreeps[0].WalkAnimationURL);
+            // query asset server for every tower
+            var oTowers = [];
+            $(document).ready(function () {
+                $.ajax({
+                    url: 'http://localhost:1337/tileset/' + oCampaign.TilesetID + '/towers',
+                    dataType: 'json',
+                    async: false,
+                    success: function (json) {
+                        oTowers = json;
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert(xhr.status);
+                        alert(thrownError);
+                    }
+                });
+            });
+
+            // load test tower
+            var base = this.load.spritesheet(oTowers[0].GameObjectID + ".base", oTowers[0].BaseURL, 64, 64);
+            if (oTowers[0].RotatorURL !== undefined) {
+                var rotator = this.load.spritesheet(oTowers[0].GameObjectID + ".rotator", oTowers[0].RotatorURL, 64, 64);
+            }
+
+            // load test creep
             var walk = this.load.spritesheet(oCreeps[0].GameObjectID + '.walk', oCreeps[0].WalkAnimationURL, 64, 64);
             if (oCreeps[0].DieAnimationURL !== undefined) {
                 var die = this.load.spritesheet(oCreeps[0].GameObjectID + '.die', oCreeps[0].DieAnimationURL, 64, 64);
             }
+
+            // load background, tileset, and CSV map
             this.load.image('background', oTileset.BackgroundURL);
             this.load.image('tileIMG', oTileset.WallURL);
             this.load.tilemap('tileDEF', oCampaign.MapURL, null, Phaser.Tilemap.CSV);
@@ -567,9 +600,18 @@ var TDGame;
                 }
             }
 
+            // make a creep group
+            var creepGroup = this.game.add.group();
+
+            creepGroup.name = "creeps";
+
             // drop a creep
             var creep0;
             creep0 = new Creep(this.game, "CREEP000", extendedPath);
+            creepGroup.add(creep0);
+
+            //drop a tower
+            var tower0 = new Tower(this.game, "TOWER000", new Phaser.Point(3, 3), creepGroup);
         };
         return Proto1;
     })(Phaser.State);
@@ -632,4 +674,81 @@ var SimpleGame = (function () {
 window.onload = function () {
     // var game = new SimpleGame();
 };
+var Tower = (function (_super) {
+    __extends(Tower, _super);
+    function Tower(ThisGame, TowerID, Location, CreepGroup) {
+        this._id = TowerID;
+        this._baseTextureKey = this._id + ".base";
+        this._rotatorTextureKey = this._id + ".rotator";
+        this._creepList = CreepGroup;
+        _super.call(this, ThisGame, Location.x * 64 + 32, Location.y * 64 + 32, this._baseTextureKey, 0);
+        this.anchor.setTo(0.5, 0.5);
+        this.game.add.existing(this);
+
+        this.Range = 128; // default range
+        this._targetCreep = null;
+        this._hasTurret = this.game.cache.checkImageKey(this._rotatorTextureKey);
+    }
+    Object.defineProperty(Tower.prototype, "Range", {
+        set: function (Dist) {
+            this._range = new Phaser.Circle(this.position.x, this.position.y, Dist * 2);
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    // phaser update loop
+    Tower.prototype.update = function () {
+        // check if the tower has a target within range
+        if (this._targetCreep !== null && this._range.contains(this._targetCreep.x, this._targetCreep.y)) {
+            console.log("target creep is not null and is in range - clear to shoot");
+
+            // shoooooot iiiiiit!!!  ..or, you kow, get the rotation and draw a line..
+            if (this._hasTurret) {
+                this.rotateTurretToTarget();
+            }
+
+            // pew pew pew!
+            var line = new Phaser.Line(this.x, this.y, this._targetCreep.x, this._targetCreep.y);
+            console.log(line.angle);
+        } else {
+            // console.log("No target creep, or creep is out of range.");
+            this._targetCreep = null;
+            if (this._creepList.countLiving() > 0) {
+                this.targetNearestInRangeCreep();
+            }
+        }
+    };
+
+    // rotate turret to tract targeted creep
+    Tower.prototype.rotateTurretToTarget = function () {
+    };
+
+    // set the nearest in-range creep as target
+    Tower.prototype.targetNearestInRangeCreep = function () {
+        var _this = this;
+        var nearest;
+        var lastDistance = this._range.diameter;
+
+        // console.log("LIVE CREEPS IN GROUP: " + this._creepList.countLiving());
+        this._creepList.forEachAlive(function (creep) {
+            if (_this._range.contains(creep.position.x, creep.position.y)) {
+                var distance = Phaser.Point.distance(creep.position, _this.position);
+                if (distance < lastDistance) {
+                    lastDistance = distance; // if the distance to this creep from tower is the lowest so far, save it for the next loop
+                    nearest = creep;
+                }
+            }
+        }, this);
+
+        // now that the loop is complete, set the nearest creep as the tower target
+        if (lastDistance < this._range.diameter) {
+            console.log("targeting NEW creep: " + nearest.key);
+            this._targetCreep = nearest;
+        } else {
+            console.log("No creeps in range");
+        }
+    };
+    return Tower;
+})(Phaser.Sprite);
 //# sourceMappingURL=game.js.map

@@ -43,8 +43,11 @@
     <TypeScriptCompile Include="Scripts\typings\stylus\stylus.d.ts" />
     <Content Include="ASSETS\CAMPAIGNS\C_00000\map.csv" />
     <Content Include="ASSETS\TILESETS\TS_00000\background.png" />
+    <Content Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP000\die_anim.png" />
     <Content Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP000\walk_anim.png" />
     <Content Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP001\walk_anim.png" />
+    <Content Include="ASSETS\TILESETS\TS_00000\TOWERS\TOWER000\base.png" />
+    <Content Include="ASSETS\TILESETS\TS_00000\TOWERS\TOWER000\rotator.png" />
     <Content Include="ASSETS\TILESETS\TS_00000\walls.png" />
     <Content Include="package.json" />
     <Content Include="public\stylesheets\style.styl" />
