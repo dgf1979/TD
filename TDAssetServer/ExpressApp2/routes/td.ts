@@ -84,10 +84,10 @@ export function CreateDemoCampaign() {
     demoCampaign.TilesetID = "TS_00000";
 
     var wave1: goc.Wave = new goc.Wave;
-    wave1.CreepCount = 1;
-    wave1.CreepIndex = 0;
+    wave1.CreepCount = 2;
+    wave1.CreepID = "CREEP000";
     wave1.CreepSpeed = 1000;
-    wave1.SpawnDelay = 1;
+    wave1.SpawnDelay = 4;
 
     demoCampaign.Waves = [];
     demoCampaign.Waves.push(wave1);

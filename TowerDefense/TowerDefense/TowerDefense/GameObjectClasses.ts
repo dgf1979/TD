@@ -11,7 +11,7 @@
     // a wave, each consisting of a number of creeps ofa  specific type
     export class Wave {
         SpawnDelay: number;
-        CreepIndex: number;
+        CreepID: string;
         CreepCount: number;
         CreepSpeed: number;
     }

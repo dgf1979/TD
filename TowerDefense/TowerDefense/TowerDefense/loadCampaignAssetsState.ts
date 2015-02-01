@@ -2,14 +2,14 @@
     export class LoadCampaignAssets extends Phaser.State {
 
         preloadBar: Phaser.Sprite; // progbar
+        _campaign: GameObjectClasses.Campaign;
 
         preload() {
             // progbar
             this.preloadBar = this.add.sprite(200, 250, 'progbar');
             this.load.setPreloadSprite(this.preloadBar);
-
-
-            console.log('Value in LCA State: ' + TDGame.currentCampaign);
+            
+            // console.log('Value in LCA State: ' + TDGame.currentCampaign);
 
             // query asset server for the selected campaigns details
             var oCampaign: GameObjectClasses.Campaign;
@@ -22,6 +22,11 @@
                         success: (json: GameObjectClasses.Campaign) => {
                             oCampaign = json;
                             console.log('AJAX campaign ID: ' + oCampaign.ID);
+                            this._campaign = oCampaign;
+                        },
+                        error: (xhr: any, ajaxOptions: any, thrownError: any) => {
+                            alert(xhr.status);
+                            alert(thrownError);
                         }
                     })
             });
@@ -37,12 +42,15 @@
                         success: (json: GameObjectClasses.Tileset) => {
                             oTileset = json;
                             console.log("Tileset: " + oTileset);
+                        },
+                        error: (xhr: any, ajaxOptions: any, thrownError: any) => {
+                            alert(xhr.status);
+                            alert(thrownError);
                         }
                     })
             });
 
             // query asset server for every creep
-            // var oCreep: GameObjectClasses.CreepAssets; 
             var oCreeps: GameObjectClasses.CreepAssets[] = [];
             $(document).ready(() => {
                 $.ajax(
@@ -52,8 +60,6 @@
                         async: false,
                         success: (json: GameObjectClasses.CreepAssets[]) => {
                             oCreeps = json;
-                            // console.log("AJAX success returned: " + JSON.stringify(json));
-                            // console.log("creep list length: " + oCreeps.length);
                             console.log("WalkAnimationURL prop: " + oCreeps[oCreeps.length].WalkAnimationURL);
                         },
                         error: (xhr: any, ajaxOptions: any, thrownError: any) => {
@@ -81,32 +87,34 @@
                     })
             });
 
+            // load towers
+            for (var i = 0; i < oTowers.length; i++) {
+                var base = this.load.spritesheet(oTowers[i].GameObjectID + ".base", oTowers[i].BaseURL, 64, 64);
+                if (oTowers[0].RotatorURL !== undefined) {
+                    var rotator = this.load.spritesheet(oTowers[i].GameObjectID + ".rotator", oTowers[i].RotatorURL, 64, 64);
+                }
+            } 
 
-            // load test tower
-            var base = this.load.spritesheet(oTowers[0].GameObjectID + ".base", oTowers[0].BaseURL, 64, 64);
-            if (oTowers[0].RotatorURL !== undefined) {
-                var rotator = this.load.spritesheet(oTowers[0].GameObjectID + ".rotator", oTowers[0].RotatorURL, 64, 64);
+            // load creeps
+            for (var i = 0; i < oCreeps.length; i++) {
+                var walk = this.load.spritesheet(oCreeps[i].GameObjectID + '.walk', oCreeps[i].WalkAnimationURL, 64, 64);
+                if (oCreeps[i].DieAnimationURL !== undefined) {
+                    var die = this.load.spritesheet(oCreeps[i].GameObjectID + '.die', oCreeps[i].DieAnimationURL, 64, 64);
+                }
             }
 
-            // load test creep
-            var walk = this.load.spritesheet(oCreeps[0].GameObjectID + '.walk', oCreeps[0].WalkAnimationURL, 64, 64);
-            if (oCreeps[0].DieAnimationURL !== undefined) {
-                var die = this.load.spritesheet(oCreeps[0].GameObjectID + '.die', oCreeps[0].DieAnimationURL, 64, 64);
-            }
 
             // load background, tileset, and CSV map
             this.load.image('background', oTileset.BackgroundURL);
             this.load.image('tileIMG', oTileset.WallURL);
             this.load.tilemap('tileDEF', oCampaign.MapURL, null, Phaser.Tilemap.CSV);
 
-            // console.log("CSV: " + oCampaign.MapURL);
-
         }
 
         // phaser.create()
         create() {
             var tween: Phaser.Tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
-            tween.onComplete.add(() => this.game.state.start('Proto1', true, false));
+            tween.onComplete.add(() => this.game.state.start('Proto1', true, false, this._campaign));
         }
 
     }

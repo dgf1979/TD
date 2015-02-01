@@ -18,14 +18,15 @@
         this.health = 10;
         this._id = CreepType;
         this._payout = 10;
-        this._velocity = 300;
-        this._path = StartPath;
+        this._velocity = 600;
+        this._path = StartPath; // duplication handled by factory
         this.animations.add("walk");
-        this.animations.play("walk",4,true);
+        this.animations.play("walk", 4, true);
 
         this.game.add.existing(this);
 
         this.position = this._path[0];
+        console.log("spawn in at: " + this._path[0]);
         var lookat = this._path[1];
         this.rotation = Phaser.Point.angle(lookat, this.position);
     }
@@ -54,7 +55,11 @@
     // exit map
     private Exit() {
         var fadeOut: Phaser.Tween = this.game.add.tween(this).to({ alpha: 0 }, 500, Phaser.Easing.Linear.None, true);
-        fadeOut.onComplete.add(() => { this.kill(); this.destroy(); });
+        fadeOut.onComplete.add(() => {
+            this.health = 0;
+            this.kill();
+            this.destroy();
+        });
     }
 
     // die

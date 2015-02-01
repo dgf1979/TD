@@ -41,6 +41,7 @@
     <TypeScriptCompile Include="BootState.ts" />
     <TypeScriptCompile Include="campaignListState.ts" />
     <TypeScriptCompile Include="CreepClass.ts" />
+    <TypeScriptCompile Include="CreepFactory.ts" />
     <TypeScriptCompile Include="GameObjectClasses.ts" />
     <TypeScriptCompile Include="gameStates.ts" />
     <TypeScriptCompile Include="Helpers.ts" />

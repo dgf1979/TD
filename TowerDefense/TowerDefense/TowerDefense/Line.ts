@@ -35,5 +35,6 @@
 
     NoDraw() {
         this._bmd.clear();
+        this._bmd.render();
     }
 } 

@@ -8,67 +8,61 @@
     private _creepList: Phaser.Group;
     private _targetCreep: Phaser.Sprite;
     private _laserLine: BitmapLine;
+    // private _turretTween: Phaser.Tween;
 
     constructor(ThisGame: Phaser.Game, TowerID: string, Location: Phaser.Point, CreepGroup: Phaser.Group) {
         this._id = TowerID;
+        // texture keys
         this._baseTextureKey = this._id + ".base";
         this._rotatorTextureKey = this._id + ".rotator";
         this._creepList = CreepGroup;
+        //load the sprite contructor
         super(ThisGame, Location.x * 64 + 32, Location.y * 64 + 32, this._baseTextureKey, 0);
         this.anchor.setTo(0.5, 0.5);
         this.game.add.existing(this);
-
         this.Range = 128; // default range
         this._targetCreep = null;
+        // optional turret handling
         this._hasTurret = this.game.cache.checkImageKey(this._rotatorTextureKey);
-
         if (this._hasTurret) {
             this._turret = this.game.add.sprite(this.position.x, this.position.y, this._rotatorTextureKey);
             this._turret.anchor.setTo(0.5, 0.5);
+            // this._turretTween = this.game.add.tween(this._turret);
         }
-
         //laser line
         this._laserLine = new BitmapLine(this.game);        
     }
 
+    // range setter
     public set Range(Dist: number) {
         this._range = new Phaser.Circle(this.position.x, this.position.y, Dist * 2);
     }
 
     // phaser update loop
     update() {
-        // check if the tower has a target within range
-        if (this._targetCreep !== null && this._range.contains(this._targetCreep.x, this._targetCreep.y)) {
-            console.log("target creep is not null and is in range - clear to shoot");
-            // shoooooot iiiiiit!!!  ..or, you kow, get the rotation and draw a line..
-            if (this._hasTurret) { this.rotateTurretToTarget(); }
-            // pew pew pew!
-
-            // var line: Phaser.Line = new Phaser.Line(this.x, this.y, this._targetCreep.x, this._targetCreep.y);
-            // console.log(line.angle);
-            this._laserLine.Draw(this.position, this._targetCreep.position);
-
-        } else { // search for the next target
-            // console.log("No target creep, or creep is out of range.");
-            this._laserLine.NoDraw();
-            this._targetCreep = null;
-            if (this._creepList.countLiving() > 0) {
-                this.targetNearestInRangeCreep();
-            }
-        }
-    }
-
-    // rotate turret to tract targeted creep
-    private rotateTurretToTarget() {
-        this._turret.rotation = Phaser.Point.angle(this._targetCreep.position, this.position);
+        // console.log("Living Creeps: " + this._creepList.countLiving());
+        // console.log("target: " + this._targetCreep);
+        // aquire target
+        this.aquireTarget();
+        // follow target
+        this.trackTarget();
+        //shoot target
+        this.shootTarget();
     }
 
     // set the nearest in-range creep as target
-    private targetNearestInRangeCreep() {
+    private aquireTarget() {
+        //remove out-of-range targets
+        if (this._targetCreep !== null) {
+            if (this._range.contains(this._targetCreep.x, this._targetCreep.y) && this._targetCreep.alive) {
+                return;
+            } else {
+                this._targetCreep = null;
+            }
+        } 
+
         var nearest: Phaser.Sprite;
         var lastDistance: number = this._range.diameter;
-
-        // console.log("LIVE CREEPS IN GROUP: " + this._creepList.countLiving()); 
         this._creepList.forEachAlive((creep: Phaser.Sprite) => { // for each live creep on the board
             if (this._range.contains(creep.position.x, creep.position.y)) { // if the creep is in range
                 var distance = Phaser.Point.distance(creep.position, this.position); // get distance from creep to tower
@@ -78,13 +72,30 @@
                 } 
             }
         }, this);
-
         // now that the loop is complete, set the nearest creep as the tower target
-        if (lastDistance < this._range.diameter) {
+        if (lastDistance < this._range.radius) {
             console.log("targeting NEW creep: " + nearest.key);
             this._targetCreep = nearest;
         } else {
-            console.log("No creeps in range");
+            this._targetCreep = null;
+        }
+    }
+
+    // rotate turret to tract targeted creep
+    private trackTarget() {
+        if (this._hasTurret && this._targetCreep !== null) {
+            // calculate angle in degrees between tower and targreted creep
+            var lookAtAngle: number = Phaser.Math.angleBetweenPoints(this.position, this._targetCreep.position);
+            this._turret.rotation = lookAtAngle;
+        }
+    }
+
+    // shoot at target
+    private shootTarget() {
+        if (this._targetCreep !== null || typeof(this._targetCreep) === "undefined") {
+            this._laserLine.Draw(this.position, this._targetCreep.position);
+        } else {
+            this._laserLine.NoDraw();
         }
     }
 } 

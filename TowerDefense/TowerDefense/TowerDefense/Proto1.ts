@@ -2,27 +2,27 @@
 
     export class Proto1 extends Phaser.State {
 
+        _campaign: GameObjectClasses.Campaign;
         background: Phaser.Sprite;
         tdmap: TDMap;
         pather: PathHelper;
+
+        // init - get params passed to state
+        init(Campaign: GameObjectClasses.Campaign) {
+            this._campaign = Campaign;
+        }
 
         // run-up
         create() {
             this.background = this.add.sprite(0, 0, "background");
 
-            // var map: TDMap = new TDMap(this.game);
-
             // set up the map
-            console.log("about to try adding the tilemap..");
             var map = this.game.add.tilemap("tileDEF", 64, 64, 10, 10);
             map.addTilesetImage("tileIMG");
             map.setCollisionBetween(0, 99);
             var layer = map.createLayer(0);
-            // layer.scale = new Phaser.Point(this.ScaleFactor, this.ScaleFactor);
             layer.resizeWorld();
-            //console.log("made it!");
 
-            //
             this.tdmap = new TDMap(this.game);
 
             // get all tiles in layer and build a dirty little walkable array
@@ -43,7 +43,7 @@
             this.tdmap.SetCreepSpawnLocation(1, 8);
             this.tdmap.SetCreepExitLocation(8, 1);
 
-            // use the path wrapper to run the A* pathfinding algorythm
+            // use the path wrapper to run the A* pathfinding
             this.pather = new PathHelper(this.tdmap);
             this.pather.AsyncCalculatePath(this.tdmap.CreepSpawn, 32);
 
@@ -60,20 +60,26 @@
                 }
             }
 
+            // loop waves
+            var wave: GameObjectClasses.Wave = this._campaign.Waves[0];
+            
+
             // make a creep group
             var creepGroup: Phaser.Group = this.game.add.group();
-
             creepGroup.name = "creeps";
-            // drop a creep
-            var creep0: Creep;
-            creep0 = new Creep(this.game, "CREEP000", extendedPath);
-            creepGroup.add(creep0);
+
+            // creep factory
+            var CF: CreepFactory = new CreepFactory(this.game, wave, creepGroup, extendedPath);
+            CF.Start();
+            // var creep0: Creep;
+            // creep0 = new Creep(this.game, "CREEP000", extendedPath);
+            // creepGroup.add(creep0);
 
             //drop a tower
             var tower0 = new Tower(this.game, "TOWER000", new Phaser.Point(3, 3), creepGroup);
-            tower0.Range = 320;
+            tower0.Range = 360;
 
         }
-    }
 
+    }
 } 

@@ -151,14 +151,15 @@ var Creep = (function (_super) {
         this.health = 10;
         this._id = CreepType;
         this._payout = 10;
-        this._velocity = 300;
-        this._path = StartPath;
+        this._velocity = 600;
+        this._path = StartPath; // duplication handled by factory
         this.animations.add("walk");
         this.animations.play("walk", 4, true);
 
         this.game.add.existing(this);
 
         this.position = this._path[0];
+        console.log("spawn in at: " + this._path[0]);
         var lookat = this._path[1];
         this.rotation = Phaser.Point.angle(lookat, this.position);
     }
@@ -188,6 +189,7 @@ var Creep = (function (_super) {
         var _this = this;
         var fadeOut = this.game.add.tween(this).to({ alpha: 0 }, 500, Phaser.Easing.Linear.None, true);
         fadeOut.onComplete.add(function () {
+            _this.health = 0;
             _this.kill();
             _this.destroy();
         });
@@ -207,6 +209,34 @@ var Creep = (function (_super) {
     };
     return Creep;
 })(Phaser.Sprite);
+var CreepFactory = (function () {
+    function CreepFactory(ThisGame, Wave, CreepGroup, StartPath) {
+        this._game = ThisGame;
+        this._wave = Wave;
+        this._creepGroup = CreepGroup;
+        this._startingPath = StartPath;
+    }
+    CreepFactory.prototype.Start = function () {
+        this.createCreep();
+        this._game.time.events.repeat(Phaser.Timer.SECOND * this._wave.SpawnDelay, this._wave.CreepCount - 1, this.createCreep, this);
+    };
+
+    CreepFactory.prototype.createCreep = function () {
+        console.log("creating new creep at: " + this._startingPath[0]);
+        var creep = new Creep(this._game, this._wave.CreepID, this.PathNewCopy());
+        this._creepGroup.add(creep);
+    };
+
+    // clone path array - because JavaScript.
+    CreepFactory.prototype.PathNewCopy = function () {
+        var newPath = [];
+        for (var i = 0; i < this._startingPath.length; i++) {
+            newPath.push(new Phaser.Point(this._startingPath[i].x, this._startingPath[i].y));
+        }
+        return newPath;
+    };
+    return CreepFactory;
+})();
 var GameObjectClasses;
 (function (GameObjectClasses) {
     // a campaign, consisting of multiple waves
@@ -330,6 +360,7 @@ var BitmapLine = (function () {
 
     BitmapLine.prototype.NoDraw = function () {
         this._bmd.clear();
+        this._bmd.render();
     };
     return BitmapLine;
 })();
@@ -341,12 +372,12 @@ var TDGame;
             _super.apply(this, arguments);
         }
         LoadCampaignAssets.prototype.preload = function () {
+            var _this = this;
             // progbar
             this.preloadBar = this.add.sprite(200, 250, 'progbar');
             this.load.setPreloadSprite(this.preloadBar);
 
-            console.log('Value in LCA State: ' + TDGame.currentCampaign);
-
+            // console.log('Value in LCA State: ' + TDGame.currentCampaign);
             // query asset server for the selected campaigns details
             var oCampaign;
             $(document).ready(function () {
@@ -357,6 +388,11 @@ var TDGame;
                     success: function (json) {
                         oCampaign = json;
                         console.log('AJAX campaign ID: ' + oCampaign.ID);
+                        _this._campaign = oCampaign;
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert(xhr.status);
+                        alert(thrownError);
                     }
                 });
             });
@@ -371,12 +407,15 @@ var TDGame;
                     success: function (json) {
                         oTileset = json;
                         console.log("Tileset: " + oTileset);
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        alert(xhr.status);
+                        alert(thrownError);
                     }
                 });
             });
 
             // query asset server for every creep
-            // var oCreep: GameObjectClasses.CreepAssets;
             var oCreeps = [];
             $(document).ready(function () {
                 $.ajax({
@@ -385,9 +424,6 @@ var TDGame;
                     async: false,
                     success: function (json) {
                         oCreeps = json;
-
-                        // console.log("AJAX success returned: " + JSON.stringify(json));
-                        // console.log("creep list length: " + oCreeps.length);
                         console.log("WalkAnimationURL prop: " + oCreeps[oCreeps.length].WalkAnimationURL);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
@@ -414,23 +450,24 @@ var TDGame;
                 });
             });
 
-            // load test tower
-            var base = this.load.spritesheet(oTowers[0].GameObjectID + ".base", oTowers[0].BaseURL, 64, 64);
-            if (oTowers[0].RotatorURL !== undefined) {
-                var rotator = this.load.spritesheet(oTowers[0].GameObjectID + ".rotator", oTowers[0].RotatorURL, 64, 64);
+            for (var i = 0; i < oTowers.length; i++) {
+                var base = this.load.spritesheet(oTowers[i].GameObjectID + ".base", oTowers[i].BaseURL, 64, 64);
+                if (oTowers[0].RotatorURL !== undefined) {
+                    var rotator = this.load.spritesheet(oTowers[i].GameObjectID + ".rotator", oTowers[i].RotatorURL, 64, 64);
+                }
             }
 
-            // load test creep
-            var walk = this.load.spritesheet(oCreeps[0].GameObjectID + '.walk', oCreeps[0].WalkAnimationURL, 64, 64);
-            if (oCreeps[0].DieAnimationURL !== undefined) {
-                var die = this.load.spritesheet(oCreeps[0].GameObjectID + '.die', oCreeps[0].DieAnimationURL, 64, 64);
+            for (var i = 0; i < oCreeps.length; i++) {
+                var walk = this.load.spritesheet(oCreeps[i].GameObjectID + '.walk', oCreeps[i].WalkAnimationURL, 64, 64);
+                if (oCreeps[i].DieAnimationURL !== undefined) {
+                    var die = this.load.spritesheet(oCreeps[i].GameObjectID + '.die', oCreeps[i].DieAnimationURL, 64, 64);
+                }
             }
 
             // load background, tileset, and CSV map
             this.load.image('background', oTileset.BackgroundURL);
             this.load.image('tileIMG', oTileset.WallURL);
             this.load.tilemap('tileDEF', oCampaign.MapURL, null, Phaser.Tilemap.CSV);
-            // console.log("CSV: " + oCampaign.MapURL);
         };
 
         // phaser.create()
@@ -438,7 +475,7 @@ var TDGame;
             var _this = this;
             var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
             tween.onComplete.add(function () {
-                return _this.game.state.start('Proto1', true, false);
+                return _this.game.state.start('Proto1', true, false, _this._campaign);
             });
         };
         return LoadCampaignAssets;
@@ -485,6 +522,127 @@ var TDGame;
     })(Phaser.State);
     TDGame.StartMenu = StartMenu;
 })(TDGame || (TDGame = {}));
+var TDGame;
+(function (TDGame) {
+    var Proto1 = (function (_super) {
+        __extends(Proto1, _super);
+        function Proto1() {
+            _super.apply(this, arguments);
+        }
+        // init - get params passed to state
+        Proto1.prototype.init = function (Campaign) {
+            this._campaign = Campaign;
+        };
+
+        // run-up
+        Proto1.prototype.create = function () {
+            this.background = this.add.sprite(0, 0, "background");
+
+            // set up the map
+            var map = this.game.add.tilemap("tileDEF", 64, 64, 10, 10);
+            map.addTilesetImage("tileIMG");
+            map.setCollisionBetween(0, 99);
+            var layer = map.createLayer(0);
+            layer.resizeWorld();
+
+            this.tdmap = new TDMap(this.game);
+
+            // get all tiles in layer and build a dirty little walkable array
+            var tiles = layer.getTiles(0, 0, layer.width, layer.height, false, false);
+
+            // use helper to init a 2D array
+            var tmp = Helper.Array2D(10, 12, 0);
+
+            for (var i = 0; i < tiles.length; i++) {
+                var tile = tiles[i];
+
+                // console.log(tile.x + "," + tile.y + "collides=" + tile.canCollide);
+                if (tile.canCollide) {
+                    tmp[tile.y][tile.x] = 1;
+                }
+            }
+
+            // load up the map object
+            this.tdmap.LoadWalkable(tmp);
+            this.tdmap.SetCreepSpawnLocation(1, 8);
+            this.tdmap.SetCreepExitLocation(8, 1);
+
+            // use the path wrapper to run the A* pathfinding
+            this.pather = new PathHelper(this.tdmap);
+            this.pather.AsyncCalculatePath(this.tdmap.CreepSpawn, 32);
+
+            // debug helper - show each element of the map path
+            var path = this.pather.Path;
+            var extendedPath = [];
+            for (var i = 0; i < path.length; i++) {
+                var tile = map.getTile(path[i].x, path[i].y, 0, true);
+                if (tile != null) {
+                    extendedPath[i] = new Phaser.Point(tile.worldX + tile.centerX, tile.worldY + tile.centerY);
+                    Helper.WriteDebugText("P" + i, this.game, extendedPath[i].x, extendedPath[i].y);
+                }
+            }
+
+            // loop waves
+            var wave = this._campaign.Waves[0];
+
+            // make a creep group
+            var creepGroup = this.game.add.group();
+            creepGroup.name = "creeps";
+
+            // creep factory
+            var CF = new CreepFactory(this.game, wave, creepGroup, extendedPath);
+            CF.Start();
+
+            // var creep0: Creep;
+            // creep0 = new Creep(this.game, "CREEP000", extendedPath);
+            // creepGroup.add(creep0);
+            //drop a tower
+            var tower0 = new Tower(this.game, "TOWER000", new Phaser.Point(3, 3), creepGroup);
+            tower0.Range = 360;
+        };
+        return Proto1;
+    })(Phaser.State);
+    TDGame.Proto1 = Proto1;
+})(TDGame || (TDGame = {}));
+var TDMap = (function () {
+    function TDMap(PhaserGameObject) {
+        this._game = PhaserGameObject;
+    }
+    TDMap.prototype.LoadWalkable = function (Grid) {
+        this._walkableGrid = Grid;
+    };
+
+    TDMap.prototype.SetCreepSpawnLocation = function (X, Y) {
+        this._creepSpawn = new Phaser.Point(X, Y);
+    };
+
+    TDMap.prototype.SetCreepExitLocation = function (X, Y) {
+        this._creepExit = new Phaser.Point(X, Y);
+    };
+
+    Object.defineProperty(TDMap.prototype, "CreepSpawn", {
+        get: function () {
+            return this._creepSpawn;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TDMap.prototype, "CreepExit", {
+        get: function () {
+            return this._creepExit;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(TDMap.prototype, "WalkableGrid", {
+        get: function () {
+            return this._walkableGrid;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return TDMap;
+})();
 // wrap some EasyStar functionality into typescript for simpler (to me) usage
 var PathHelper = (function () {
     // default constructor
@@ -580,124 +738,6 @@ var PathHelper = (function () {
     };
     return PathHelper;
 })();
-var TDGame;
-(function (TDGame) {
-    var Proto1 = (function (_super) {
-        __extends(Proto1, _super);
-        function Proto1() {
-            _super.apply(this, arguments);
-        }
-        // run-up
-        Proto1.prototype.create = function () {
-            this.background = this.add.sprite(0, 0, "background");
-
-            // var map: TDMap = new TDMap(this.game);
-            // set up the map
-            console.log("about to try adding the tilemap..");
-            var map = this.game.add.tilemap("tileDEF", 64, 64, 10, 10);
-            map.addTilesetImage("tileIMG");
-            map.setCollisionBetween(0, 99);
-            var layer = map.createLayer(0);
-
-            // layer.scale = new Phaser.Point(this.ScaleFactor, this.ScaleFactor);
-            layer.resizeWorld();
-
-            //console.log("made it!");
-            //
-            this.tdmap = new TDMap(this.game);
-
-            // get all tiles in layer and build a dirty little walkable array
-            var tiles = layer.getTiles(0, 0, layer.width, layer.height, false, false);
-
-            // use helper to init a 2D array
-            var tmp = Helper.Array2D(10, 12, 0);
-
-            for (var i = 0; i < tiles.length; i++) {
-                var tile = tiles[i];
-
-                // console.log(tile.x + "," + tile.y + "collides=" + tile.canCollide);
-                if (tile.canCollide) {
-                    tmp[tile.y][tile.x] = 1;
-                }
-            }
-
-            // load up the map object
-            this.tdmap.LoadWalkable(tmp);
-            this.tdmap.SetCreepSpawnLocation(1, 8);
-            this.tdmap.SetCreepExitLocation(8, 1);
-
-            // use the path wrapper to run the A* pathfinding algorythm
-            this.pather = new PathHelper(this.tdmap);
-            this.pather.AsyncCalculatePath(this.tdmap.CreepSpawn, 32);
-
-            // debug helper - show each element of the map path
-            var path = this.pather.Path;
-            var extendedPath = [];
-            for (var i = 0; i < path.length; i++) {
-                var tile = map.getTile(path[i].x, path[i].y, 0, true);
-                if (tile != null) {
-                    extendedPath[i] = new Phaser.Point(tile.worldX + tile.centerX, tile.worldY + tile.centerY);
-                    Helper.WriteDebugText("P" + i, this.game, extendedPath[i].x, extendedPath[i].y);
-                }
-            }
-
-            // make a creep group
-            var creepGroup = this.game.add.group();
-
-            creepGroup.name = "creeps";
-
-            // drop a creep
-            var creep0;
-            creep0 = new Creep(this.game, "CREEP000", extendedPath);
-            creepGroup.add(creep0);
-
-            //drop a tower
-            var tower0 = new Tower(this.game, "TOWER000", new Phaser.Point(3, 3), creepGroup);
-            tower0.Range = 320;
-        };
-        return Proto1;
-    })(Phaser.State);
-    TDGame.Proto1 = Proto1;
-})(TDGame || (TDGame = {}));
-var TDMap = (function () {
-    function TDMap(PhaserGameObject) {
-        this._game = PhaserGameObject;
-    }
-    TDMap.prototype.LoadWalkable = function (Grid) {
-        this._walkableGrid = Grid;
-    };
-
-    TDMap.prototype.SetCreepSpawnLocation = function (X, Y) {
-        this._creepSpawn = new Phaser.Point(X, Y);
-    };
-
-    TDMap.prototype.SetCreepExitLocation = function (X, Y) {
-        this._creepExit = new Phaser.Point(X, Y);
-    };
-
-    Object.defineProperty(TDMap.prototype, "CreepSpawn", {
-        get: function () {
-            return this._creepSpawn;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TDMap.prototype, "CreepExit", {
-        get: function () {
-            return this._creepExit;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(TDMap.prototype, "WalkableGrid", {
-        get: function () {
-            return this._walkableGrid;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    return TDMap;
-})();
 var SimpleGame = (function () {
     function SimpleGame() {
         this.game = new Phaser.Game(100, 100, Phaser.AUTO, 'test', { preload: this.preload, create: this.create });
@@ -718,28 +758,35 @@ window.onload = function () {
 };
 var Tower = (function (_super) {
     __extends(Tower, _super);
+    // private _turretTween: Phaser.Tween;
     function Tower(ThisGame, TowerID, Location, CreepGroup) {
         this._id = TowerID;
+
+        // texture keys
         this._baseTextureKey = this._id + ".base";
         this._rotatorTextureKey = this._id + ".rotator";
         this._creepList = CreepGroup;
+
+        //load the sprite contructor
         _super.call(this, ThisGame, Location.x * 64 + 32, Location.y * 64 + 32, this._baseTextureKey, 0);
         this.anchor.setTo(0.5, 0.5);
         this.game.add.existing(this);
-
         this.Range = 128; // default range
         this._targetCreep = null;
-        this._hasTurret = this.game.cache.checkImageKey(this._rotatorTextureKey);
 
+        // optional turret handling
+        this._hasTurret = this.game.cache.checkImageKey(this._rotatorTextureKey);
         if (this._hasTurret) {
             this._turret = this.game.add.sprite(this.position.x, this.position.y, this._rotatorTextureKey);
             this._turret.anchor.setTo(0.5, 0.5);
+            // this._turretTween = this.game.add.tween(this._turret);
         }
 
         //laser line
         this._laserLine = new BitmapLine(this.game);
     }
     Object.defineProperty(Tower.prototype, "Range", {
+        // range setter
         set: function (Dist) {
             this._range = new Phaser.Circle(this.position.x, this.position.y, Dist * 2);
         },
@@ -749,41 +796,32 @@ var Tower = (function (_super) {
 
     // phaser update loop
     Tower.prototype.update = function () {
-        // check if the tower has a target within range
-        if (this._targetCreep !== null && this._range.contains(this._targetCreep.x, this._targetCreep.y)) {
-            console.log("target creep is not null and is in range - clear to shoot");
+        // console.log("Living Creeps: " + this._creepList.countLiving());
+        // console.log("target: " + this._targetCreep);
+        // aquire target
+        this.aquireTarget();
 
-            // shoooooot iiiiiit!!!  ..or, you kow, get the rotation and draw a line..
-            if (this._hasTurret) {
-                this.rotateTurretToTarget();
-            }
+        // follow target
+        this.trackTarget();
 
-            // pew pew pew!
-            // var line: Phaser.Line = new Phaser.Line(this.x, this.y, this._targetCreep.x, this._targetCreep.y);
-            // console.log(line.angle);
-            this._laserLine.Draw(this.position, this._targetCreep.position);
-        } else {
-            // console.log("No target creep, or creep is out of range.");
-            this._laserLine.NoDraw();
-            this._targetCreep = null;
-            if (this._creepList.countLiving() > 0) {
-                this.targetNearestInRangeCreep();
-            }
-        }
-    };
-
-    // rotate turret to tract targeted creep
-    Tower.prototype.rotateTurretToTarget = function () {
-        this._turret.rotation = Phaser.Point.angle(this._targetCreep.position, this.position);
+        //shoot target
+        this.shootTarget();
     };
 
     // set the nearest in-range creep as target
-    Tower.prototype.targetNearestInRangeCreep = function () {
+    Tower.prototype.aquireTarget = function () {
         var _this = this;
+        //remove out-of-range targets
+        if (this._targetCreep !== null) {
+            if (this._range.contains(this._targetCreep.x, this._targetCreep.y) && this._targetCreep.alive) {
+                return;
+            } else {
+                this._targetCreep = null;
+            }
+        }
+
         var nearest;
         var lastDistance = this._range.diameter;
-
-        // console.log("LIVE CREEPS IN GROUP: " + this._creepList.countLiving());
         this._creepList.forEachAlive(function (creep) {
             if (_this._range.contains(creep.position.x, creep.position.y)) {
                 var distance = Phaser.Point.distance(creep.position, _this.position);
@@ -795,11 +833,29 @@ var Tower = (function (_super) {
         }, this);
 
         // now that the loop is complete, set the nearest creep as the tower target
-        if (lastDistance < this._range.diameter) {
+        if (lastDistance < this._range.radius) {
             console.log("targeting NEW creep: " + nearest.key);
             this._targetCreep = nearest;
         } else {
-            console.log("No creeps in range");
+            this._targetCreep = null;
+        }
+    };
+
+    // rotate turret to tract targeted creep
+    Tower.prototype.trackTarget = function () {
+        if (this._hasTurret && this._targetCreep !== null) {
+            // calculate angle in degrees between tower and targreted creep
+            var lookAtAngle = Phaser.Math.angleBetweenPoints(this.position, this._targetCreep.position);
+            this._turret.rotation = lookAtAngle;
+        }
+    };
+
+    // shoot at target
+    Tower.prototype.shootTarget = function () {
+        if (this._targetCreep !== null || typeof (this._targetCreep) === "undefined") {
+            this._laserLine.Draw(this.position, this._targetCreep.position);
+        } else {
+            this._laserLine.NoDraw();
         }
     };
     return Tower;
