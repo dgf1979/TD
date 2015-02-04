@@ -17,7 +17,7 @@
             this.background = this.add.sprite(0, 0, "background");
 
             // set up the map
-            var map = this.game.add.tilemap("tileDEF", 64, 64, 10, 10);
+            var map = this.game.add.tilemap("tileDEF", TDGame.tileSize, TDGame.tileSize, 10, 10);
             map.addTilesetImage("tileIMG");
             map.setCollisionBetween(0, 99);
             var layer = map.createLayer(0);
@@ -28,7 +28,7 @@
             // get all tiles in layer and build a dirty little walkable array
             var tiles: Phaser.Tile[] = layer.getTiles(0, 0, layer.width, layer.height, false, false);
             // use helper to init a 2D array
-            var tmp: number[][] = Helper.Array2D(10, 12, 0);
+            var tmp: number[][] = Helper.Array2D(22, 22, 0);
             // flip any unwalkable tile to 1
             for (var i = 0; i < tiles.length; i++) {
                 var tile: Phaser.Tile = tiles[i];
@@ -41,7 +41,7 @@
             // load up the map object
             this.tdmap.LoadWalkable(tmp);
             this.tdmap.SetCreepSpawnLocation(1, 8);
-            this.tdmap.SetCreepExitLocation(8, 1);
+            this.tdmap.SetCreepExitLocation(14, 14);
 
             // use the path wrapper to run the A* pathfinding
             this.pather = new PathHelper(this.tdmap);
@@ -77,7 +77,11 @@
 
             //drop a tower
             var tower0 = new Tower(this.game, "TOWER000", new Phaser.Point(3, 3), creepGroup);
-            tower0.Range = 360;
+            tower0.Range = 128;
+
+            //drop a 2nd tower
+            var tower1 = new Tower(this.game, "TOWER000", new Phaser.Point(6, 6), creepGroup);
+            tower0.Range = 128;
 
         }
 

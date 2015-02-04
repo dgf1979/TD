@@ -1,14 +1,12 @@
 ﻿module TDGame {
 
+    // global vars for passing between states
     export var currentCampaign: string = '';
+    export var tileSize: number = 32;
 
     export class Game extends Phaser.Game {
-
-        // global vars for passing between states
-        
-
         constructor() {
-            super(800, 640, Phaser.AUTO, 'game', null);
+            super(1024, 768, Phaser.AUTO, 'game', null);
             this.state.add('BootState', BootState, true);
             this.state.add('PreloadState', PreloadState, false);
             this.state.add('StartMenu', StartMenu, false);

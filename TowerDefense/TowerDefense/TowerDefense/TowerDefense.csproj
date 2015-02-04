@@ -20,11 +20,6 @@
   <ItemGroup>
     <Content Include="game.js" />
     <Content Include="img\loader.png" />
-    <Content Include="img\test.png" />
-    <Content Include="img\tilemap0\background0.png" />
-    <Content Include="img\tilemap0\creeps\creep0.png" />
-    <Content Include="img\tilemap0\grid0.png" />
-    <Content Include="img\tilemap0\tileset0.png" />
     <Content Include="packages.config" />
     <None Include="js\jquery\jquery-2.1.3.intellisense.js" />
     <Content Include="js\jquery\jquery-2.1.3.js" />
@@ -45,6 +40,7 @@
     <TypeScriptCompile Include="GameObjectClasses.ts" />
     <TypeScriptCompile Include="gameStates.ts" />
     <TypeScriptCompile Include="Helpers.ts" />
+    <TypeScriptCompile Include="HPBarClass.ts" />
     <TypeScriptCompile Include="js\easystar\easystarjs.d.ts" />
     <TypeScriptCompile Include="Line.ts" />
     <TypeScriptCompile Include="loadCampaignAssetsState.ts" />
@@ -56,8 +52,6 @@
     <TypeScriptCompile Include="test.ts" />
     <TypeScriptCompile Include="js\phaser\phaser.d.ts" />
     <TypeScriptCompile Include="js\phaser\pixi.d.ts" />
-    <Content Include="img\tilemap0\tilemap0.json" />
-    <Content Include="img\tilemap0\tilemap0.csv" />
     <TypeScriptCompile Include="TowerClass.ts" />
   </ItemGroup>
   <ItemGroup>

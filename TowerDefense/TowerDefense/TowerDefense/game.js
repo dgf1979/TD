@@ -148,7 +148,7 @@ var Creep = (function (_super) {
         // this.scale = new Phaser.Point(2, 2);
         this.anchor.setTo(0.5, 0.5);
 
-        this.health = 10;
+        this.health = 20;
         this._id = CreepType;
         this._payout = 10;
         this._velocity = 600;
@@ -162,10 +162,16 @@ var Creep = (function (_super) {
         console.log("spawn in at: " + this._path[0]);
         var lookat = this._path[1];
         this.rotation = Phaser.Point.angle(lookat, this.position);
+
+        // health bar setup
+        this._healthBar = new HPBar(this);
     }
     // phaser update loop
     Creep.prototype.update = function () {
-        this.FollowPath(); // movement
+        if (this.alive) {
+            this.FollowPath(); // movement
+            this._healthBar.Update();
+        }
     };
 
     // movement
@@ -176,7 +182,7 @@ var Creep = (function (_super) {
                 var nextPos = this._path[1];
                 var angle = Phaser.Point.angle(nextPos, this.position);
                 this.rotation = angle;
-                this.game.add.tween(this.position).to(nextPos, this._velocity, Phaser.Easing.Linear.None, true);
+                this._movementTween = this.game.add.tween(this.position).to(nextPos, this._velocity, Phaser.Easing.Linear.None, true);
                 this._path.shift();
             } else {
                 this.Exit();
@@ -187,23 +193,40 @@ var Creep = (function (_super) {
     // exit map
     Creep.prototype.Exit = function () {
         var _this = this;
-        var fadeOut = this.game.add.tween(this).to({ alpha: 0 }, 500, Phaser.Easing.Linear.None, true);
+        console.log("Fade Away...");
+        var fadeOut = this.game.add.tween(this).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
         fadeOut.onComplete.add(function () {
-            _this.health = 0;
-            _this.kill();
             _this.destroy();
         });
+    };
+
+    // overrride sprite.damage
+    Creep.prototype.Damage = function (Points) {
+        if (this.health > 0) {
+            this.health -= Points; // call the built-in function
+        } else {
+            this.health = 0;
+            if (this.alive) {
+                this.Die();
+            }
+        }
+        ;
+        console.log("Creep taking damage; " + this.health + " hp remaining.");
     };
 
     // die
     Creep.prototype.Die = function () {
         // todo: add value to global payout
-        this.animations.stop("walk");
+        console.log("DIE DIE DIE");
+        this._movementTween.stop();
+        console.log("current anim: " + this.animations.currentAnim.name);
+        this.animations.stop("walk", true);
         if (!this.game.cache.checkImageKey(this._dieTextureKey)) {
             this.Exit();
         } else {
+            this.loadTexture(this._dieTextureKey, 0, true);
             var die_anim = this.animations.add("die");
-            die_anim.play(15, false); // no loop, kill on complete
+            die_anim.play(4, false, false); // no loop
             this.Exit();
         }
     };
@@ -281,13 +304,14 @@ var GameObjectClasses;
 })(GameObjectClasses || (GameObjectClasses = {}));
 var TDGame;
 (function (TDGame) {
+    // global vars for passing between states
     TDGame.currentCampaign = '';
+    TDGame.tileSize = 32;
 
     var Game = (function (_super) {
         __extends(Game, _super);
-        // global vars for passing between states
         function Game() {
-            _super.call(this, 800, 640, Phaser.AUTO, 'game', null);
+            _super.call(this, 1024, 768, Phaser.AUTO, 'game', null);
             this.state.add('BootState', TDGame.BootState, true);
             this.state.add('PreloadState', TDGame.PreloadState, false);
             this.state.add('StartMenu', TDGame.StartMenu, false);
@@ -316,12 +340,48 @@ var Helper;
 
     // debugging text writer
     function WriteDebugText(Text, CurrentGame, AtCanvasX, AtCanvasY) {
-        var style = { fill: "blue" };
+        var style = { fill: "blue", font: "bold 12px Arial" };
         var txt = CurrentGame.add.text(AtCanvasX, AtCanvasY, Text, style);
         txt.anchor.set(0.5, 0.5);
     }
     Helper.WriteDebugText = WriteDebugText;
 })(Helper || (Helper = {}));
+var HPBar = (function () {
+    function HPBar(Parent) {
+        // load privates
+        this._parent = Parent;
+        this._maxHealth = Parent.health;
+        this._lastHealth = Parent.health;
+
+        // build the bar
+        this._healthBar = this._parent.game.add.graphics(0, 0);
+
+        // 80% of parent width
+        this._totalBarWidth = 30;
+    }
+    // call from parent update
+    HPBar.prototype.Update = function () {
+        var startingPoint = this._parent.position;
+        if (this._lastHealth !== this._parent.health) {
+            var factor = this._totalBarWidth / this._maxHealth;
+            var barWidth = factor * this._parent.health;
+            var color = Phaser.Color.getColor(255, 0, 0);
+
+            //build a new health bar
+            this._healthBar.clear();
+            this._healthBar.beginFill(color);
+            this._healthBar.lineStyle(2, color, 1);
+            this._healthBar.moveTo(0, 0);
+            this._healthBar.lineTo(barWidth, 0);
+            this._healthBar.endFill();
+            this._lastHealth = this._parent.health;
+        } else {
+            this._healthBar.position.x = this._parent.position.x - 15;
+            this._healthBar.position.y = this._parent.position.y + 15;
+        }
+    };
+    return HPBar;
+})();
 var BitmapLine = (function () {
     function BitmapLine(ThisGame) {
         this._bmd = ThisGame.add.bitmapData(640, 640);
@@ -451,16 +511,16 @@ var TDGame;
             });
 
             for (var i = 0; i < oTowers.length; i++) {
-                var base = this.load.spritesheet(oTowers[i].GameObjectID + ".base", oTowers[i].BaseURL, 64, 64);
+                var base = this.load.spritesheet(oTowers[i].GameObjectID + ".base", oTowers[i].BaseURL, TDGame.tileSize, TDGame.tileSize);
                 if (oTowers[0].RotatorURL !== undefined) {
-                    var rotator = this.load.spritesheet(oTowers[i].GameObjectID + ".rotator", oTowers[i].RotatorURL, 64, 64);
+                    var rotator = this.load.spritesheet(oTowers[i].GameObjectID + ".rotator", oTowers[i].RotatorURL, TDGame.tileSize, TDGame.tileSize);
                 }
             }
 
             for (var i = 0; i < oCreeps.length; i++) {
-                var walk = this.load.spritesheet(oCreeps[i].GameObjectID + '.walk', oCreeps[i].WalkAnimationURL, 64, 64);
+                var walk = this.load.spritesheet(oCreeps[i].GameObjectID + '.walk', oCreeps[i].WalkAnimationURL, TDGame.tileSize, TDGame.tileSize);
                 if (oCreeps[i].DieAnimationURL !== undefined) {
-                    var die = this.load.spritesheet(oCreeps[i].GameObjectID + '.die', oCreeps[i].DieAnimationURL, 64, 64);
+                    var die = this.load.spritesheet(oCreeps[i].GameObjectID + '.die', oCreeps[i].DieAnimationURL, TDGame.tileSize, TDGame.tileSize);
                 }
             }
 
@@ -539,7 +599,7 @@ var TDGame;
             this.background = this.add.sprite(0, 0, "background");
 
             // set up the map
-            var map = this.game.add.tilemap("tileDEF", 64, 64, 10, 10);
+            var map = this.game.add.tilemap("tileDEF", TDGame.tileSize, TDGame.tileSize, 10, 10);
             map.addTilesetImage("tileIMG");
             map.setCollisionBetween(0, 99);
             var layer = map.createLayer(0);
@@ -551,7 +611,7 @@ var TDGame;
             var tiles = layer.getTiles(0, 0, layer.width, layer.height, false, false);
 
             // use helper to init a 2D array
-            var tmp = Helper.Array2D(10, 12, 0);
+            var tmp = Helper.Array2D(22, 22, 0);
 
             for (var i = 0; i < tiles.length; i++) {
                 var tile = tiles[i];
@@ -565,7 +625,7 @@ var TDGame;
             // load up the map object
             this.tdmap.LoadWalkable(tmp);
             this.tdmap.SetCreepSpawnLocation(1, 8);
-            this.tdmap.SetCreepExitLocation(8, 1);
+            this.tdmap.SetCreepExitLocation(14, 14);
 
             // use the path wrapper to run the A* pathfinding
             this.pather = new PathHelper(this.tdmap);
@@ -598,7 +658,11 @@ var TDGame;
             // creepGroup.add(creep0);
             //drop a tower
             var tower0 = new Tower(this.game, "TOWER000", new Phaser.Point(3, 3), creepGroup);
-            tower0.Range = 360;
+            tower0.Range = 128;
+
+            //drop a 2nd tower
+            var tower1 = new Tower(this.game, "TOWER000", new Phaser.Point(6, 6), creepGroup);
+            tower0.Range = 128;
         };
         return Proto1;
     })(Phaser.State);
@@ -768,10 +832,11 @@ var Tower = (function (_super) {
         this._creepList = CreepGroup;
 
         //load the sprite contructor
-        _super.call(this, ThisGame, Location.x * 64 + 32, Location.y * 64 + 32, this._baseTextureKey, 0);
+        _super.call(this, ThisGame, Location.x * TDGame.tileSize + TDGame.tileSize / 2, Location.y * TDGame.tileSize + TDGame.tileSize / 2, this._baseTextureKey, 0);
         this.anchor.setTo(0.5, 0.5);
         this.game.add.existing(this);
         this.Range = 128; // default range
+        this.DamagePer = 0.5; // default damage per
         this._targetCreep = null;
 
         // optional turret handling
@@ -782,13 +847,25 @@ var Tower = (function (_super) {
             // this._turretTween = this.game.add.tween(this._turret);
         }
 
-        //laser line
+        // laser line
         this._laserLine = new BitmapLine(this.game);
+
+        // fire rate setup
+        this._nextFire = ThisGame.time.now;
     }
     Object.defineProperty(Tower.prototype, "Range", {
         // range setter
         set: function (Dist) {
             this._range = new Phaser.Circle(this.position.x, this.position.y, Dist * 2);
+        },
+        enumerable: true,
+        configurable: true
+    });
+
+    Object.defineProperty(Tower.prototype, "DamagePer", {
+        // damage setter
+        set: function (Points) {
+            this._damagePer = Points;
         },
         enumerable: true,
         configurable: true
@@ -813,7 +890,7 @@ var Tower = (function (_super) {
         var _this = this;
         //remove out-of-range targets
         if (this._targetCreep !== null) {
-            if (this._range.contains(this._targetCreep.x, this._targetCreep.y) && this._targetCreep.alive) {
+            if (this._range.contains(this._targetCreep.x, this._targetCreep.y) && this._targetCreep.alive && this._targetCreep.health > 0) {
                 return;
             } else {
                 this._targetCreep = null;
@@ -854,8 +931,20 @@ var Tower = (function (_super) {
     Tower.prototype.shootTarget = function () {
         if (this._targetCreep !== null || typeof (this._targetCreep) === "undefined") {
             this._laserLine.Draw(this.position, this._targetCreep.position);
+            this.damagePerMS(this._targetCreep);
         } else {
             this._laserLine.NoDraw();
+        }
+    };
+
+    // laser-style damage
+    Tower.prototype.damagePerMS = function (Target) {
+        var fireRate = 200;
+        if (this.game.time.now > this._nextFire) {
+            Target.Damage(this._damagePer);
+
+            // console.log("Tower Damaging Target for " + this._damagePer + " points");
+            this._nextFire += fireRate;
         }
     };
     return Tower;

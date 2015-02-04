@@ -13,7 +13,7 @@
 
     // debugging text writer
     export function WriteDebugText(Text: string, CurrentGame: Phaser.Game, AtCanvasX: number, AtCanvasY: number) {
-        var style: PIXI.TextStyle = { fill: "blue" };
+        var style: PIXI.TextStyle = { fill: "blue", font: "bold 12px Arial" };
         var txt = CurrentGame.add.text(AtCanvasX, AtCanvasY, Text, style);
         txt.anchor.set(0.5, 0.5);
     }

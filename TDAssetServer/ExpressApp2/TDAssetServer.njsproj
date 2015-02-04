@@ -45,7 +45,6 @@
     <Content Include="ASSETS\TILESETS\TS_00000\background.png" />
     <Content Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP000\die_anim.png" />
     <Content Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP000\walk_anim.png" />
-    <Content Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP001\walk_anim.png" />
     <Content Include="ASSETS\TILESETS\TS_00000\TOWERS\TOWER000\base.png" />
     <Content Include="ASSETS\TILESETS\TS_00000\TOWERS\TOWER000\rotator.png" />
     <Content Include="ASSETS\TILESETS\TS_00000\walls.png" />
@@ -59,19 +58,13 @@
     <Folder Include="ASSETS\" />
     <Folder Include="ASSETS\CAMPAIGNS\" />
     <Folder Include="ASSETS\CAMPAIGNS\C_00000\" />
-    <Folder Include="ASSETS\CAMPAIGNS\C_00001\" />
-    <Folder Include="ASSETS\CAMPAIGNS\C_00002\" />
     <Folder Include="ASSETS\TILESETS\" />
     <Folder Include="ASSETS\TILESETS\TS_00000\" />
     <Folder Include="ASSETS\TILESETS\TS_00000\BULLETS\" />
-    <Folder Include="ASSETS\TILESETS\TS_00000\BULLETS\BULLET000\" />
-    <Folder Include="ASSETS\TILESETS\TS_00000\BULLETS\BULLET001\" />
     <Folder Include="ASSETS\TILESETS\TS_00000\CREEPS\" />
     <Folder Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP000\" />
-    <Folder Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP001\" />
     <Folder Include="ASSETS\TILESETS\TS_00000\TOWERS\" />
     <Folder Include="ASSETS\TILESETS\TS_00000\TOWERS\TOWER000\" />
-    <Folder Include="ASSETS\TILESETS\TS_00000\TOWERS\TOWER001\" />
     <Folder Include="ASSETS\TILESETS\TS_00001\" />
     <Folder Include="ASSETS\TILESETS\TS_00001\BULLETS\" />
     <Folder Include="ASSETS\TILESETS\TS_00001\BULLETS\BULLET000\" />
