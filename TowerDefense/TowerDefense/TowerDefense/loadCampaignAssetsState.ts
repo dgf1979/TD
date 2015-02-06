@@ -89,17 +89,17 @@
 
             // load towers
             for (var i = 0; i < oTowers.length; i++) {
-                var base = this.load.spritesheet(oTowers[i].GameObjectID + ".base", oTowers[i].BaseURL, TDGame.tileSize, TDGame.tileSize);
+                var base = this.load.image(oTowers[i].GameObjectID + ".base", oTowers[i].BaseURL, true);
                 if (oTowers[0].RotatorURL !== undefined) {
-                    var rotator = this.load.spritesheet(oTowers[i].GameObjectID + ".rotator", oTowers[i].RotatorURL, TDGame.tileSize, TDGame.tileSize);
+                    var rotator = this.load.spritesheet(oTowers[i].GameObjectID + ".rotator", oTowers[i].RotatorURL, TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
                 }
             } 
 
             // load creeps
             for (var i = 0; i < oCreeps.length; i++) {
-                var walk = this.load.spritesheet(oCreeps[i].GameObjectID + '.walk', oCreeps[i].WalkAnimationURL, TDGame.tileSize, TDGame.tileSize);
+                var walk = this.load.spritesheet(oCreeps[i].GameObjectID + '.walk', oCreeps[i].WalkAnimationURL, TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
                 if (oCreeps[i].DieAnimationURL !== undefined) {
-                    var die = this.load.spritesheet(oCreeps[i].GameObjectID + '.die', oCreeps[i].DieAnimationURL, TDGame.tileSize, TDGame.tileSize);
+                    var die = this.load.spritesheet(oCreeps[i].GameObjectID + '.die', oCreeps[i].DieAnimationURL, TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
                 }
             }
 

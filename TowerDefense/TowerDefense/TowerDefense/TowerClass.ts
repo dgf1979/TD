@@ -19,7 +19,7 @@
         this._rotatorTextureKey = this._id + ".rotator";
         this._creepList = CreepGroup;
         //load the sprite contructor
-        super(ThisGame, Location.x * TDGame.tileSize + TDGame.tileSize / 2, Location.y * TDGame.tileSize + TDGame.tileSize / 2, this._baseTextureKey, 0);
+        super(ThisGame, Location.x * TDGame.ui.tileSize.x + TDGame.ui.tileSize.x / 2, Location.y * TDGame.ui.tileSize.y + TDGame.ui.tileSize.y / 2, this._baseTextureKey, 0);
         this.anchor.setTo(0.5, 0.5);
         this.game.add.existing(this);
         this.Range = 128; // default range
