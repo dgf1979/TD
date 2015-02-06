@@ -32,10 +32,7 @@
             this.preloadBar = this.add.sprite(200, 250, 'progbar');
             this.load.setPreloadSprite(this.preloadBar);
 
-            // this.load.image('creep0', 'img/tilemap0/creeps/creep0.png');
-            // this.load.image('background', 'img/tilemap0/background0.png');
-            // this.load.image('tileIMG', 'img/tilemap0/tileset0.png');
-            // this.load.tilemap('tileDEF', 'img/tilemap0/tilemap0.csv', null, Phaser.Tilemap.CSV);
+            this.load.image('debugTile', 'img/32x32.png');
 
         }
 

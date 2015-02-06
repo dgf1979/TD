@@ -26,6 +26,18 @@ class PathHelper {
         }
     }
 
+    GetPixelPath(TileWidth: number, TileHeight: number): Phaser.Point[]{
+        var Path: Phaser.Point[] = this.Path;
+        var pixelPath: Phaser.Point[] = [];
+        for (var i: number = 0; i < Path.length; i++) {
+            var x = Path[i].x;
+            var y = Path[i].y;
+            var p = new Phaser.Point(TileWidth * x + TileWidth / 2, TileHeight * y + TileWidth / 2);
+            pixelPath.push(p);
+        }
+        return pixelPath;
+    }
+
     // return if map is walkable
     MapIsWalkable(): boolean {
         return this._pathFound;
@@ -39,6 +51,14 @@ class PathHelper {
     // return the html debug string
     DebugPathString(): string {
         return this._htmlDebugGrid;
+    }
+
+    // draw path
+    DebugPathDraw(PixelPath: Phaser.Point[], Game: Phaser.Game) {
+        // debug helper - show each element of the map path
+        for (var i = 0; i < PixelPath.length; i++) {
+            Helper.WriteDebugText("P" + i, Game, PixelPath[i].x, PixelPath[i].y);
+        }
     }
 
     // use EasyStar.js to generate a path
@@ -57,18 +77,13 @@ class PathHelper {
             } else {
                 this._pathFound = true;
                 this._asyncComplete = true;
-                // alert("Path found: first point is " + path[0].x + "," + path[0].y);
                 var newGrid = grid.slice();
-                // var displayPathStr: string = "Path: ";
                 for (var i: number = 0; i < path.length; i++) {
-                    // displayPathStr = displayPathStr + 'X:' + path[i].x + ',Y:' + path[i].y + " -> ";
                     var x: number = path[i].x;
                     var y: number = path[i].y;
-                    // fill the path list
                     this._path[i] = new Phaser.Point(x, y);
                     newGrid[y][x] = 8;  // path taken marked with an arbitrary '8'
                 }
-                // alert(this.PrintableArrayString(newGrid));
                 this._htmlDebugGrid = this.PrintableArrayString(newGrid);
             }
         });

@@ -1,4 +1,5 @@
 ﻿module UI {
+    "use strict";
     export class Positioning {
         tileSize: Phaser.Point = new Phaser.Point(32, 32);
         screenSize: Phaser.Point = new Phaser.Point(1024, 768);
@@ -50,7 +51,7 @@
             var mouse: Phaser.Pointer = this._game.input.mousePointer;
 
             if (this._playarea.contains(mouse.position.x, mouse.position.y)) {
-                var currentTile: Phaser.Tile = PlayArea.getTileWorldXY(mouse.position.x, mouse.position.y);
+                var currentTile: Phaser.Tile = PlayArea.getTileWorldXY(mouse.position.x, mouse.position.y, null, null, 1);
                 if (currentTile !== null) {
                     this._cursor.position = new Phaser.Point(currentTile.worldX, currentTile.worldY);
                     this._cursor.visible = true;
