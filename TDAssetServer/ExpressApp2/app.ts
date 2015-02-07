@@ -70,11 +70,6 @@ app.get("/campaign", routes.CampaignList);
 app.get("/campaign/:id", routes.CampaignGetByID);
 
 
-
-
-
 http.createServer(app).listen(app.get("port"), function () {
     console.log("Express server listening on port " + app.get("port"));
-
-
 });

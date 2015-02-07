@@ -48,7 +48,7 @@
             this._cursor.endFill();
 
             this._debugText = Helper.CreateUpdateableDebugText("",
-                this._game, TDGame.ui.screenSize.x - 64,
+                this._game, TDGame.ui.screenSize.x - 128,
                 TDGame.ui.screenSize.y - 64);
         }
 

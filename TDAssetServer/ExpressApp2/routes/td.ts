@@ -133,20 +133,25 @@ function TowerAssetLoader(TilesetID: string): goc.TowerAssets[] {
     var subfld: string[] = nodefs.SubDirsOf(searchPath); // get each "tower" subfolder
     console.log("found " + subfld.length + " subfolders");
     for (var i = 0; i < subfld.length; i++) {
-        // a valid base.png means a valid tower
+        // a valid base.png OR rotator.png means a valid tower
         var towerID = subfld[i];
+        var towerFound: boolean = false;
         var basePNG: string = searchPath + "\\" + towerID + "\\base.png";
+        var rotatorPNG: string = searchPath + "\\" + towerID + "\\rotator.png";
         console.log("looking in: " + towerID);
-        if (nodefs.Exists(basePNG)) {
-            console.log("found: " + basePNG);
-            var tower: goc.TowerAssets = new goc.TowerAssets;
-            tower.GameObjectID = towerID;
-            tower.BaseURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/TOWERS/" + towerID + "/base.png";
+        var tower: goc.TowerAssets = new goc.TowerAssets;
+        tower.GameObjectID = towerID;
 
-            var rotatorPNG: string = searchPath + "\\" + towerID + "\\rotator.png";
-            if (nodefs.Exists(rotatorPNG)) {
-                tower.RotatorURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/TOWERS/" + towerID + "/rotator.png";
-            }
+        if (nodefs.Exists(basePNG)) {
+            tower.BaseURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/TOWERS/" + towerID + "/base.png";
+            towerFound = true;
+        }
+        if (nodefs.Exists(rotatorPNG)) {
+            tower.RotatorURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/TOWERS/" + towerID + "/rotator.png";
+            towerFound = true;
+        }
+
+        if (towerFound) {
             towers.push(tower);
         }
     }
