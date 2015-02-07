@@ -27,6 +27,8 @@
 
     export class MouseHandler {
 
+        ClickSignal: Phaser.Signal = new Phaser.Signal();
+
         private _game: Phaser.Game;
         private _playarea: Phaser.Rectangle;
         private _debugText: Phaser.Text;
@@ -55,6 +57,13 @@
         update(PlayArea: Phaser.Tilemap) {
             var mouse: Phaser.Pointer = this._game.input.mousePointer;
             if (this._playarea.contains(mouse.position.x, mouse.position.y)) {
+                if (this._game.input.activePointer.isDown) {
+                    var x, y: number;
+                    x = Phaser.Math.snapToFloor(mouse.position.x, TDGame.ui.tileSize.x);
+                    y = Phaser.Math.snapToFloor(mouse.position.y, TDGame.ui.tileSize.y);
+                    this.ClickSignal.dispatch(x, y);
+                }
+
                 this._debugText.text = "Tracking Mouse at: " + mouse.position.x + "," + mouse.position.y;
                 var currentTile: Phaser.Tile = PlayArea.getTileWorldXY(mouse.position.x, mouse.position.y);
                 if (currentTile !== null) {

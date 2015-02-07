@@ -2,7 +2,7 @@
 
     private _game: Phaser.Game;
     private _towers: Phaser.Group[]; // array of sprite groups
-    private _selected: Phaser.Group;
+    private _selected: string;
 
     constructor(ThisGame: Phaser.Game) {
         this._game = ThisGame;
@@ -19,7 +19,7 @@
             var hasBase = this._game.cache.checkImageKey(base);
             var hasRotator = this._game.cache.checkImageKey(rotator);
             if (hasBase || hasRotator) {
-                var newGroup: Phaser.Group = new Phaser.Group(this._game, "TowerGroup" + i, towerID, true);
+                var newGroup: Phaser.Group = new Phaser.Group(this._game, null, towerID, true);
                 newGroup.position = TDGame.ui.towerTilesUL[i];
                 if (hasBase) {
                     var TMIbase = new Phaser.Sprite(this._game, 0, 0, base, 0);
@@ -44,7 +44,12 @@
         } 
     }
 
-    menuItemOnMouseOver(Group: Phaser.Group) {
+    // get ID of selected tower
+    get SelectedTower(): string {
+        return this._selected;
+    }
+
+    private menuItemOnMouseOver(Group: Phaser.Group) {
         return () => {
             Group.forEach((s: Phaser.Sprite) => {
                 s.tint = Phaser.Color.getColor(0, 150, 0);
@@ -54,7 +59,7 @@
         // ThisSprite.tint = Phaser.Color.getColor(0, 150, 0);
     }
 
-    menuItemOnMouseOut(Group: Phaser.Group) {
+    private menuItemOnMouseOut(Group: Phaser.Group) {
         return () => {
             Group.forEach((s: Phaser.Sprite) => {
                 s.tint = 16777215;
@@ -63,9 +68,9 @@
         // ThisSprite.tint = 16777215;
     }
 
-    menuItemOnMouseClick(Group: Phaser.Group) {
+    private menuItemOnMouseClick(Group: Phaser.Group) {
         return () => {
-            this._selected = Group;
+            this._selected = Group.name;
             console.log("Selected: " + Group.name);
         }
     }
