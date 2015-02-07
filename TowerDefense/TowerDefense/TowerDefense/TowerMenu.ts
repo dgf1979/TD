@@ -1,7 +1,8 @@
 ﻿class TowerMenu {
 
     private _game: Phaser.Game;
-    private _towers: Phaser.Group[];
+    private _towers: Phaser.Group[]; // array of sprite groups
+    private _selected: Phaser.Group;
 
     constructor(ThisGame: Phaser.Game) {
         this._game = ThisGame;
@@ -18,7 +19,7 @@
             var hasBase = this._game.cache.checkImageKey(base);
             var hasRotator = this._game.cache.checkImageKey(rotator);
             if (hasBase || hasRotator) {
-                var newGroup: Phaser.Group = new Phaser.Group(this._game, null, towerID, true);
+                var newGroup: Phaser.Group = new Phaser.Group(this._game, "TowerGroup" + i, towerID, true);
                 newGroup.position = TDGame.ui.towerTilesUL[i];
                 if (hasBase) {
                     var TMIbase = new Phaser.Sprite(this._game, 0, 0, base, 0);
@@ -28,25 +29,44 @@
                     var TMIrotator = new Phaser.Sprite(this._game, 0, 0, rotator, 0);
                     newGroup.add(TMIrotator);
                 }
-                newGroup.interactive = true;
-                newGroup.buttonMode = true;
-                newGroup.hitArea = new Phaser.Rectangle(0, 0, TDGame.ui.tileSize.x, TDGame.ui.tileSize.x);
-                newGroup.mousedown = (e: PIXI.InteractionData) => { alert("click"); }
+                //add click handling to topmost sprite
+                var topmostSprite: Phaser.Sprite = newGroup.getTop();
+                topmostSprite.inputEnabled = true;
+                var mouseover = this.menuItemOnMouseOver(newGroup);
+                var mouseout = this.menuItemOnMouseOut(newGroup);
+                var mouseclick = this.menuItemOnMouseClick(newGroup);
+                topmostSprite.events.onInputDown.add(mouseclick);
+                topmostSprite.events.onInputOver.add(mouseover);
+                topmostSprite.events.onInputOut.add(mouseout);
+                console.log("topmost sprite: " + topmostSprite.key);
                 this._towers.push(newGroup);
             }
         } 
     }
 
-    menuItemOnMouseOver() {
+    menuItemOnMouseOver(Group: Phaser.Group) {
+        return () => {
+            Group.forEach((s: Phaser.Sprite) => {
+                s.tint = Phaser.Color.getColor(0, 150, 0);
+            }, this);
+        }
         // console.log(this.tint);
-        // this.tint = Phaser.Color.getColor(0, 150, 0);
+        // ThisSprite.tint = Phaser.Color.getColor(0, 150, 0);
     }
 
-    menuItemOnMouseOut() {
-        // this.tint = 16777215;
+    menuItemOnMouseOut(Group: Phaser.Group) {
+        return () => {
+            Group.forEach((s: Phaser.Sprite) => {
+                s.tint = 16777215;
+            }, this);
+        }
+        // ThisSprite.tint = 16777215;
     }
 
-    menuItemOnMouseClick() {
-        alert("Click");
+    menuItemOnMouseClick(Group: Phaser.Group) {
+        return () => {
+            this._selected = Group;
+            console.log("Selected: " + Group.name);
+        }
     }
 }

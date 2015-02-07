@@ -29,6 +29,7 @@
 
         private _game: Phaser.Game;
         private _playarea: Phaser.Rectangle;
+        private _debugText: Phaser.Text;
 
         private _cursor: Phaser.Graphics;
 
@@ -41,24 +42,37 @@
 
             this._cursor = ThisGame.add.graphics(0, 0);
             this._cursor.visible = false;
-            this._cursor.lineStyle(2, Phaser.Color.getColor(255,0,0), 0.8);
-            this._cursor.beginFill(Phaser.Color.getColor(255, 0, 0), 0.5);
+            this._cursor.lineStyle(2,0xffffff, 0.50);
+            this._cursor.beginFill(0xffffff, 0.25);
             this._cursor.drawRect(0, 0, TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
             this._cursor.endFill();
+
+            this._debugText = Helper.CreateUpdateableDebugText("",
+                this._game, TDGame.ui.screenSize.x - 64,
+                TDGame.ui.screenSize.y - 64);
         }
 
         update(PlayArea: Phaser.Tilemap) {
             var mouse: Phaser.Pointer = this._game.input.mousePointer;
-
             if (this._playarea.contains(mouse.position.x, mouse.position.y)) {
-                var currentTile: Phaser.Tile = PlayArea.getTileWorldXY(mouse.position.x, mouse.position.y, null, null, 1);
+                this._debugText.text = "Tracking Mouse at: " + mouse.position.x + "," + mouse.position.y;
+                var currentTile: Phaser.Tile = PlayArea.getTileWorldXY(mouse.position.x, mouse.position.y);
                 if (currentTile !== null) {
                     this._cursor.position = new Phaser.Point(currentTile.worldX, currentTile.worldY);
-                    this._cursor.visible = true;
+                    this._cursor.tint = 0xff0000;
                 } else {
-                    this._cursor.visible = false;
-                }
+                    var x, y: number;
+                    x = Phaser.Math.snapToFloor(mouse.position.x, TDGame.ui.tileSize.x);
+                    y = Phaser.Math.snapToFloor(mouse.position.y, TDGame.ui.tileSize.y);
+                    this._cursor.position = new Phaser.Point(x, y);
+                    this._cursor.tint = 0x00ff00;
+                }   
+                this._cursor.visible = true;
+            } else {
+                this._cursor.visible = false;
+                this._debugText.text = "";
             }
+
         }
     }
 } 

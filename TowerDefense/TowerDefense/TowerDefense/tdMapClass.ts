@@ -14,8 +14,8 @@
         this._tileMap.addTilesetImage("tileIMG");
         this._tileMap.setCollisionBetween(0, 99);
         var layer = this._tileMap.createLayer(0);
-        layer.resizeWorld;
-        layer.debug = true;
+        layer.resizeWorld();
+        // layer.debug = true;
 
         // set up pathing
         this._creepSpawn = CreepSpawn;
@@ -28,6 +28,7 @@
     get TileMap(): Phaser.Tilemap {
         return this._tileMap;
     }
+
 
     private GetWalkable(Layer: Phaser.TilemapLayer) {
         // get all tiles in layer and build a dirty little walkable array
