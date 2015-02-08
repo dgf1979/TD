@@ -1,11 +1,12 @@
 ﻿module TDGame {
-
+    "use strict";
     export class Proto1 extends Phaser.State {
 
         _campaign: GameObjectClasses.Campaign;
-        background: Phaser.Sprite;
-        tdmap: TDMap;
-        pather: PathHelper;
+        _background: Phaser.Sprite;
+        _tdmap: TDMap;
+        _pather: PathHelper;
+        _mouseHandler: UI.MouseHandler;
 
         // init - get params passed to state
         init(Campaign: GameObjectClasses.Campaign) {
@@ -14,75 +15,62 @@
 
         // run-up
         create() {
-            this.background = this.add.sprite(0, 0, "background");
+            this._background = this.add.sprite(0, 0, "background");
 
             // set up the map
-            var map = this.game.add.tilemap("tileDEF", TDGame.tileSize, TDGame.tileSize, 10, 10);
-            map.addTilesetImage("tileIMG");
-            map.setCollisionBetween(0, 99);
-            var layer = map.createLayer(0);
-            layer.resizeWorld();
+            this._tdmap = new TDMap(this.game, new Phaser.Point(1, 1), new Phaser.Point(22, 22));
 
-            this.tdmap = new TDMap(this.game);
-
-            // get all tiles in layer and build a dirty little walkable array
-            var tiles: Phaser.Tile[] = layer.getTiles(0, 0, layer.width, layer.height, false, false);
-            // use helper to init a 2D array
-            var tmp: number[][] = Helper.Array2D(22, 22, 0);
-            // flip any unwalkable tile to 1
-            for (var i = 0; i < tiles.length; i++) {
-                var tile: Phaser.Tile = tiles[i];
-                // console.log(tile.x + "," + tile.y + "collides=" + tile.canCollide);
-                if (tile.canCollide) {
-                    tmp[tile.y][tile.x] = 1;
-                }
-            }
-
-            // load up the map object
-            this.tdmap.LoadWalkable(tmp);
-            this.tdmap.SetCreepSpawnLocation(1, 8);
-            this.tdmap.SetCreepExitLocation(14, 14);
 
             // use the path wrapper to run the A* pathfinding
-            this.pather = new PathHelper(this.tdmap);
-            this.pather.AsyncCalculatePath(this.tdmap.CreepSpawn, 32);
-
-            // debug helper - show each element of the map path
-            var path: Phaser.Point[] = this.pather.Path;
-            var extendedPath: Phaser.Point[] = [];
-            for (var i: number = 0; i < path.length; i++) {
-                var tile: Phaser.Tile = map.getTile(path[i].x, path[i].y,0,true);
-                if (tile != null) {
-                    extendedPath[i] = new Phaser.Point
-                        (tile.worldX + tile.centerX,
-                        tile.worldY + tile.centerY);
-                    Helper.WriteDebugText("P" + i, this.game, extendedPath[i].x, extendedPath[i].y);
+            this._pather = new PathHelper(this._tdmap);
+            this._pather.AsyncCalculatePath(this._tdmap.CreepSpawn, TDGame.ui.tileSize.x);
+            var path: Phaser.Point[];
+            if (this._pather.ProcessingComplete) {
+                if (this._pather.MapIsWalkable) {
+                    path = this._pather.GetPixelPath(TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
+                    // console.log(this._pather.DebugPathString());
+                    // console.log(path);
+                    // this._pather.DebugPathDraw(path, this.game);
+                } else {
+                    alert("No path found!");
                 }
+            } else {
+                alert("Path processiong not complete");
             }
 
             // loop waves
             var wave: GameObjectClasses.Wave = this._campaign.Waves[0];
-            
 
             // make a creep group
             var creepGroup: Phaser.Group = this.game.add.group();
             creepGroup.name = "creeps";
 
             // creep factory
-            var CF: CreepFactory = new CreepFactory(this.game, wave, creepGroup, extendedPath);
+            var CF: CreepFactory = new CreepFactory(this.game, wave, creepGroup, path);
             CF.Start();
-            // var creep0: Creep;
-            // creep0 = new Creep(this.game, "CREEP000", extendedPath);
-            // creepGroup.add(creep0);
 
-            //drop a tower
-            var tower0 = new Tower(this.game, "TOWER000", new Phaser.Point(3, 3), creepGroup);
-            tower0.Range = 128;
+            // set up info display area
+            var towerInfoDisplayArea = new DisplayArea(this.game, TDGame.ui.displayArea1UL, TDGame.ui.displayArea1BR);
 
-            //drop a 2nd tower
-            var tower1 = new Tower(this.game, "TOWER000", new Phaser.Point(6, 6), creepGroup);
-            tower0.Range = 128;
+            // create menu from avail. towers
+            var towerMenu: TowerMenu = new TowerMenu(this.game);
 
+            // subscribe to onselected of tower menu
+            towerMenu.ItemSelectedSignal.add(() => { towerInfoDisplayArea.Name = towerMenu.SelectedTower; } );
+
+            // tower factory
+            var TF: TowerFactory = new TowerFactory(this.game, creepGroup);
+
+            // handle the mouse
+            this._mouseHandler = new UI.MouseHandler(this.game, TDGame.ui);
+
+            //try subscribing to event
+            this._mouseHandler.ClickSignal.add((X: number, Y: number) => { TF.PlaceTower(towerMenu.SelectedTower, new Phaser.Point(X, Y)); } );
+
+        }
+
+        update() {
+            this._mouseHandler.update(this._tdmap.TileMap);
         }
 
     }

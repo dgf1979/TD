@@ -8,7 +8,7 @@
         Waves: Wave[];
     }
 
-    // a wave, each consisting of a number of creeps ofa  specific type
+    // a wave, each consisting of a number of creeps of a specific type
     export class Wave {
         SpawnDelay: number;
         CreepID: string;
@@ -22,14 +22,14 @@
         BackgroundURL: string;
     }
 
-    // asset URLs for a partucular type of creep
+    // asset URLs for a particular type of creep
     export class CreepAssets {
         GameObjectID: string;
         WalkAnimationURL: string;
         DieAnimationURL: string;
     }
 
-    // asset URLs for a partucular type of creep
+    // asset URLs for a particular type of creep
     export class TowerAssets {
         GameObjectID: string;
         BaseURL: string;

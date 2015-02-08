@@ -26,9 +26,9 @@
     }
 
     export class MouseHandler {
-
+        // signals
         ClickSignal: Phaser.Signal = new Phaser.Signal();
-
+        // vars
         private _game: Phaser.Game;
         private _playarea: Phaser.Rectangle;
         private _debugText: Phaser.Text;

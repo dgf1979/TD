@@ -14,7 +14,6 @@
 
         super(ThisGame, 0, 0, this._walkTextureKey, 0);
 
-        // this.scale = new Phaser.Point(2, 2);
         this.anchor.setTo(0.5, 0.5);
 
         this.health = 20;

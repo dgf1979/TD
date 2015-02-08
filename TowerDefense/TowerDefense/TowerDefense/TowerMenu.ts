@@ -1,9 +1,13 @@
 ﻿class TowerMenu {
+    // Signals
+    ItemSelectedSignal: Phaser.Signal = new Phaser.Signal();
 
+    // vars
     private _game: Phaser.Game;
     private _towers: Phaser.Group[]; // array of sprite groups
     private _selected: string;
-
+    
+    // constructor
     constructor(ThisGame: Phaser.Game) {
         this._game = ThisGame;
         this._towers = [];
@@ -72,6 +76,7 @@
         return () => {
             this._selected = Group.name;
             console.log("Selected: " + Group.name);
+            this.ItemSelectedSignal.dispatch(this._selected);
         }
     }
 }
