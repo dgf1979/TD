@@ -42,7 +42,7 @@
                 topmostSprite.events.onInputDown.add(mouseclick);
                 topmostSprite.events.onInputOver.add(mouseover);
                 topmostSprite.events.onInputOut.add(mouseout);
-                console.log("topmost sprite: " + topmostSprite.key);
+                // console.log("topmost sprite: " + topmostSprite.key);
                 this._towers.push(newGroup);
             }
         } 
@@ -75,7 +75,7 @@
     private menuItemOnMouseClick(Group: Phaser.Group) {
         return () => {
             this._selected = Group.name;
-            console.log("Selected: " + Group.name);
+            // console.log("Selected: " + Group.name);
             this.ItemSelectedSignal.dispatch(this._selected);
         }
     }

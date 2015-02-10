@@ -50,6 +50,7 @@
     <Content Include="ASSETS\TILESETS\TS_00000\TOWERS\TOWER001\base.png" />
     <Content Include="ASSETS\TILESETS\TS_00000\TOWERS\TOWER002\rotator.png" />
     <Content Include="ASSETS\TILESETS\TS_00000\walls.png" />
+    <Content Include="DebugGenerateTileset.html" />
     <Content Include="package.json" />
     <Content Include="public\stylesheets\style.styl" />
     <Content Include="README.md" />
@@ -62,7 +63,7 @@
     <Folder Include="ASSETS\CAMPAIGNS\C_00000\" />
     <Folder Include="ASSETS\TILESETS\" />
     <Folder Include="ASSETS\TILESETS\TS_00000\" />
-    <Folder Include="ASSETS\TILESETS\TS_00000\BULLETS\" />
+    <Folder Include="ASSETS\TILESETS\TS_00000\MISSLES\" />
     <Folder Include="ASSETS\TILESETS\TS_00000\CREEPS\" />
     <Folder Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP000\" />
     <Folder Include="ASSETS\TILESETS\TS_00000\TOWERS\" />

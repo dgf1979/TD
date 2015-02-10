@@ -6,7 +6,7 @@ var Campaign = (function () {
 })();
 exports.Campaign = Campaign;
 
-// a wave, each consisting of a number of creeps ofa  specific type
+// a wave, each consisting of a number of creeps of a specific type
 var Wave = (function () {
     function Wave() {
     }
@@ -14,6 +14,7 @@ var Wave = (function () {
 })();
 exports.Wave = Wave;
 
+// tileset classes
 // a tileset, with URLs to each asset
 var Tileset = (function () {
     function Tileset() {
@@ -37,4 +38,20 @@ var TowerAssets = (function () {
     return TowerAssets;
 })();
 exports.TowerAssets = TowerAssets;
+
+// asset-related creep info
+var Creep = (function () {
+    function Creep() {
+    }
+    return Creep;
+})();
+exports.Creep = Creep;
+
+// asset-related tower info
+var Tower = (function () {
+    function Tower() {
+    }
+    return Tower;
+})();
+exports.Tower = Tower;
 //# sourceMappingURL=GameObjectClasses.js.map

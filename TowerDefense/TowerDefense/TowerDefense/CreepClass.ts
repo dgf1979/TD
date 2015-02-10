@@ -27,7 +27,7 @@
         this.game.add.existing(this);
 
         this.position = this._path[0];
-        console.log("spawn in at: " + this._path[0]);
+        // console.log("spawn in at: " + this._path[0]);
         var lookat = this._path[1];
         this.rotation = Phaser.Point.angle(lookat, this.position);
 
@@ -78,16 +78,16 @@
                 this.Die();
             } 
         };
-        console.log("Creep taking damage; " + this.health + " hp remaining.");
+        // console.log("Creep taking damage; " + this.health + " hp remaining.");
         
     }
 
     // die
     private Die() {
         // todo: add value to global payout
-        console.log("DIE DIE DIE");
+        // console.log("DIE DIE DIE");
         this._movementTween.stop();
-        console.log("current anim: " + this.animations.currentAnim.name);
+        // console.log("current anim: " + this.animations.currentAnim.name);
         this.animations.stop("walk", true);
         if (!this.game.cache.checkImageKey(this._dieTextureKey)) {
             this.Exit();

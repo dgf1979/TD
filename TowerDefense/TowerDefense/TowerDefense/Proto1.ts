@@ -18,7 +18,7 @@
             this._background = this.add.sprite(0, 0, "background");
 
             // set up the map
-            this._tdmap = new TDMap(this.game, new Phaser.Point(1, 1), new Phaser.Point(22, 22));
+            this._tdmap = new TDMap(this.game, new Phaser.Point(1, 1), new Phaser.Point(20, 20));
 
 
             // use the path wrapper to run the A* pathfinding

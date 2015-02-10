@@ -31,6 +31,13 @@ function TileSetGetByID(req, res) {
 }
 exports.TileSetGetByID = TileSetGetByID;
 
+// /tileset/:id/debuggen (GET)
+function TileSetDebugGen(req, res) {
+    "user strict";
+    var id = req.params.id;
+}
+exports.TileSetDebugGen = TileSetDebugGen;
+
 // /tileset/:id/creeps GET[] (get)
 function TileSetCreepsByID(req, res) {
     "use strict";
@@ -102,6 +109,14 @@ function CreateDemoCampaign() {
     console.log("Demo campaign should now exist at:" + saveAs);
 }
 exports.CreateDemoCampaign = CreateDemoCampaign;
+
+// generate a json object for tileset details
+function GenerateTilesetJSON(TilesetID) {
+    var searchPath = global.ASSETPATH + "\\TILESETS\\" + TilesetID;
+    var creepPath = searchPath + "\\CREEPS";
+    var towerPath = searchPath + "\\TOWERS";
+    var misslePath = searchPath + "\\MISSLES";
+}
 
 function CreepAssetLoader(TilesetID) {
     var creeps = [];
