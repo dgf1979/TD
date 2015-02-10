@@ -12,20 +12,22 @@
     private _nextFire: number;
     // private _turretTween: Phaser.Tween;
 
-    constructor(ThisGame: Phaser.Game, TowerID: string, Location: Phaser.Point, CreepGroup: Phaser.Group) {
-        this._id = TowerID;
+    constructor(ThisGame: Phaser.Game, TowerName: string, Location: Phaser.Point, CreepGroup: Phaser.Group) {
+        this._id = TowerName;
+        //get the tower data
+
         // texture keys
         this._baseTextureKey = this._id + ".base";
         this._rotatorTextureKey = this._id + ".rotator";
         this._creepList = CreepGroup;
         // load the sprite contructor
-        super(ThisGame, Location.x + TDGame.ui.tileSize.x / 2 , Location.y + TDGame.ui.tileSize.y / 2, this._baseTextureKey, 0);
+        super(ThisGame, Location.x + TDGame.ui.tileSize.x / 2, Location.y + TDGame.ui.tileSize.y / 2, this._baseTextureKey, 0);
         this.anchor.setTo(0.5, 0.5);
         this.game.add.existing(this);
         this.Range = 128; // default range
         this.DamagePer = 0.5; // default damage per
         this._targetCreep = null;
-        // optional turret handling
+        // turret handling
         this._hasTurret = this.game.cache.checkImageKey(this._rotatorTextureKey);
         if (this._hasTurret) {
             this._turret = this.game.add.sprite(this.position.x, this.position.y, this._rotatorTextureKey);
@@ -56,7 +58,7 @@
         this.aquireTarget();
         // follow target
         this.trackTarget();
-        //shoot target
+        // shoot target
         this.shootTarget();
     }
 

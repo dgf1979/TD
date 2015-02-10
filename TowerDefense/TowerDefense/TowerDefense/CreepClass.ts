@@ -1,5 +1,7 @@
 ﻿class Creep extends Phaser.Sprite {
-    private _id: string;
+    private _name: string;
+    private _id: number;
+    private _cost: number;
     private _payout: number;
     private _velocity: number;
     private _path: Phaser.Point[];
@@ -8,31 +10,27 @@
     private _movementTween: Phaser.Tween;
     private _healthBar: HPBar;
 
-    constructor(ThisGame: Phaser.Game, CreepType: string, StartPath: Phaser.Point[]) {
-        this._walkTextureKey = CreepType + ".walk";
-        this._dieTextureKey = CreepType + ".die";
-
+    constructor(ThisGame: Phaser.Game, CreepID: number, StartPath: Phaser.Point[]) {
+        this._id = CreepID;
+        this._name = TDGame.currentTileset.Creeps[CreepID].Name;  // get from global
+        this._walkTextureKey = this.Name + ".walk";
+        this._dieTextureKey = this.Name + ".die";
         super(ThisGame, 0, 0, this._walkTextureKey, 0);
-
         this.anchor.setTo(0.5, 0.5);
-
-        this.health = 20;
-        this._id = CreepType;
-        this._payout = 10;
-        this._velocity = 600;
         this._path = StartPath; // duplication handled by factory
         this.animations.add("walk");
         this.animations.play("walk", 4, true);
-
         this.game.add.existing(this);
-
         this.position = this._path[0];
-        // console.log("spawn in at: " + this._path[0]);
         var lookat = this._path[1];
         this.rotation = Phaser.Point.angle(lookat, this.position);
-
         // health bar setup
         this._healthBar = new HPBar(this);
+    }
+
+    // name getter
+    get Name() {
+        return this._name;
     }
 
     // phaser update loop

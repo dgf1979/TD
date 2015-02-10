@@ -11,7 +11,7 @@
             item1.inputEnabled = true;
             item1.events.onInputOver.add(function () { this.menuItemOnMouseOver(item1); }, this);
             item1.events.onInputOut.add(() => this.menuItemOnMouseOut(item1), this);
-            item1.events.onInputDown.add(this.menuItemOnMouseClick, this);
+            item1.events.onInputDown.add(() => this.menuItemOnMouseClick(item1), this);
         }
 
         menuItemOnMouseOver(menuItem: Phaser.Text) {
@@ -22,8 +22,8 @@
             menuItem.scale = new Phaser.Point(1.0, 1.0);
         }
 
-        menuItemOnMouseClick() {
-            this.game.state.start('CampaignListState', true, false);
+        menuItemOnMouseClick(menuItem: Phaser.Text) {
+            this.game.state.start('CampaignListState', true, false, menuItem.text);
         }
     }
 }

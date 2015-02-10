@@ -2,7 +2,8 @@
 
     // global vars for passing between states
     export var ui: UI.Positioning;
-    export var currentCampaign: string = '';
+    export var currentCampaign: GameObjectClasses.Campaign;
+    export var currentTileset: GameObjectClasses.Tileset;
 
     export class Game extends Phaser.Game {
         constructor() {

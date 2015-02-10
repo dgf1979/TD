@@ -19,7 +19,7 @@
 
     private createCreep() {
         console.log("creating new creep at: " + this._startingPath[0]);
-        var creep: Creep = new Creep(this._game, this._wave.CreepID, this.PathNewCopy());
+        var creep: Creep = new Creep(this._game, this._wave.CreepIndex, this.PathNewCopy());
         this._creepGroup.add(creep);
     }
 

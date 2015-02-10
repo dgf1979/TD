@@ -7,8 +7,8 @@
         this._creeps = TargetCreeps;
     }
 
-    PlaceTower(Type: string, Location: Phaser.Point) {
-        var tower: Tower = new Tower(this._game, Type, Location, this._creeps);
+    PlaceTower(TowerName: String, Location: Phaser.Point) {
+        var tower: Tower = new Tower(this._game, TowerName, Location, this._creeps);
         // alert(tower.key);
     }
 } 

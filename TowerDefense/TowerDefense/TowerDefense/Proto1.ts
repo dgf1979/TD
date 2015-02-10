@@ -2,16 +2,10 @@
     "use strict";
     export class Proto1 extends Phaser.State {
 
-        _campaign: GameObjectClasses.Campaign;
         _background: Phaser.Sprite;
         _tdmap: TDMap;
         _pather: PathHelper;
         _mouseHandler: UI.MouseHandler;
-
-        // init - get params passed to state
-        init(Campaign: GameObjectClasses.Campaign) {
-            this._campaign = Campaign;
-        }
 
         // run-up
         create() {
@@ -39,7 +33,7 @@
             }
 
             // loop waves
-            var wave: GameObjectClasses.Wave = this._campaign.Waves[0];
+            var wave: GameObjectClasses.Wave = currentCampaign.Waves[0];
 
             // make a creep group
             var creepGroup: Phaser.Group = this.game.add.group();
@@ -64,7 +58,7 @@
             // handle the mouse
             this._mouseHandler = new UI.MouseHandler(this.game, TDGame.ui);
 
-            //try subscribing to event
+            // try subscribing to event
             this._mouseHandler.ClickSignal.add((X: number, Y: number) => { TF.PlaceTower(towerMenu.SelectedTower, new Phaser.Point(X, Y)); } );
 
         }

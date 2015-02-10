@@ -24,35 +24,18 @@ exports.TileSetList = TileSetList;
 function TileSetGetByID(req, res) {
     "use strict";
     var id = req.params.id;
-    var ts = new goc.Tileset;
-    ts.BackgroundURL = global.ASSETURL + "/TILESETS/" + id + "/background.png";
-    ts.WallURL = global.ASSETURL + "/TILESETS/" + id + "/walls.png";
-    res.json(ts);
+
+    // var ts: goc.Tileset = new goc.Tileset;
+    // res.json(ts);
+    var tilesetJSON = global.ASSETPATH + "\\TILESETS\\" + id + "\\tileset.json";
+
+    if (nodefs.Exists(tilesetJSON) != true) {
+        GenerateTilesetJSON(id);
+    }
+
+    res.json(nodefs.TextIntoJSON(tilesetJSON));
 }
 exports.TileSetGetByID = TileSetGetByID;
-
-// /tileset/:id/debuggen (GET)
-function TileSetDebugGen(req, res) {
-    "user strict";
-    var id = req.params.id;
-}
-exports.TileSetDebugGen = TileSetDebugGen;
-
-// /tileset/:id/creeps GET[] (get)
-function TileSetCreepsByID(req, res) {
-    "use strict";
-    var id = req.params.id;
-    res.json(CreepAssetLoader(id));
-}
-exports.TileSetCreepsByID = TileSetCreepsByID;
-
-// /tileset/:id/towers GET[] (get)
-function TileSetTowersByID(req, res) {
-    "use strict";
-    var id = req.params.id;
-    res.json(TowerAssetLoader(id));
-}
-exports.TileSetTowersByID = TileSetTowersByID;
 
 // /campaign LIST (GET)
 function CampaignList(req, res) {
@@ -88,34 +71,69 @@ function NamesAndIDsOf(ThisDir) {
 function CreateDemoCampaign() {
     "use strict";
     var saveAs = global.ASSETPATH + "\\CAMPAIGNS\\C_00000\\campaign.json";
-
     var demoCampaign = new goc.Campaign();
-
     demoCampaign.ID = "C_00000";
     demoCampaign.MapURL = global.ASSETURL + "/CAMPAIGNS/" + demoCampaign.ID + "/map.csv";
     demoCampaign.TilesetID = "TS_00000";
 
+    //build a demo wave
     var wave1 = new goc.Wave;
-    wave1.CreepCount = 2;
-    wave1.CreepID = "CREEP000";
+    wave1.CreepCount = 3;
+    wave1.CreepIndex = 0;
     wave1.CreepSpeed = 1000;
-    wave1.SpawnDelay = 4;
+    wave1.SpawnDelay = 6;
 
+    // push wave into campaign
     demoCampaign.Waves = [];
     demoCampaign.Waves.push(wave1);
 
-    nodefs.SaveObjectAsJSONFile(saveAs, demoCampaign);
+    //build a demo set of creep stats
+    var cs = new goc.CreepData();
+    cs.AssetID = "CREEP000";
+    cs.HitPoints = 40;
+    cs.WalkSpeed = 1200;
 
+    // push into campaign
+    demoCampaign.CreepStats = [];
+    demoCampaign.CreepStats.push(cs);
+
+    // build a demo set of tower stats
+    var ts = new goc.TowerData();
+    ts.AssetID = "TOWER000";
+    ts.Damage = 1;
+    ts.FireRate = 1;
+    ts.Range = 96;
+
+    // push into campaign
+    demoCampaign.TowerStats = [];
+    demoCampaign.TowerStats.push(ts);
+
+    nodefs.SaveObjectAsJSONFile(saveAs, demoCampaign);
     console.log("Demo campaign should now exist at:" + saveAs);
 }
 exports.CreateDemoCampaign = CreateDemoCampaign;
 
 // generate a json object for tileset details
 function GenerateTilesetJSON(TilesetID) {
+    "use strict";
     var searchPath = global.ASSETPATH + "\\TILESETS\\" + TilesetID;
-    var creepPath = searchPath + "\\CREEPS";
-    var towerPath = searchPath + "\\TOWERS";
-    var misslePath = searchPath + "\\MISSLES";
+    var saveAs = searchPath + "\\tileset.json";
+
+    // implement later
+    // var misslePath: string = searchPath + "\\MISSLES";
+    var TilesetToGen = new goc.Tileset();
+    TilesetToGen.ID = TilesetID;
+    TilesetToGen.Author = "JaneSmith";
+    TilesetToGen.Name = "DemoDefault";
+
+    TilesetToGen.BackgroundURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/background.png";
+    TilesetToGen.WallURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/walls.png";
+
+    TilesetToGen.Creeps = CreepAssetLoader(TilesetID);
+    TilesetToGen.Towers = TowerAssetLoader(TilesetID);
+
+    nodefs.SaveObjectAsJSONFile(saveAs, TilesetToGen);
+    console.log("Demo campaign should now exist at:" + saveAs);
 }
 
 function CreepAssetLoader(TilesetID) {
@@ -132,13 +150,13 @@ function CreepAssetLoader(TilesetID) {
         if (nodefs.Exists(walkPNG)) {
             console.log("found: " + walkPNG);
             var creep = new goc.CreepAssets;
-            creep.GameObjectID = creepID;
             creep.WalkAnimationURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/CREEPS/" + creepID + "/walk_anim.png";
 
             var diePNG = searchPath + "\\" + creepID + "\\die_anim.png";
             if (nodefs.Exists(diePNG)) {
                 creep.DieAnimationURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/CREEPS/" + creepID + "/die_anim.png";
             }
+            creep.Name = "PlaceholderCreepName" + i;
             creeps.push(creep);
         }
     }
@@ -159,7 +177,6 @@ function TowerAssetLoader(TilesetID) {
         var rotatorPNG = searchPath + "\\" + towerID + "\\rotator.png";
         console.log("looking in: " + towerID);
         var tower = new goc.TowerAssets;
-        tower.GameObjectID = towerID;
 
         if (nodefs.Exists(basePNG)) {
             tower.BaseURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/TOWERS/" + towerID + "/base.png";
@@ -171,9 +188,24 @@ function TowerAssetLoader(TilesetID) {
         }
 
         if (towerFound) {
+            tower.Name = "PlaceholderTowerName" + i;
             towers.push(tower);
         }
     }
     return towers;
 }
+/*
+// /tileset/:id/creeps GET[] (get)
+export function TileSetCreepsByID(req: express.Request, res: express.Response) {
+"use strict";
+var id: string = req.params.id;
+res.json(CreepAssetLoader(id));
+}
+// /tileset/:id/towers GET[] (get)
+export function TileSetTowersByID(req: express.Request, res: express.Response) {
+"use strict";
+var id: string = req.params.id;
+res.json(TowerAssetLoader(id));
+}
+*/
 //# sourceMappingURL=td.js.map

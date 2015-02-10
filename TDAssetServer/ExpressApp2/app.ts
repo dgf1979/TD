@@ -63,9 +63,8 @@ app.get("/", routes.AssetPath);
 // tileset routes
 app.get("/tileset", routes.TileSetList);
 app.get("/tileset/:id", routes.TileSetGetByID);
-app.get("/tileset/:id/debugGen", routes.TileSetDebugGen);
-app.get("/tileset/:id/creeps", routes.TileSetCreepsByID);
-app.get("/tileset/:id/towers", routes.TileSetTowersByID);
+// app.get("/tileset/:id/creeps", routes.TileSetCreepsByID);
+// app.get("/tileset/:id/towers", routes.TileSetTowersByID);
 // campaign routes
 app.get("/campaign", routes.CampaignList);
 app.get("/campaign/:id", routes.CampaignGetByID);

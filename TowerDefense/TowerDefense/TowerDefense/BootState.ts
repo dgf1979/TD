@@ -1,4 +1,5 @@
 ﻿module TDGame {
+    "use strict";
     // BOOT STATE
     export class BootState extends Phaser.State {
 

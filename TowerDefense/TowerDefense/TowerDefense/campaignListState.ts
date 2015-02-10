@@ -55,8 +55,7 @@
 
         menuItemClicked(menuItem: Phaser.Text) {
             return () => {
-                TDGame.currentCampaign = menuItem.text;
-                this.game.state.start('LoadCampaignAssets', true, false);
+                this.game.state.start('LoadCampaignAssets', true, false, menuItem.text);
             }
         }
     }

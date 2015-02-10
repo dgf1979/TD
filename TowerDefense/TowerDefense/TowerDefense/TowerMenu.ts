@@ -1,5 +1,5 @@
 ﻿class TowerMenu {
-    // Signals
+    // signals
     ItemSelectedSignal: Phaser.Signal = new Phaser.Signal();
 
     // vars
@@ -16,14 +16,16 @@
 
     private load() {
         // load towers images into selection tiles
-        for (var i = 0; i < 8; i++) {
-            var towerID: string = "TOWER00" + i;
-            var base = towerID + ".base";
-            var rotator = towerID + ".rotator";
+        var tas: GameObjectClasses.TowerAssets[] = TDGame.currentTileset.Towers;
+
+        for (var i = 0; i < tas.length; i++) {
+            var name: string = tas[i].Name;
+            var base = name + ".base";
+            var rotator = name + ".rotator";
             var hasBase = this._game.cache.checkImageKey(base);
             var hasRotator = this._game.cache.checkImageKey(rotator);
             if (hasBase || hasRotator) {
-                var newGroup: Phaser.Group = new Phaser.Group(this._game, null, towerID, true);
+                var newGroup: Phaser.Group = new Phaser.Group(this._game, null, name, true);
                 newGroup.position = TDGame.ui.towerTilesUL[i];
                 if (hasBase) {
                     var TMIbase = new Phaser.Sprite(this._game, 0, 0, base, 0);
@@ -56,7 +58,7 @@
     private menuItemOnMouseOver(Group: Phaser.Group) {
         return () => {
             Group.forEach((s: Phaser.Sprite) => {
-                s.tint = Phaser.Color.getColor(0, 150, 0);
+                s.tint = Phaser.Color.getColor(102, 255, 255);
             }, this);
         }
         // console.log(this.tint);

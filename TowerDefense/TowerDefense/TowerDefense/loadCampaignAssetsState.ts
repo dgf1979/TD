@@ -1,28 +1,30 @@
 ﻿module TDGame {
+    "use strict";
     export class LoadCampaignAssets extends Phaser.State {
 
         preloadBar: Phaser.Sprite; // progbar
-        _campaign: GameObjectClasses.Campaign;
+        _campaignID: string;
+
+        init(ID: string) {
+            console.log('Selected Campaign State: ' + ID);
+            this._campaignID = ID;
+        }
 
         preload() {
             // progbar
             this.preloadBar = this.add.sprite(200, 250, 'progbar');
             this.load.setPreloadSprite(this.preloadBar);
-            
-            // console.log('Value in LCA State: ' + TDGame.currentCampaign);
 
             // query asset server for the selected campaigns details
-            var oCampaign: GameObjectClasses.Campaign;
             $(document).ready(() => {
                 $.ajax(
                     {
-                        url: 'http://localhost:1337/campaign/' + TDGame.currentCampaign,
+                        url: 'http://localhost:1337/campaign/' + this._campaignID,
                         dataType: 'json',
                         async: false,
                         success: (json: GameObjectClasses.Campaign) => {
-                            oCampaign = json;
-                            console.log('AJAX campaign ID: ' + oCampaign.ID);
-                            this._campaign = oCampaign;
+                            currentCampaign = json;
+                            console.log('AJAX campaign ID: ' + currentCampaign.Name);
                         },
                         error: (xhr: any, ajaxOptions: any, thrownError: any) => {
                             alert(xhr.status);
@@ -32,16 +34,15 @@
             });
 
             // query asset server for the tileset used in this campaign
-            var oTileset: GameObjectClasses.Tileset;
             $(document).ready(() => {
                 $.ajax(
                     {
-                        url: 'http://localhost:1337/tileset/' + oCampaign.TilesetID,
+                        url: 'http://localhost:1337/tileset/' + currentCampaign.TilesetID,
                         dataType: 'json',
                         async: false,
                         success: (json: GameObjectClasses.Tileset) => {
-                            oTileset = json;
-                            console.log("Tileset: " + oTileset);
+                            currentTileset = json;
+                            console.log("Tileset: " + currentTileset.Name);
                         },
                         error: (xhr: any, ajaxOptions: any, thrownError: any) => {
                             alert(xhr.status);
@@ -50,71 +51,40 @@
                     })
             });
 
-            // query asset server for every creep
-            var oCreeps: GameObjectClasses.CreepAssets[] = [];
-            $(document).ready(() => {
-                $.ajax(
-                    {
-                        url: 'http://localhost:1337/tileset/' + oCampaign.TilesetID + '/creeps',
-                        dataType: 'json',
-                        async: false,
-                        success: (json: GameObjectClasses.CreepAssets[]) => {
-                            oCreeps = json;
-                            console.log("WalkAnimationURL prop: " + oCreeps[oCreeps.length].WalkAnimationURL);
-                        },
-                        error: (xhr: any, ajaxOptions: any, thrownError: any) => {
-                            alert(xhr.status);
-                            alert(thrownError);
-                        }
-                    })
-            });
-
-            // query asset server for every tower
-            var oTowers: GameObjectClasses.TowerAssets[] = [];
-            $(document).ready(() => {
-                $.ajax(
-                    {
-                        url: 'http://localhost:1337/tileset/' + oCampaign.TilesetID + '/towers',
-                        dataType: 'json',
-                        async: false,
-                        success: (json: GameObjectClasses.TowerAssets[]) => {
-                            oTowers = json;
-                        },
-                        error: (xhr: any, ajaxOptions: any, thrownError: any) => {
-                            alert(xhr.status);
-                            alert(thrownError);
-                        }
-                    })
-            });
-
-            // load towers
+            // load tower assets
+            var oTowers: GameObjectClasses.TowerAssets[] = currentTileset.Towers;
             for (var i = 0; i < oTowers.length; i++) {
-                var base = this.load.image(oTowers[i].GameObjectID + ".base", oTowers[i].BaseURL, true);
-                if (oTowers[0].RotatorURL !== undefined) {
-                    var rotator = this.load.spritesheet(oTowers[i].GameObjectID + ".rotator", oTowers[i].RotatorURL, TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
+                if (oTowers[i].BaseURL != "") {
+                    this.load.spritesheet(oTowers[i].Name + ".base", oTowers[i].BaseURL, TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
+                } else {
+                    this.load.spritesheet(oTowers[i].Name + ".base", "img/32x32.png", TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
                 }
+                if (oTowers[i].RotatorURL != "") {
+                    this.load.spritesheet(oTowers[i].Name + ".rotator", oTowers[i].RotatorURL, TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
+                }   
             } 
 
-            // load creeps
+            // load creep assets
+            var oCreeps: GameObjectClasses.CreepAssets[] = currentTileset.Creeps;
             for (var i = 0; i < oCreeps.length; i++) {
-                var walk = this.load.spritesheet(oCreeps[i].GameObjectID + '.walk', oCreeps[i].WalkAnimationURL, TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
+                var walk = this.load.spritesheet(oCreeps[i].Name + '.walk', oCreeps[i].WalkAnimationURL, TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
                 if (oCreeps[i].DieAnimationURL !== undefined) {
-                    var die = this.load.spritesheet(oCreeps[i].GameObjectID + '.die', oCreeps[i].DieAnimationURL, TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
+                    var die = this.load.spritesheet(oCreeps[i].Name + '.die', oCreeps[i].DieAnimationURL, TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
                 }
             }
 
 
             // load background, tileset, and CSV map
-            this.load.image('background', oTileset.BackgroundURL);
-            this.load.image('tileIMG', oTileset.WallURL);
-            this.load.tilemap('tileDEF', oCampaign.MapURL, null, Phaser.Tilemap.CSV);
+            this.load.image('background', currentTileset.BackgroundURL);
+            this.load.image('tileIMG', currentTileset.WallURL);
+            this.load.tilemap('tileDEF', currentCampaign.MapURL, null, Phaser.Tilemap.CSV);
 
         }
 
         // phaser.create()
         create() {
             var tween: Phaser.Tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
-            tween.onComplete.add(() => this.game.state.start('Proto1', true, false, this._campaign));
+            tween.onComplete.add(() => this.game.state.start('Proto1', true, false));
         }
 
     }
