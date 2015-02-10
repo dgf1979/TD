@@ -1,40 +1,70 @@
 ﻿module GameObjectClasses {
 
+    // campaign classes //
+
     // a campaign, consisting of multiple waves
     export class Campaign {
         ID: string;
+        Name: string;
+        Author: string;
         TilesetID: string;
         MapURL: string;
         Waves: Wave[];
+        CreepStats: CreepData[];
+        TowerStats: TowerData[];
     }
 
     // a wave, each consisting of a number of creeps of a specific type
     export class Wave {
         SpawnDelay: number;
-        CreepID: string;
+        CreepIndex: number;
         CreepCount: number;
         CreepSpeed: number;
     }
 
-    // a tileset, with URLs to each asset
-    export class Tileset {
-        WallURL: string;
-        BackgroundURL: string;
+    // campaign variables for creeps
+    export class CreepData {
+        AssetID: string;
+        HitPoints: number;
+        WalkSpeed: number;
     }
 
-    // asset URLs for a particular type of creep
+    // campaign variables for towers
+    export class TowerData {
+        AssetID: string;
+        FireRate: number;
+        Damage: number;
+        Range: number;
+    }
+
+
+    // tileset classes //
+
+    // a tileset, with URLs to each asset
+    export class Tileset {
+        ID: string;
+        Name: string;
+        Author: string;
+        WallURL: string;
+        BackgroundURL: string;
+        Creeps: CreepAssets[];
+        Towers: TowerAssets[];
+    }
+
+    // asset URLs for a partucular type of creep
     export class CreepAssets {
-        GameObjectID: string;
+        Name: string;
         WalkAnimationURL: string;
         DieAnimationURL: string;
     }
 
-    // asset URLs for a particular type of creep
+    // asset URLs for a partucular type of creep
     export class TowerAssets {
-        GameObjectID: string;
+        Name: string;
         BaseURL: string;
         RotatorURL: string;
     }
+
 
 }
 

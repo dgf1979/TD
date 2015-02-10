@@ -1,4 +1,5 @@
-﻿// a campaign, consisting of multiple waves
+﻿// campaign classes //
+// a campaign, consisting of multiple waves
 var Campaign = (function () {
     function Campaign() {
     }
@@ -14,7 +15,23 @@ var Wave = (function () {
 })();
 exports.Wave = Wave;
 
-// tileset classes
+// campaign variables for creeps
+var CreepData = (function () {
+    function CreepData() {
+    }
+    return CreepData;
+})();
+exports.CreepData = CreepData;
+
+// campaign variables for towers
+var TowerData = (function () {
+    function TowerData() {
+    }
+    return TowerData;
+})();
+exports.TowerData = TowerData;
+
+// tileset classes //
 // a tileset, with URLs to each asset
 var Tileset = (function () {
     function Tileset() {
@@ -38,20 +55,4 @@ var TowerAssets = (function () {
     return TowerAssets;
 })();
 exports.TowerAssets = TowerAssets;
-
-// asset-related creep info
-var Creep = (function () {
-    function Creep() {
-    }
-    return Creep;
-})();
-exports.Creep = Creep;
-
-// asset-related tower info
-var Tower = (function () {
-    function Tower() {
-    }
-    return Tower;
-})();
-exports.Tower = Tower;
 //# sourceMappingURL=GameObjectClasses.js.map

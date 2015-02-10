@@ -1,4 +1,6 @@
-﻿// a campaign, consisting of multiple waves
+﻿// campaign classes //
+
+// a campaign, consisting of multiple waves
 export class Campaign {
     ID: string;
     Name: string;
@@ -6,6 +8,8 @@ export class Campaign {
     TilesetID: string;
     MapURL: string;
     Waves: Wave[];
+    CreepStats: CreepData[];
+    TowerStats: TowerData[];
 }
 
 // a wave, each consisting of a number of creeps of a specific type
@@ -16,7 +20,23 @@ export class Wave {
     CreepSpeed: number;
 }
 
-// tileset classes
+// campaign variables for creeps
+export class CreepData {
+    AssetID: string;
+    HitPoints: number;
+    WalkSpeed: number;
+}
+
+// campaign variables for towers
+export class TowerData {
+    AssetID: string;
+    FireRate: number;
+    Damage: number;
+    Range: number;
+}
+
+
+// tileset classes //
 
 // a tileset, with URLs to each asset
 export class Tileset {
@@ -25,33 +45,24 @@ export class Tileset {
     Author: string;
     WallURL: string;
     BackgroundURL: string;
-    Creeps: Creep;
-    Towers: Tower;
+    Creeps: CreepAssets[];
+    Towers: TowerAssets[];
 }
 
 // asset URLs for a partucular type of creep
 export class CreepAssets {
+    Name: string;
     WalkAnimationURL: string;
     DieAnimationURL: string;
 }
 
 // asset URLs for a partucular type of creep
 export class TowerAssets {
+    Name: string;
     BaseURL: string;
     RotatorURL: string;
 }
 
-// asset-related creep info
-export class Creep {
-    name: string;
-    assets: CreepAssets;
-}
-
-// asset-related tower info
-export class Tower {
-    name: string;
-    assets: TowerAssets;
-}
 
 
 
