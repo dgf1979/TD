@@ -1,4 +1,5 @@
 ﻿class Tower extends Phaser.Group {
+    private _game: Phaser.Game;
     private _name: string;
     private _range: Phaser.Circle;
     private _baseTextureKey: string;
@@ -15,6 +16,7 @@
     // private _turretTween: Phaser.Tween;
 
     constructor(ThisGame: Phaser.Game, TowerIndex: number, Location: Phaser.Point, CreepGroup: Phaser.Group) {
+        this._game = ThisGame;
         var TowerJSONData: GameObjectClasses.TowerData = TDGame.currentCampaign.TowerStats[TowerIndex];
         var TowerJSONAssets: GameObjectClasses.TowerAssets = TDGame.currentTileset.Towers[TowerIndex];
         this._name = TowerJSONAssets.Name;
@@ -139,9 +141,9 @@
     // laser-style damage
     private damagePerMS(Target: Creep) {
         if (this.game.time.now > this._nextFire) {
+            this._nextFire = this.game.time.now + this._fireRate;
             Target.Damage(this._damagePer);
-            console.log("Tower Damaging Target for " + this._damagePer + " points"); 
-            this._nextFire += this._fireRate;
+            console.log(this._game.time.totalElapsedSeconds() + ": Tower Damaging Target for " + this._damagePer + " points"); 
         }
     }
 } 

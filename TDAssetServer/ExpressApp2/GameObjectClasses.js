@@ -48,7 +48,7 @@ var CreepAssets = (function () {
 })();
 exports.CreepAssets = CreepAssets;
 
-// asset URLs for a partucular type of creep
+// asset URLs for a particular type of tower
 var TowerAssets = (function () {
     function TowerAssets() {
     }

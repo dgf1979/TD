@@ -5,12 +5,14 @@
     // vars
     private _game: Phaser.Game;
     private _towers: Phaser.Group[]; // array of sprite groups
+    private _cursorCopies: Phaser.Group[];
     private _selected: number;
     
     // constructor
     constructor(ThisGame: Phaser.Game) {
         this._game = ThisGame;
         this._towers = [];
+        this._cursorCopies = [];
         this.load();
     }
 
@@ -27,14 +29,24 @@
             var hasRotator = this._game.cache.checkImageKey(rotator);
             if (hasBase || hasRotator) {
                 var newGroup: Phaser.Group = new Phaser.Group(this._game, null, name, true);
+                var newCursorGroup: Phaser.Group = new Phaser.Group(this._game, null, name, true);
+                newCursorGroup.visible = false;
                 newGroup.position = TDGame.ui.towerTilesUL[i];
                 if (hasBase) {
+                    // menu copy
                     var TMIbase = new Phaser.Sprite(this._game, 0, 0, base, 0);
                     newGroup.add(TMIbase);
+                    // cursor copy
+                    var TMIbaseCursorCopy = new Phaser.Sprite(this._game, 0, 0, base, 0);
+                    newCursorGroup.add(TMIbaseCursorCopy);
                 }
                 if (hasRotator) {
+                    // menu copy
                     var TMIrotator = new Phaser.Sprite(this._game, 0, 0, rotator, 0);
                     newGroup.add(TMIrotator);
+                    // cursor copy
+                    var TMIrotatorCursorCopy = new Phaser.Sprite(this._game, 0, 0, rotator, 0);
+                    newCursorGroup.add(TMIrotatorCursorCopy);
                 }
                 // add click handling to topmost sprite
                 var topmostSprite: Phaser.Sprite = newGroup.getTop();
@@ -46,7 +58,8 @@
                 topmostSprite.events.onInputOver.add(mouseover);
                 topmostSprite.events.onInputOut.add(mouseout);
                 // console.log("topmost sprite: " + topmostSprite.key);
-                this._towers.push(newGroup);
+                this._towers.push(newGroup);  // menu group
+                this._cursorCopies.push(newCursorGroup); // cursor copies
             }
         } 
     }
@@ -54,6 +67,20 @@
     // get ID of selected tower
     get SelectedTowerIndex(): number {
         return this._selected;
+    }
+
+    ClearSelectedTower() {
+        this._selected = -1;
+    }
+
+    // return the sprite group for the currently selected index
+    get SelectedSpriteGroup(): Phaser.Group {
+        if (this._cursorCopies[this._selected]) {
+            return this._cursorCopies[this._selected];
+        } else {
+            console.log("couldn't find selected tower menuitem sprite group at index: " + this._selected);
+            return new Phaser.Group(this._game);
+        }
     }
 
     private menuItemOnMouseOver(Group: Phaser.Group) {

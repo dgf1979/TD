@@ -32,6 +32,9 @@
                 alert("Path processiong not complete");
             }
 
+            // handle the mouse
+            this._mouseHandler = new UI.MouseHandler(this.game, TDGame.ui);
+
             // loop waves
             var wave: GameObjectClasses.Wave = currentCampaign.Waves[0];
 
@@ -50,18 +53,23 @@
             var towerMenu: TowerMenu = new TowerMenu(this.game);
 
             // subscribe to onselected of tower menu
-            var updateTowerDisplay = (TowerIndex: number) => { towerInfoDisplayArea.SetAll(TowerIndex); };
+            var updateTowerDisplay = (TowerIndex: number) => {
+                this._mouseHandler.SetSpriteCursor(towerMenu.SelectedSpriteGroup);
+                towerInfoDisplayArea.SetAll(TowerIndex);
+            };
             towerMenu.ItemSelectedSignal.add(updateTowerDisplay);
 
             // tower factory
             var TF: TowerFactory = new TowerFactory(this.game, creepGroup);
 
-            // handle the mouse
-            this._mouseHandler = new UI.MouseHandler(this.game, TDGame.ui);
-
-            // try subscribing to event
+            // subscribing to grid-click event on mouse.
             var dropTower = (X: number, Y: number) =>
-            { console.log("ClickSignalXY: " + X + "," + Y); TF.PlaceTower(towerMenu.SelectedTowerIndex, new Phaser.Point(X, Y)); };
+            {
+                console.log("ClickSignalXY: " + X + "," + Y);
+                TF.PlaceTower(towerMenu.SelectedTowerIndex, new Phaser.Point(X, Y));
+                towerMenu.ClearSelectedTower();
+                this._mouseHandler.ClearSpriteCursor();
+            };
             this._mouseHandler.ClickSignal.add(dropTower);
 
         }

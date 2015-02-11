@@ -4,7 +4,7 @@
         tileSize: Phaser.Point = new Phaser.Point(32, 32);
         screenSize: Phaser.Point = new Phaser.Point(1024, 768);
         playAreaUL: Phaser.Point = new Phaser.Point(32, 32);
-        playAreaTiles: Phaser.Point = new Phaser.Point(22, 22);
+        playAreaTiles: Phaser.Point = new Phaser.Point(22, 20);
         iconAreaUL: Phaser.Point = new Phaser.Point(768, 32);
 
         towerTilesUL: Phaser.Point[] = [
@@ -25,6 +25,7 @@
         displayArea2BR: Phaser.Point = new Phaser.Point(959, 495);
     }
 
+    // pointer control and cursor handling
     export class MouseHandler {
         // signals
         ClickSignal: Phaser.Signal = new Phaser.Signal();
@@ -32,7 +33,8 @@
         private _game: Phaser.Game;
         private _playarea: Phaser.Rectangle;
         private _debugText: Phaser.Text;
-
+        private _isBlocked: boolean;
+        private _cursorSpriteGroup: Phaser.Group;
         private _cursor: Phaser.Graphics;
 
         constructor(ThisGame: Phaser.Game, UIPosition: UI.Positioning) {
@@ -65,8 +67,28 @@
                     var x, y: number;
                     x = Phaser.Math.snapToFloor(xpos, TDGame.ui.tileSize.x);
                     y = Phaser.Math.snapToFloor(ypos, TDGame.ui.tileSize.y);
-                    this.ClickSignal.dispatch(x, y);
+                    // only register click if the tile isn't blocked
+                    if (!this._isBlocked) {
+                        this.ClickSignal.dispatch(x, y);
+                    }
                 }
+            }
+        }
+
+        // set a sprite group as a cursor
+        SetSpriteCursor(SpriteGroup: Phaser.Group) {
+            var internal: Phaser.Group;
+            internal = SpriteGroup;
+            this._cursorSpriteGroup = internal;
+            console.log("sprite cursor set to: " + internal.name + " at " + internal.position); 
+        }
+
+        // clear a sprite group as a cursor
+        ClearSpriteCursor() {
+            if (this._cursorSpriteGroup) {
+                this._cursorSpriteGroup.position.set(0, 0);
+                this._cursorSpriteGroup.visible = false;
+                this._cursorSpriteGroup = null;
             }
         }
 
@@ -76,18 +98,31 @@
                 this._debugText.text = "Tracking Mouse at: " + mouse.position.x + "," + mouse.position.y;
                 var currentTile: Phaser.Tile = PlayArea.getTileWorldXY(mouse.position.x, mouse.position.y);
                 if (currentTile !== null) {
-                    this._cursor.position = new Phaser.Point(currentTile.worldX, currentTile.worldY);
+                    var currentXY: Phaser.Point = new Phaser.Point(currentTile.worldX, currentTile.worldY);
+                    this._cursor.position = currentXY;
                     this._cursor.tint = 0xff0000;
+                    if (this._cursorSpriteGroup) {
+                        this._cursorSpriteGroup.visible = false;
+                    }
+                    this._isBlocked = true;
                 } else {
                     var x, y: number;
                     x = Phaser.Math.snapToFloor(mouse.position.x, TDGame.ui.tileSize.x);
                     y = Phaser.Math.snapToFloor(mouse.position.y, TDGame.ui.tileSize.y);
-                    this._cursor.position = new Phaser.Point(x, y);
+                    var currentXY: Phaser.Point = new Phaser.Point(x, y);
+                    this._cursor.position = currentXY;
                     this._cursor.tint = 0x00ff00;
+                    if (this._cursorSpriteGroup) {
+                        this._cursorSpriteGroup.position = currentXY;    
+                        this._cursorSpriteGroup.visible = true;
+                        console.log("SpriteCursor at: " + this._cursorSpriteGroup.position);
+                    }
+                    this._isBlocked = false;
                 }   
                 this._cursor.visible = true;
             } else {
                 this._cursor.visible = false;
+                if(this._cursorSpriteGroup) { this._cursorSpriteGroup.visible = false; }
                 this._debugText.text = "";
             }
 

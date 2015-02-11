@@ -51,6 +51,13 @@
                     })
             });
 
+            this.load.crossOrigin = 'anonymous';
+
+            // load background, tileset, and CSV map
+            this.load.image('background', currentTileset.BackgroundURL);
+            this.load.image('tileIMG', currentTileset.WallURL);
+            this.load.tilemap('tileDEF', currentCampaign.MapURL, null, Phaser.Tilemap.CSV);
+
             // load tower assets
             var oTowers: GameObjectClasses.TowerAssets[] = currentTileset.Towers;
             for (var i = 0; i < oTowers.length; i++) {
@@ -77,18 +84,12 @@
             }
 
 
-            // load background, tileset, and CSV map
-            this.load.image('background', currentTileset.BackgroundURL);
-            this.load.image('tileIMG', currentTileset.WallURL);
-            this.load.tilemap('tileDEF', currentCampaign.MapURL, null, Phaser.Tilemap.CSV);
-
 
         }
 
         // phaser.create()
         create() {
             var tween: Phaser.Tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
-            console.log("ASSETS: " + this.game.cache.getKeys);
             tween.onComplete.add(() => this.game.state.start('Proto1', true, false));
         }
 

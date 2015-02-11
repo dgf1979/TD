@@ -59,7 +59,7 @@ export class CreepAssets {
     DieAnimationURL: string;
 }
 
-// asset URLs for a partucular type of creep
+// asset URLs for a particular type of tower
 export class TowerAssets {
     Index: number;
     Name: string;

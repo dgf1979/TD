@@ -5,17 +5,7 @@ import path = require("path");
 
 var app = express();
 
-// all environments
-app.set("port", process.env.PORT || 1337);
-app.set("views", path.join(__dirname, "views"));
-app.set("view engine", "jade");
-app.use(express.favicon());
-app.use(express.logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded());
-app.use(express.methodOverride());
-
-// dumb middlewear
+// CORS middlewear
 app.use(function (req: express.Request, res: express.Response, next: any) {
     if (global.ASSETURL === undefined) {
         global.ASSETURL = req.protocol + "://" + req.get("host");
@@ -26,9 +16,10 @@ app.use(function (req: express.Request, res: express.Response, next: any) {
 
 // allow requests from other domains
 var allowCrossDomain = function (req: express.Request, res: express.Response, next: any) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.header("Access-Control-Allow-Origin", "*");  // * for any source
+    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE"); // allow all common verbs
+    // res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
 
     // intercept OPTIONS method
     if ("OPTIONS" === req.method) {
@@ -37,9 +28,21 @@ var allowCrossDomain = function (req: express.Request, res: express.Response, ne
         next();
     }
 };
-app.use(allowCrossDomain);
 
+// all environments
+app.set("port", process.env.PORT || 1337);
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "jade");
+app.use(express.favicon());
+app.use(express.logger("dev"));
+app.use(express.json());
+app.use(express.urlencoded());
+app.use(express.methodOverride());
+app.use(allowCrossDomain);
 app.use(app.router);
+
+
+
 
 // set the assets folder location up
 global.ASSETPATH = __dirname + "\\ASSETS";

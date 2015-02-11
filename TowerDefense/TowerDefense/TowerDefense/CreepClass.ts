@@ -31,7 +31,7 @@
         this.rotation = Phaser.Point.angle(lookat, this.position);
         // health bar setup
         this._healthBar = new HPBar(this);
-        alert("creep starting with " + this.health + " hp");
+        // alert("creep starting with " + this.health + " hp");
     }
 
     // name getter
@@ -91,7 +91,6 @@
     // die
     private Die() {
         // todo: add value to global payout
-        // console.log("DIE DIE DIE");
         this._movementTween.stop();
         // console.log("current anim: " + this.animations.currentAnim.name);
         this.animations.stop("walk", true);
