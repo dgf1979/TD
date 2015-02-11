@@ -64,7 +64,7 @@ interface INameAndID {
 }
 
 // generate a demo campaign and save to folder
-export function CreateDemoCampaign() {
+export function CreateDemoCampaign(req: express.Request, res: express.Response) {
     "use strict";
     var saveAs: string = global.ASSETPATH + "\\CAMPAIGNS\\C_00000\\campaign.json";
     var demoCampaign: goc.Campaign = new goc.Campaign();
@@ -83,26 +83,34 @@ export function CreateDemoCampaign() {
     demoCampaign.Waves.push(wave1);
 
     //build a demo set of creep stats
-    var cs: goc.CreepData = new goc.CreepData();
-    cs.AssetID = "CREEP000";
-    cs.HitPoints = 40;
-    cs.WalkSpeed = 1200;
-    // push into campaign
     demoCampaign.CreepStats = [];
-    demoCampaign.CreepStats.push(cs);
+    for (var i = 0; i < 8; i++) {
+        var cs: goc.CreepData = new goc.CreepData();
+        cs.AssetID = "CREEP00" + i;
+        cs.Index = i;
+        cs.HitPoints = 40;
+        cs.WalkSpeed = 2000;
+        // push into campaign
+        demoCampaign.CreepStats.push(cs);
+    }
 
     // build a demo set of tower stats
-    var ts: goc.TowerData = new goc.TowerData();
-    ts.AssetID = "TOWER000";
-    ts.Damage = 1;
-    ts.FireRate = 1;
-    ts.Range = 96;
-    // push into campaign
     demoCampaign.TowerStats = [];
-    demoCampaign.TowerStats.push(ts);
+    for (var i = 0; i < 8; i++) {
+        var ts: goc.TowerData = new goc.TowerData();
+        ts.AssetID = "TOWER00" + i;
+        ts.Index = i;
+        ts.Damage = 3;
+        ts.FireRate = 1;
+        ts.Range = 96;
+        // push into campaign
+        demoCampaign.TowerStats.push(ts);
+    }
 
     nodefs.SaveObjectAsJSONFile(saveAs, demoCampaign);
     console.log("Demo campaign should now exist at:" + saveAs);
+
+    res.end();
 }
 
 // generate a json object for tileset details
@@ -150,6 +158,7 @@ function CreepAssetLoader(TilesetID: string): goc.CreepAssets[]{
                 creep.DieAnimationURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/CREEPS/" + creepID + "/die_anim.png";
             }
             creep.Name = "PlaceholderCreepName" + i;
+            creep.Index = i;
             creeps.push(creep);
         }
     }
@@ -182,6 +191,7 @@ function TowerAssetLoader(TilesetID: string): goc.TowerAssets[] {
 
         if (towerFound) {
             tower.Name = "PlaceholderTowerName" + i;
+            tower.Index = i;
             towers.push(tower);
         }
     }

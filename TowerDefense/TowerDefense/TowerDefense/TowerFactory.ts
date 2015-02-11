@@ -7,8 +7,9 @@
         this._creeps = TargetCreeps;
     }
 
-    PlaceTower(TowerName: String, Location: Phaser.Point) {
-        var tower: Tower = new Tower(this._game, TowerName, Location, this._creeps);
-        // alert(tower.key);
+    PlaceTower(TowerIndex: number, Location: Phaser.Point) {
+        if (TowerIndex >= 0 && TowerIndex < 8) {
+            new Tower(this._game, TowerIndex, Location, this._creeps);
+        }
     }
 } 

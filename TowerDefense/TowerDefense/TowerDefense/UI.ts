@@ -52,18 +52,27 @@
             this._debugText = Helper.CreateUpdateableDebugText("",
                 this._game, TDGame.ui.screenSize.x - 128,
                 TDGame.ui.screenSize.y - 64);
+
+            var clicked = this.gridClicked();
+            this._game.input.onDown.add(clicked);
+        }
+
+        private gridClicked() {
+            return () => {
+                var xpos: number = this._game.input.activePointer.position.x;
+                var ypos: number = this._game.input.activePointer.position.y;
+                if (this._playarea.contains(xpos, ypos)) {
+                    var x, y: number;
+                    x = Phaser.Math.snapToFloor(xpos, TDGame.ui.tileSize.x);
+                    y = Phaser.Math.snapToFloor(ypos, TDGame.ui.tileSize.y);
+                    this.ClickSignal.dispatch(x, y);
+                }
+            }
         }
 
         update(PlayArea: Phaser.Tilemap) {
             var mouse: Phaser.Pointer = this._game.input.mousePointer;
             if (this._playarea.contains(mouse.position.x, mouse.position.y)) {
-                if (this._game.input.activePointer.isDown) {
-                    var x, y: number;
-                    x = Phaser.Math.snapToFloor(mouse.position.x, TDGame.ui.tileSize.x);
-                    y = Phaser.Math.snapToFloor(mouse.position.y, TDGame.ui.tileSize.y);
-                    this.ClickSignal.dispatch(x, y);
-                }
-
                 this._debugText.text = "Tracking Mouse at: " + mouse.position.x + "," + mouse.position.y;
                 var currentTile: Phaser.Tile = PlayArea.getTileWorldXY(mouse.position.x, mouse.position.y);
                 if (currentTile !== null) {

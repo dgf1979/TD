@@ -56,11 +56,14 @@
             for (var i = 0; i < oTowers.length; i++) {
                 if (oTowers[i].BaseURL != "") {
                     this.load.spritesheet(oTowers[i].Name + ".base", oTowers[i].BaseURL, TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
+                    console.log("ASSET ADDED: " + oTowers[i].Name + ".base");
                 } else {
                     this.load.spritesheet(oTowers[i].Name + ".base", "img/32x32.png", TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
+                    console.log("ASSET ADDED: " + oTowers[i].Name + ".base");
                 }
                 if (oTowers[i].RotatorURL != "") {
                     this.load.spritesheet(oTowers[i].Name + ".rotator", oTowers[i].RotatorURL, TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
+                    console.log("ASSET ADDED: " + oTowers[i].Name + ".rotator");
                 }   
             } 
 
@@ -79,11 +82,13 @@
             this.load.image('tileIMG', currentTileset.WallURL);
             this.load.tilemap('tileDEF', currentCampaign.MapURL, null, Phaser.Tilemap.CSV);
 
+
         }
 
         // phaser.create()
         create() {
             var tween: Phaser.Tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
+            console.log("ASSETS: " + this.game.cache.getKeys);
             tween.onComplete.add(() => this.game.state.start('Proto1', true, false));
         }
 

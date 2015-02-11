@@ -24,6 +24,7 @@
 
     // campaign variables for creeps
     export class CreepData {
+        Index: number;
         AssetID: string;
         HitPoints: number;
         WalkSpeed: number;
@@ -31,6 +32,7 @@
 
     // campaign variables for towers
     export class TowerData {
+        Index: number;
         AssetID: string;
         FireRate: number;
         Damage: number;
@@ -53,6 +55,7 @@
 
     // asset URLs for a partucular type of creep
     export class CreepAssets {
+        Index: number;
         Name: string;
         WalkAnimationURL: string;
         DieAnimationURL: string;
@@ -60,6 +63,7 @@
 
     // asset URLs for a partucular type of creep
     export class TowerAssets {
+        Index: number;
         Name: string;
         BaseURL: string;
         RotatorURL: string;

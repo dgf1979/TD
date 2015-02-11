@@ -68,7 +68,7 @@ function NamesAndIDsOf(ThisDir) {
 
 
 // generate a demo campaign and save to folder
-function CreateDemoCampaign() {
+function CreateDemoCampaign(req, res) {
     "use strict";
     var saveAs = global.ASSETPATH + "\\CAMPAIGNS\\C_00000\\campaign.json";
     var demoCampaign = new goc.Campaign();
@@ -88,28 +88,36 @@ function CreateDemoCampaign() {
     demoCampaign.Waves.push(wave1);
 
     //build a demo set of creep stats
-    var cs = new goc.CreepData();
-    cs.AssetID = "CREEP000";
-    cs.HitPoints = 40;
-    cs.WalkSpeed = 1200;
-
-    // push into campaign
     demoCampaign.CreepStats = [];
-    demoCampaign.CreepStats.push(cs);
+    for (var i = 0; i < 8; i++) {
+        var cs = new goc.CreepData();
+        cs.AssetID = "CREEP00" + i;
+        cs.Index = i;
+        cs.HitPoints = 40;
+        cs.WalkSpeed = 2000;
+
+        // push into campaign
+        demoCampaign.CreepStats.push(cs);
+    }
 
     // build a demo set of tower stats
-    var ts = new goc.TowerData();
-    ts.AssetID = "TOWER000";
-    ts.Damage = 1;
-    ts.FireRate = 1;
-    ts.Range = 96;
-
-    // push into campaign
     demoCampaign.TowerStats = [];
-    demoCampaign.TowerStats.push(ts);
+    for (var i = 0; i < 8; i++) {
+        var ts = new goc.TowerData();
+        ts.AssetID = "TOWER00" + i;
+        ts.Index = i;
+        ts.Damage = 3;
+        ts.FireRate = 1;
+        ts.Range = 96;
+
+        // push into campaign
+        demoCampaign.TowerStats.push(ts);
+    }
 
     nodefs.SaveObjectAsJSONFile(saveAs, demoCampaign);
     console.log("Demo campaign should now exist at:" + saveAs);
+
+    res.end();
 }
 exports.CreateDemoCampaign = CreateDemoCampaign;
 
@@ -157,6 +165,7 @@ function CreepAssetLoader(TilesetID) {
                 creep.DieAnimationURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/CREEPS/" + creepID + "/die_anim.png";
             }
             creep.Name = "PlaceholderCreepName" + i;
+            creep.Index = i;
             creeps.push(creep);
         }
     }
@@ -189,6 +198,7 @@ function TowerAssetLoader(TilesetID) {
 
         if (towerFound) {
             tower.Name = "PlaceholderTowerName" + i;
+            tower.Index = i;
             towers.push(tower);
         }
     }

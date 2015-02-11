@@ -50,7 +50,8 @@
             var towerMenu: TowerMenu = new TowerMenu(this.game);
 
             // subscribe to onselected of tower menu
-            towerMenu.ItemSelectedSignal.add(() => { towerInfoDisplayArea.Name = towerMenu.SelectedTower; } );
+            var updateTowerDisplay = (TowerIndex: number) => { towerInfoDisplayArea.SetAll(TowerIndex); };
+            towerMenu.ItemSelectedSignal.add(updateTowerDisplay);
 
             // tower factory
             var TF: TowerFactory = new TowerFactory(this.game, creepGroup);
@@ -59,7 +60,9 @@
             this._mouseHandler = new UI.MouseHandler(this.game, TDGame.ui);
 
             // try subscribing to event
-            this._mouseHandler.ClickSignal.add((X: number, Y: number) => { TF.PlaceTower(towerMenu.SelectedTower, new Phaser.Point(X, Y)); } );
+            var dropTower = (X: number, Y: number) =>
+            { console.log("ClickSignalXY: " + X + "," + Y); TF.PlaceTower(towerMenu.SelectedTowerIndex, new Phaser.Point(X, Y)); };
+            this._mouseHandler.ClickSignal.add(dropTower);
 
         }
 

@@ -8,7 +8,7 @@
     constructor(ThisGame: Phaser.Game) {
         this._bmd = ThisGame.add.bitmapData(640, 640);
         this._sprite = ThisGame.add.sprite(0, 0, this._bmd);
-        this._color = 'green';
+        this._color = 'yellow';
         this._width = 5;
     }
 

@@ -34,7 +34,7 @@
         txt.strokeThickness = 2;
         txt.fill = "#66ffff";
         // position and alignment default (LEFT)
-        txt.position.x = this._marginL
+        txt.position.x = this._marginL;
         txt.align = "left";
         this._textGroup.add(txt);
         return txt;
@@ -43,9 +43,9 @@
     private RightAlignedText(Text: string): Phaser.Text {
         var txt: Phaser.Text = this.Text(Text);
         txt.align = "right";
-        txt.anchor.set(1, 0)
+        txt.anchor.set(1, 0);
         txt.position.x = this._area.width - this._marginR;
-        txt.fill = "#ffff66"
+        txt.fill = "#ffff66";
 
         return txt;
     }
@@ -81,6 +81,15 @@
 
     HideAll() {
         this._textGroup.visible = false;
+    }
+
+    SetAll(TowerIndex: number) {
+        var TowerJSONData: GameObjectClasses.TowerData = TDGame.currentCampaign.TowerStats[TowerIndex];
+        var TowerJSONAssets: GameObjectClasses.TowerAssets = TDGame.currentTileset.Towers[TowerIndex];
+        this.Name = TowerJSONAssets.Name;
+        this.Range = TowerJSONData.Range;
+        this.Rate = TowerJSONData.FireRate;
+        this.Damage = TowerJSONData.Damage;
     }
 
     set Range(Range: number) {

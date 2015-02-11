@@ -1,6 +1,5 @@
 ﻿class Creep extends Phaser.Sprite {
     private _name: string;
-    private _id: number;
     private _cost: number;
     private _payout: number;
     private _velocity: number;
@@ -10,12 +9,18 @@
     private _movementTween: Phaser.Tween;
     private _healthBar: HPBar;
 
-    constructor(ThisGame: Phaser.Game, CreepID: number, StartPath: Phaser.Point[]) {
-        this._id = CreepID;
-        this._name = TDGame.currentTileset.Creeps[CreepID].Name;  // get from global
+    constructor(ThisGame: Phaser.Game, CreepIndex: number, StartPath: Phaser.Point[]) {
+        var CreepJSONData: GameObjectClasses.CreepData = TDGame.currentCampaign.CreepStats[CreepIndex];
+        var CreepJSONAssets: GameObjectClasses.CreepAssets = TDGame.currentTileset.Creeps[CreepIndex];
+
+        this._name = CreepJSONAssets.Name;
         this._walkTextureKey = this.Name + ".walk";
         this._dieTextureKey = this.Name + ".die";
+
         super(ThisGame, 0, 0, this._walkTextureKey, 0);
+
+        this.health = CreepJSONData.HitPoints;
+        this._velocity = CreepJSONData.WalkSpeed;
         this.anchor.setTo(0.5, 0.5);
         this._path = StartPath; // duplication handled by factory
         this.animations.add("walk");
@@ -26,6 +31,7 @@
         this.rotation = Phaser.Point.angle(lookat, this.position);
         // health bar setup
         this._healthBar = new HPBar(this);
+        alert("creep starting with " + this.health + " hp");
     }
 
     // name getter
@@ -59,7 +65,9 @@
 
     // exit map
     private Exit() {
-        console.log("Fade Away...");
+        if (this.health > 0) {
+            console.log("creep escaped with " + this.health + " hp.");
+        }
         var fadeOut: Phaser.Tween = this.game.add.tween(this).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
         fadeOut.onComplete.add(() => {
             this.destroy();
@@ -76,7 +84,7 @@
                 this.Die();
             } 
         };
-        // console.log("Creep taking damage; " + this.health + " hp remaining.");
+        console.log("Creep taking damage; " + this.health + " hp remaining.");
         
     }
 

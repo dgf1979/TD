@@ -25,4 +25,5 @@
         txt.anchor.set(0.5, 0.5);
         return txt;
     }
+
 }

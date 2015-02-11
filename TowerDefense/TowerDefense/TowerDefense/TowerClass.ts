@@ -1,39 +1,58 @@
-﻿class Tower extends Phaser.Sprite {
-    private _id: string;
+﻿class Tower extends Phaser.Group {
+    private _name: string;
     private _range: Phaser.Circle;
     private _baseTextureKey: string;
     private _rotatorTextureKey: string;
     private _turret: Phaser.Sprite;
+    private _base: Phaser.Sprite;
     private _hasTurret: boolean;
     private _creepList: Phaser.Group;
     private _targetCreep: Creep;
     private _laserLine: BitmapLine;
     private _damagePer: number;
     private _nextFire: number;
+    private _fireRate: number;
     // private _turretTween: Phaser.Tween;
 
-    constructor(ThisGame: Phaser.Game, TowerName: string, Location: Phaser.Point, CreepGroup: Phaser.Group) {
-        this._id = TowerName;
-        //get the tower data
+    constructor(ThisGame: Phaser.Game, TowerIndex: number, Location: Phaser.Point, CreepGroup: Phaser.Group) {
+        var TowerJSONData: GameObjectClasses.TowerData = TDGame.currentCampaign.TowerStats[TowerIndex];
+        var TowerJSONAssets: GameObjectClasses.TowerAssets = TDGame.currentTileset.Towers[TowerIndex];
+        this._name = TowerJSONAssets.Name;
+        this._targetCreep = null;
+        this._creepList = CreepGroup;
+
+        // get the tower data
+        console.log("adding tower: " + this._name);
+        super(ThisGame, null, this._name, true);
+
+        this.position = Location;
+        this.Range = TowerJSONData.Range;
+        this.DamagePer = TowerJSONData.Damage;
+        this._fireRate = 1000 / TowerJSONData.FireRate;
 
         // texture keys
-        this._baseTextureKey = this._id + ".base";
-        this._rotatorTextureKey = this._id + ".rotator";
-        this._creepList = CreepGroup;
-        // load the sprite contructor
-        super(ThisGame, Location.x + TDGame.ui.tileSize.x / 2, Location.y + TDGame.ui.tileSize.y / 2, this._baseTextureKey, 0);
-        this.anchor.setTo(0.5, 0.5);
-        this.game.add.existing(this);
-        this.Range = 128; // default range
-        this.DamagePer = 0.5; // default damage per
-        this._targetCreep = null;
+        this._baseTextureKey = this._name + ".base";
+        this._rotatorTextureKey = this._name + ".rotator";
+
+        // base handling
+        console.log("Looking for asset key: " + this._baseTextureKey);
+        if (this.game.cache.checkImageKey(this._baseTextureKey)) {
+            console.log("Adding tower base");
+            this._base = this.game.add.sprite(this.position.x, this.position.y, this._baseTextureKey);
+        }
+
+        console.log("Looking for asset key: " + this._rotatorTextureKey);
         // turret handling
         this._hasTurret = this.game.cache.checkImageKey(this._rotatorTextureKey);
         if (this._hasTurret) {
-            this._turret = this.game.add.sprite(this.position.x, this.position.y, this._rotatorTextureKey);
+            console.log("adding tower turret");
+            this._turret = this.game.add.sprite(this.position.x + TDGame.ui.tileSize.x / 2,
+                this.position.y + TDGame.ui.tileSize.x / 2,
+                this._rotatorTextureKey);
             this._turret.anchor.setTo(0.5, 0.5);
             // this._turretTween = this.game.add.tween(this._turret);
         }
+
         // laser line
         this._laserLine = new BitmapLine(this.game);
         // fire rate setup
@@ -42,7 +61,9 @@
 
     // range setter
     public set Range(Dist: number) {
-        this._range = new Phaser.Circle(this.position.x, this.position.y, Dist * 2);
+        this._range = new Phaser.Circle(this.position.x + TDGame.ui.tileSize.x / 2,
+            this.position.y + TDGame.ui.tileSize.x / 2,
+            Dist * 2);
     }
 
     // damage setter
@@ -64,7 +85,7 @@
 
     // set the nearest in-range creep as target
     private aquireTarget() {
-        //remove out-of-range targets
+        // remove out-of-range targets
         if (this._targetCreep !== null) {
             if (this._range.contains(this._targetCreep.x, this._targetCreep.y) && this._targetCreep.alive && this._targetCreep.health > 0) {
                 return;
@@ -104,8 +125,11 @@
 
     // shoot at target
     private shootTarget() {
-        if (this._targetCreep !== null || typeof(this._targetCreep) === "undefined") {
-            this._laserLine.Draw(this.position, this._targetCreep.position);
+        if (this._targetCreep !== null || typeof (this._targetCreep) === "undefined") {
+            var from: Phaser.Point = new Phaser.Point(this.position.x + TDGame.ui.tileSize.x / 2,
+                this.position.y + TDGame.ui.tileSize.y / 2);
+            var to: Phaser.Point = new Phaser.Point(this._targetCreep.position.x, this._targetCreep.position.y);
+            this._laserLine.Draw(from, to);
             this.damagePerMS(this._targetCreep);
         } else {
             this._laserLine.NoDraw();
@@ -114,11 +138,10 @@
 
     // laser-style damage
     private damagePerMS(Target: Creep) {
-        var fireRate: number = 200; //ms
         if (this.game.time.now > this._nextFire) {
             Target.Damage(this._damagePer);
-            // console.log("Tower Damaging Target for " + this._damagePer + " points"); 
-            this._nextFire += fireRate;
+            console.log("Tower Damaging Target for " + this._damagePer + " points"); 
+            this._nextFire += this._fireRate;
         }
     }
 } 

@@ -5,7 +5,7 @@
     // vars
     private _game: Phaser.Game;
     private _towers: Phaser.Group[]; // array of sprite groups
-    private _selected: string;
+    private _selected: number;
     
     // constructor
     constructor(ThisGame: Phaser.Game) {
@@ -16,10 +16,11 @@
 
     private load() {
         // load towers images into selection tiles
-        var tas: GameObjectClasses.TowerAssets[] = TDGame.currentTileset.Towers;
+        var TowerJSONAssets: GameObjectClasses.TowerAssets[] = TDGame.currentTileset.Towers;
 
-        for (var i = 0; i < tas.length; i++) {
-            var name: string = tas[i].Name;
+        for (var i = 0; i < TowerJSONAssets.length; i++) {
+            var TowerJSONData: GameObjectClasses.TowerData = TDGame.currentCampaign.TowerStats[i];
+            var name: string = TowerJSONAssets[i].Name;
             var base = name + ".base";
             var rotator = name + ".rotator";
             var hasBase = this._game.cache.checkImageKey(base);
@@ -35,12 +36,12 @@
                     var TMIrotator = new Phaser.Sprite(this._game, 0, 0, rotator, 0);
                     newGroup.add(TMIrotator);
                 }
-                //add click handling to topmost sprite
+                // add click handling to topmost sprite
                 var topmostSprite: Phaser.Sprite = newGroup.getTop();
                 topmostSprite.inputEnabled = true;
                 var mouseover = this.menuItemOnMouseOver(newGroup);
                 var mouseout = this.menuItemOnMouseOut(newGroup);
-                var mouseclick = this.menuItemOnMouseClick(newGroup);
+                var mouseclick = this.menuItemOnMouseClick(TowerJSONData.Index);
                 topmostSprite.events.onInputDown.add(mouseclick);
                 topmostSprite.events.onInputOver.add(mouseover);
                 topmostSprite.events.onInputOut.add(mouseout);
@@ -51,7 +52,7 @@
     }
 
     // get ID of selected tower
-    get SelectedTower(): string {
+    get SelectedTowerIndex(): number {
         return this._selected;
     }
 
@@ -60,9 +61,9 @@
             Group.forEach((s: Phaser.Sprite) => {
                 s.tint = Phaser.Color.getColor(102, 255, 255);
             }, this);
-        }
+        };
         // console.log(this.tint);
-        // ThisSprite.tint = Phaser.Color.getColor(0, 150, 0);
+        // thisSprite.tint = Phaser.Color.getColor(0, 150, 0);
     }
 
     private menuItemOnMouseOut(Group: Phaser.Group) {
@@ -70,15 +71,15 @@
             Group.forEach((s: Phaser.Sprite) => {
                 s.tint = 16777215;
             }, this);
-        }
+        };
         // ThisSprite.tint = 16777215;
     }
 
-    private menuItemOnMouseClick(Group: Phaser.Group) {
+    private menuItemOnMouseClick(TowerIndex: number) {
         return () => {
-            this._selected = Group.name;
-            // console.log("Selected: " + Group.name);
+            this._selected = TowerIndex;
+            console.log("Selected Tower Index: " + TowerIndex);
             this.ItemSelectedSignal.dispatch(this._selected);
-        }
+        };
     }
 }
