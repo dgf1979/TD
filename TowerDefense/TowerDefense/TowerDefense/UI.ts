@@ -80,7 +80,7 @@
             var internal: Phaser.Group;
             internal = SpriteGroup;
             this._cursorSpriteGroup = internal;
-            console.log("sprite cursor set to: " + internal.name + " at " + internal.position); 
+            // console.log("sprite cursor set to: " + internal.name + " at " + internal.position); 
         }
 
         // clear a sprite group as a cursor
@@ -115,7 +115,7 @@
                     if (this._cursorSpriteGroup) {
                         this._cursorSpriteGroup.position = currentXY;    
                         this._cursorSpriteGroup.visible = true;
-                        console.log("SpriteCursor at: " + this._cursorSpriteGroup.position);
+                        // console.log("SpriteCursor at: " + this._cursorSpriteGroup.position);
                     }
                     this._isBlocked = false;
                 }   

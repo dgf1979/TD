@@ -94,25 +94,27 @@
             } else {
                 this._targetCreep = null;
             }
-        } 
-
-        var nearest: Creep;
-        var lastDistance: number = this._range.diameter;
-        this._creepList.forEachAlive((creep: Creep) => { // for each live creep on the board
-            if (this._range.contains(creep.position.x, creep.position.y)) { // if the creep is in range
-                var distance = Phaser.Point.distance(creep.position, this.position); // get distance from creep to tower
-                if (distance < lastDistance) {
-                    lastDistance = distance; // if the distance to this creep from tower is the lowest so far, save it for the next loop
-                    nearest = creep;
-                } 
-            }
-        }, this);
-        // now that the loop is complete, set the nearest creep as the tower target
-        if (lastDistance < this._range.radius) {
-            console.log("targeting NEW creep: " + nearest.key);
-            this._targetCreep = nearest;
         } else {
-            this._targetCreep = null;
+
+            var nearest: Creep;
+            var lastDistance: number = this._range.diameter;
+            this._creepList.forEachAlive((creep: Creep) => { // for each live creep on the board
+                if (this._range.contains(creep.position.x, creep.position.y) && creep.health > 0) { // if the creep is in range
+                    var distance = Phaser.Point.distance(creep.position, this.position); // get distance from creep to tower
+                    if (distance < lastDistance) {
+                        lastDistance = distance; // if the distance to this creep from tower is the lowest so far, save it for the next loop
+                        nearest = creep;
+                    }
+                }
+            }, this);
+            // now that the loop is complete, set the nearest creep as the tower target
+            if (lastDistance < this._range.radius) {
+                console.log("targeting NEW creep: " + nearest.key);
+                this._targetCreep = nearest;
+            } else {
+                this._targetCreep = null;
+            }
+
         }
     }
 
@@ -120,7 +122,9 @@
     private trackTarget() {
         if (this._hasTurret && this._targetCreep !== null) {
             // calculate angle in degrees between tower and targreted creep
-            var lookAtAngle: number = Phaser.Math.angleBetweenPoints(this.position, this._targetCreep.position);
+            var creepCenter: Phaser.Point = new Phaser.Point(this._targetCreep.position.x - TDGame.ui.tileSize.x / 2,
+                this._targetCreep.position.y - TDGame.ui.tileSize.y /2);
+            var lookAtAngle: number = Phaser.Math.angleBetweenPoints(this.position, creepCenter);
             this._turret.rotation = lookAtAngle;
         }
     }
@@ -143,7 +147,7 @@
         if (this.game.time.now > this._nextFire) {
             this._nextFire = this.game.time.now + this._fireRate;
             Target.Damage(this._damagePer);
-            console.log(this._game.time.totalElapsedSeconds() + ": Tower Damaging Target for " + this._damagePer + " points"); 
+            // console.log(this._game.time.totalElapsedSeconds() + ": Tower Damaging Target for " + this._damagePer + " points"); 
         }
     }
 } 

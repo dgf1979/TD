@@ -67,6 +67,7 @@
     private Exit() {
         if (this.health > 0) {
             console.log("creep escaped with " + this.health + " hp.");
+            this.health = 0;
         }
         var fadeOut: Phaser.Tween = this.game.add.tween(this).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
         fadeOut.onComplete.add(() => {
@@ -77,15 +78,16 @@
     // overrride sprite.damage
     Damage(Points: number) {
         if (this.health > 0) {
-            this.health -= Points; // call the built-in function
-        } else {
+            this.health -= Points; // call the built-in health var
+            console.log("Creep taking damage; " + this.health + " hp remaining.");
+        }
+        // kill if at or below 0
+        if (this.health <= 0) {
             this.health = 0;
             if (this.alive) {
                 this.Die();
-            } 
-        };
-        console.log("Creep taking damage; " + this.health + " hp remaining.");
-        
+            }
+        }
     }
 
     // die
@@ -100,7 +102,9 @@
             this.loadTexture(this._dieTextureKey,0,true);
             var die_anim = this.animations.add("die");
             die_anim.play(4, false, false);  // no loop
-            this.Exit();
+            die_anim.onComplete.add(() => {
+                this.Exit();
+            });
         }
     }
 }
