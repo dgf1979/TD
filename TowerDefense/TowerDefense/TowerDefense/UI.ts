@@ -69,7 +69,10 @@
                     y = Phaser.Math.snapToFloor(ypos, TDGame.ui.tileSize.y);
                     // only register click if the tile isn't blocked
                     if (!this._isBlocked) {
-                        this.ClickSignal.dispatch(x, y);
+                        var tileX, tileY: number;
+                        tileX = x / TDGame.ui.tileSize.x;
+                        tileY = y / TDGame.ui.tileSize.y;
+                        this.ClickSignal.dispatch(x, y, tileX, tileY);
                     }
                 }
             }

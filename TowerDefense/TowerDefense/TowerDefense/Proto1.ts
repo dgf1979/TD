@@ -4,7 +4,6 @@
 
         _background: Phaser.Sprite;
         _tdmap: TDMap;
-        _pather: PathHelper;
         _mouseHandler: UI.MouseHandler;
 
         // run-up
@@ -14,23 +13,6 @@
             // set up the map
             this._tdmap = new TDMap(this.game, new Phaser.Point(1, 1), new Phaser.Point(20, 20));
 
-
-            // use the path wrapper to run the A* pathfinding
-            this._pather = new PathHelper(this._tdmap);
-            this._pather.AsyncCalculatePath(this._tdmap.CreepSpawn, TDGame.ui.tileSize.x);
-            var path: Phaser.Point[];
-            if (this._pather.ProcessingComplete) {
-                if (this._pather.MapIsWalkable) {
-                    path = this._pather.GetPixelPath(TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
-                    // console.log(this._pather.DebugPathString());
-                    // console.log(path);
-                    // this._pather.DebugPathDraw(path, this.game);
-                } else {
-                    alert("No path found!");
-                }
-            } else {
-                alert("Path processiong not complete");
-            }
 
             // handle the mouse
             this._mouseHandler = new UI.MouseHandler(this.game, TDGame.ui);
@@ -43,7 +25,7 @@
             creepGroup.name = "creeps";
 
             // creep factory
-            var CF: CreepFactory = new CreepFactory(this.game, wave, creepGroup, path);
+            var CF: CreepFactory = new CreepFactory(this.game, wave, creepGroup, this._tdmap);
             CF.Start();
 
             // set up info display area
@@ -60,18 +42,19 @@
             towerMenu.ItemSelectedSignal.add(updateTowerDisplay);
 
             // tower factory
-            var TF: TowerFactory = new TowerFactory(this.game, creepGroup);
+            var TF: TowerFactory = new TowerFactory(this.game, creepGroup, this._tdmap);
 
             // subscribing to grid-click event on mouse.
-            var dropTower = (X: number, Y: number) =>
+            var dropTower = (X: number, Y: number, tileX: number, tileY: number) =>
             {
-                console.log("ClickSignalXY: " + X + "," + Y);
+                console.log("ClickSignalXY: " + X + "," + Y + "; (TileXY: " + tileX + "," + tileY + ")");               
                 TF.PlaceTower(towerMenu.SelectedTowerIndex, new Phaser.Point(X, Y));
                 towerMenu.ClearSelectedTower();
-                this._mouseHandler.ClearSpriteCursor();
+                this._mouseHandler.ClearSpriteCursor();                
             };
             this._mouseHandler.ClickSignal.add(dropTower);
 
+            // subscribe to path updated
         }
 
         update() {

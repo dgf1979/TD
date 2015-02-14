@@ -2,32 +2,30 @@
 class PathHelper {
     // easystar
     private _easystar: EasyStar.js = new EasyStar.js();
-    private _pathFound: boolean;
-    private _asyncComplete: boolean;
     private _map: TDMap;
     private _path: Phaser.Point[] = [];
+    private _debugStrings: Phaser.Text[] = [];
 
-    // debug help
-    private _htmlDebugGrid: string;
+    // signals
+    SignalNewPathOK: Phaser.Signal = new Phaser.Signal();
+    SignalNewPathBlocked: Phaser.Signal = new Phaser.Signal();
 
     // default constructor
     constructor(Map: TDMap) {
         this._map = Map;
-        this._asyncComplete = true;
-        this._pathFound = false;
+        this._debugStrings = [];
     }
 
     // return path as node array
-    get Path(): Phaser.Point[]{
-        if (this._pathFound && this._asyncComplete) {
+    get TilePath(): Phaser.Point[]{
+        if (this._path) {
             return this._path;
-        } else {
-            alert("Error: caller tried to access path without checking MapIsWalkable && ProcessingComplete");
         }
     }
 
-    GetPixelPath(TileWidth: number, TileHeight: number): Phaser.Point[]{
-        var Path: Phaser.Point[] = this.Path;
+    // path translated to the centered pixel location of each tile
+    GetPixelPathCentered(TileWidth: number, TileHeight: number): Phaser.Point[]{
+        var Path: Phaser.Point[] = this.TilePath;
         var pixelPath: Phaser.Point[] = [];
         for (var i: number = 0; i < Path.length; i++) {
             var x = Path[i].x;
@@ -38,56 +36,40 @@ class PathHelper {
         return pixelPath;
     }
 
-    // return if map is walkable
-    MapIsWalkable(): boolean {
-        return this._pathFound;
-    }
-
-    // return false if the async operation is not yet complete
-    ProcessingComplete(): boolean {
-        return this._asyncComplete;
-    }
-
-    // return the html debug string
-    DebugPathString(): string {
-        return this._htmlDebugGrid;
-    }
-
     // draw path
     DebugPathDraw(PixelPath: Phaser.Point[], Game: Phaser.Game) {
         // debug helper - show each element of the map path
+        for (var i = this._debugStrings.length - 1; i >= 0; i--) {
+            this._debugStrings[i].destroy();
+            this._debugStrings.pop();
+        }
         for (var i = 0; i < PixelPath.length; i++) {
-            Helper.WriteDebugText("P" + i, Game, PixelPath[i].x, PixelPath[i].y);
+            var txt: Phaser.Text = Helper.CreateUpdateableDebugText("P" + i, Game, PixelPath[i].x, PixelPath[i].y);
+            this._debugStrings.push(txt);
         }
     }
 
     // use EasyStar.js to generate a path
-    AsyncCalculatePath(StartNode: Phaser.Point, TileSize: number) {
-        this._asyncComplete = false;
+    AsyncCalculatePath(StartNode: Phaser.Point) {
         var grid = this._map.WalkableGrid;
         // easyStar
         this._easystar.setGrid(grid);
         this._easystar.setAcceptableTiles([0]);
         this._easystar.findPath(StartNode.x, StartNode.y, this._map.CreepExit.x, this._map.CreepExit.y,
             (path: any) => {
-            if (path == null) {
-                // alert("Path not found.");
-                this._pathFound = false;
-                this._asyncComplete = true;
-            } else {
-                this._pathFound = true;
-                this._asyncComplete = true;
-                var newGrid = grid.slice();
-                for (var i: number = 0; i < path.length; i++) {
-                    var x: number = path[i].x;
-                    var y: number = path[i].y;
-                    this._path[i] = new Phaser.Point(x, y);
-                    newGrid[y][x] = 8;  // path taken marked with an arbitrary '8'
+                if (path === null) {
+                    console.log("path blocked");
+                    this.SignalNewPathBlocked.dispatch();
+                } else {
+                    console.log("path resolved");
+                    for (var i: number = 0; i < path.length; i++) {
+                        var x: number = path[i].x;
+                        var y: number = path[i].y;
+                        this._path[i] = new Phaser.Point(x, y);
+                    }
+                    this.SignalNewPathOK.dispatch(); 
                 }
-                this._htmlDebugGrid = this.PrintableArrayString(newGrid);
-            }
         });
-
         this._easystar.calculate();
     }
 
@@ -102,10 +84,7 @@ class PathHelper {
             // pstr = pstr + "\r";
             pstr = pstr + "<br />\r";
         }
-
         return pstr;
     }
-
-
 }
 

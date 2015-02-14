@@ -5,11 +5,11 @@
     _game: Phaser.Game;
     _startingPath: Phaser.Point[];
 
-    constructor(ThisGame: Phaser.Game, Wave: GameObjectClasses.Wave, CreepGroup: Phaser.Group, StartPath: Phaser.Point[]) {
+    constructor(ThisGame: Phaser.Game, Wave: GameObjectClasses.Wave, CreepGroup: Phaser.Group, Map: TDMap) {
         this._game = ThisGame;
         this._wave = Wave;
         this._creepGroup = CreepGroup;
-        this._startingPath = StartPath;
+        this._startingPath = Map.PathThrough;
     }
 
     public Start() {
