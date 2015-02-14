@@ -59,7 +59,6 @@
             };
             this._mouseHandler.ClickSignal.add(dropTower);
 
-            // subscribe to path updated
         }
 
         update() {

@@ -8,10 +8,13 @@
     private _dieTextureKey: string;
     private _movementTween: Phaser.Tween;
     private _healthBar: HPBar;
+    private _pather: PathHelper;
 
-    constructor(ThisGame: Phaser.Game, CreepIndex: number, StartPath: Phaser.Point[]) {
+    constructor(ThisGame: Phaser.Game, CreepIndex: number, StartPath: Phaser.Point[], Map: TDMap) {
         var CreepJSONData: GameObjectClasses.CreepData = TDGame.currentCampaign.CreepStats[CreepIndex];
         var CreepJSONAssets: GameObjectClasses.CreepAssets = TDGame.currentTileset.Creeps[CreepIndex];
+
+        this._pather = new PathHelper(Map);
 
         this._name = CreepJSONAssets.Name;
         this._walkTextureKey = this.Name + ".walk";
@@ -32,6 +35,23 @@
         // health bar setup
         this._healthBar = new HPBar(this);
         // alert("creep starting with " + this.health + " hp");
+
+        //subscribe to path updates
+        this._pather.SignalNewPathOK.add(() => { this.SetNewPath(); }); 
+    }
+
+    // update with new path
+    private SetNewPath() {
+        // this._movementTween.stop();
+        this._path = this._pather.GetPixelPathCentered(TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
+        console.log("Creep on new path.");
+        // this._movementTween.start();
+    }
+
+    // trigger new path gen (e.g. on map update)
+    UpdatePath(CurrentMap: TDMap) {
+        console.log("Creep received instruction to update path..");
+        this._pather.AsyncCalculatePath(Helper.PixelToTile(this.position));
     }
 
     // name getter
