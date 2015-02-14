@@ -9,12 +9,14 @@
     private _movementTween: Phaser.Tween;
     private _healthBar: HPBar;
     private _pather: PathHelper;
+    private _pathReset: boolean;
 
     constructor(ThisGame: Phaser.Game, CreepIndex: number, StartPath: Phaser.Point[], Map: TDMap) {
         var CreepJSONData: GameObjectClasses.CreepData = TDGame.currentCampaign.CreepStats[CreepIndex];
         var CreepJSONAssets: GameObjectClasses.CreepAssets = TDGame.currentTileset.Creeps[CreepIndex];
 
         this._pather = new PathHelper(Map);
+        this._pathReset = false;
 
         this._name = CreepJSONAssets.Name;
         this._walkTextureKey = this.Name + ".walk";
@@ -45,6 +47,7 @@
         // this._movementTween.stop();
         this._path = this._pather.GetPixelPathCentered(TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
         console.log("Creep on new path.");
+        this._pathReset = true;
         // this._movementTween.start();
     }
 
@@ -70,7 +73,7 @@
     // movement
     private FollowPath() {
         var p: Phaser.Point = this._path[0];
-        if (this.position.x === p.x && this.position.y === p.y) {
+        if ((this.position.x === p.x && this.position.y === p.y) || this._pathReset) {
             if (this._path.length > 1) {
                 var nextPos: Phaser.Point = this._path[1];
                 var angle: number = Phaser.Point.angle(nextPos, this.position);
@@ -80,6 +83,7 @@
             } else {
                 this.Exit();
             }
+            this._pathReset = false;
         }
     }
 
