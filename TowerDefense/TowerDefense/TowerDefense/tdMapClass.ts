@@ -12,6 +12,7 @@
     // signals
 
     SignalMapChanged: Phaser.Signal = new Phaser.Signal();
+    SignalMapChangeFailed: Phaser.Signal = new Phaser.Signal();
 
     // constructor
     constructor(ThisGame: Phaser.Game, CreepSpawn: Phaser.Point, CreepExit: Phaser.Point) {
@@ -57,8 +58,9 @@
     // call when the map update fails
     private MapUpdateFailed() {
         if (this._undo) {
-            this._walkableGrid[this._undo.y][this._undo.x];
+            this._walkableGrid[this._undo.y][this._undo.x] = 0;
             this._undo = null;
+            this.SignalMapChangeFailed.dispatch();
         }
     }
 

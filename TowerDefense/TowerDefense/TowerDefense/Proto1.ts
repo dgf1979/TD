@@ -44,13 +44,18 @@
             // tower factory
             var TF: TowerFactory = new TowerFactory(this.game, creepGroup, this._tdmap);
 
+            //subscript to tower-dropped on tower factory
+            var towerDropped = () => {
+                towerMenu.ClearSelectedTower();
+                this._mouseHandler.ClearSpriteCursor();
+            }
+            TF.SignalTowerDropped.add(towerDropped);
+
             // subscribing to grid-click event on mouse.
             var dropTower = (X: number, Y: number, tileX: number, tileY: number) =>
             {
                 console.log("ClickSignalXY: " + X + "," + Y + "; (TileXY: " + tileX + "," + tileY + ")");               
-                TF.PlaceTower(towerMenu.SelectedTowerIndex, new Phaser.Point(X, Y));
-                towerMenu.ClearSelectedTower();
-                this._mouseHandler.ClearSpriteCursor();                
+                TF.PlaceTower(towerMenu.SelectedTowerIndex, new Phaser.Point(X, Y));                
             };
             this._mouseHandler.ClickSignal.add(dropTower);
 
