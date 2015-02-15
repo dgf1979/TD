@@ -1,5 +1,16 @@
 ﻿var nodefs = require("../NodeFS");
 var goc = require("../GameObjectClasses");
+var sqldb = require("../Data");
+
+// db test
+function DBTest(req, res) {
+    "use strict";
+    var db = sqldb.DataStorage.Instance();
+    db.InsertNewAuthor("test", "test@gmail.com");
+    res.json("DBTest");
+}
+exports.DBTest = DBTest;
+;
 
 // asset path for verification
 function AssetPath(req, res) {
@@ -29,7 +40,7 @@ function TileSetGetByID(req, res) {
     // res.json(ts);
     var tilesetJSON = global.ASSETPATH + "\\TILESETS\\" + id + "\\tileset.json";
 
-    if (nodefs.Exists(tilesetJSON) != true) {
+    if (nodefs.Exists(tilesetJSON) !== true) {
         GenerateTilesetJSON(id);
     }
 
@@ -76,7 +87,7 @@ function CreateDemoCampaign(req, res) {
     demoCampaign.MapURL = global.ASSETURL + "/CAMPAIGNS/" + demoCampaign.ID + "/map.csv";
     demoCampaign.TilesetID = "TS_00000";
 
-    //build a demo wave
+    // build a demo wave
     var wave1 = new goc.Wave;
     wave1.CreepCount = 3;
     wave1.CreepIndex = 0;
@@ -87,7 +98,7 @@ function CreateDemoCampaign(req, res) {
     demoCampaign.Waves = [];
     demoCampaign.Waves.push(wave1);
 
-    //build a demo set of creep stats
+    // build a demo set of creep stats
     demoCampaign.CreepStats = [];
     for (var i = 0; i < 8; i++) {
         var cs = new goc.CreepData();
@@ -102,10 +113,10 @@ function CreateDemoCampaign(req, res) {
 
     // build a demo set of tower stats
     demoCampaign.TowerStats = [];
-    for (var i = 0; i < 8; i++) {
+    for (var i2 = 0; i2 < 8; i2++) {
         var ts = new goc.TowerData();
-        ts.AssetID = "TOWER00" + i;
-        ts.Index = i;
+        ts.AssetID = "TOWER00" + i2;
+        ts.Index = i2;
         ts.Damage = 3;
         ts.FireRate = 1;
         ts.Range = 96;
@@ -145,6 +156,7 @@ function GenerateTilesetJSON(TilesetID) {
 }
 
 function CreepAssetLoader(TilesetID) {
+    "use strict";
     var creeps = [];
 
     var searchPath = global.ASSETPATH + "\\TILESETS\\" + TilesetID + "\\CREEPS";
@@ -173,6 +185,7 @@ function CreepAssetLoader(TilesetID) {
 }
 
 function TowerAssetLoader(TilesetID) {
+    "use strict";
     var towers = [];
 
     var searchPath = global.ASSETPATH + "\\TILESETS\\" + TilesetID + "\\TOWERS";

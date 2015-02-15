@@ -17,6 +17,7 @@ exports.SubDirsOf = SubDirsOf;
 
 // return files of a given folder
 function SubFilesOf(ThisDir) {
+    "use strict";
     var rootdir = fs.readdirSync(ThisDir);
     var files = [];
     rootdir.forEach(function (item) {
@@ -39,10 +40,18 @@ exports.Exists = Exists;
 // read JSON file
 function TextIntoJSON(FilePath) {
     "use strict";
-    var obj = JSON.parse(fs.readFileSync(FilePath, 'utf8'));
+    var obj = JSON.parse(fs.readFileSync(FilePath, "utf8"));
     return obj;
 }
 exports.TextIntoJSON = TextIntoJSON;
+
+// read file into string
+function ReadTextFile(FilePath) {
+    "use strict";
+    var str = fs.readFileSync(FilePath).toString();
+    return str;
+}
+exports.ReadTextFile = ReadTextFile;
 
 function SaveObjectAsJSONFile(FilePathAndName, JSObject) {
     "use strict";

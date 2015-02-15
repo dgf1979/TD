@@ -9,6 +9,7 @@
         Author: string;
         TilesetID: string;
         MapURL: string;
+        StartMoney: number;
         Waves: Wave[];
         CreepStats: CreepData[];
         TowerStats: TowerData[];
@@ -28,6 +29,7 @@
         AssetID: string;
         HitPoints: number;
         WalkSpeed: number;
+        KillValue: number;
     }
 
     // campaign variables for towers
@@ -37,6 +39,7 @@
         FireRate: number;
         Damage: number;
         Range: number;
+        Cost: number;
     }
 
 

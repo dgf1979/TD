@@ -35,11 +35,13 @@
   </PropertyGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="Data.ts" />
     <TypeScriptCompile Include="GameObjectClasses.ts" />
     <TypeScriptCompile Include="NodeFS.ts" />
     <TypeScriptCompile Include="routes\td.ts" />
     <TypeScriptCompile Include="Scripts\typings\express\express.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\node\node.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\sqlite3\sqlite3.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\stylus\stylus.d.ts" />
     <Content Include="ASSETS\CAMPAIGNS\C_00000\map.csv" />
     <Content Include="ASSETS\TILESETS\TS_00000\background.png" />
@@ -54,6 +56,7 @@
     <Content Include="package.json" />
     <Content Include="public\stylesheets\style.styl" />
     <Content Include="README.md" />
+    <Content Include="SQL\td_create_tables.sql" />
     <Content Include="views\index.jade" />
     <Content Include="views\layout.jade" />
   </ItemGroup>
@@ -63,6 +66,7 @@
     <Folder Include="ASSETS\CAMPAIGNS\C_00000\" />
     <Folder Include="ASSETS\TILESETS\" />
     <Folder Include="ASSETS\TILESETS\TS_00000\" />
+    <Folder Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP001\" />
     <Folder Include="ASSETS\TILESETS\TS_00000\MISSLES\" />
     <Folder Include="ASSETS\TILESETS\TS_00000\CREEPS\" />
     <Folder Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP000\" />
@@ -80,6 +84,7 @@
     <Folder Include="ASSETS\TILESETS\TS_00001\TOWERS\" />
     <Folder Include="ASSETS\TILESETS\TS_00001\TOWERS\TOWER000\" />
     <Folder Include="ASSETS\TILESETS\TS_00001\TOWERS\TOWER001\" />
+    <Folder Include="SQL\" />
     <Folder Include="public\" />
     <Folder Include="public\images\" />
     <Folder Include="public\javascripts\" />
@@ -88,6 +93,7 @@
     <Folder Include="Scripts\" />
     <Folder Include="Scripts\typings\" />
     <Folder Include="Scripts\typings\express\" />
+    <Folder Include="Scripts\typings\sqlite3\" />
     <Folder Include="Scripts\typings\node\" />
     <Folder Include="Scripts\typings\stylus\" />
     <Folder Include="views\" />

@@ -5,7 +5,7 @@ import path = require("path");
 
 var app = express();
 
-// CORS middlewear
+// cors middlewear
 app.use(function (req: express.Request, res: express.Response, next: any) {
     if (global.ASSETURL === undefined) {
         global.ASSETURL = req.protocol + "://" + req.get("host");
@@ -63,6 +63,7 @@ if ("development" === app.get("env")) {
 app.get("/assetpath", routes.AssetPath);
 app.get("/demo", routes.CreateDemoCampaign); 
 app.get("/", routes.AssetPath);
+app.get("/dbtest", routes.DBTest);
 // tileset routes
 app.get("/tileset", routes.TileSetList);
 app.get("/tileset/:id", routes.TileSetGetByID);

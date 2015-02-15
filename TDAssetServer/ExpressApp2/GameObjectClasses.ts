@@ -7,6 +7,7 @@ export class Campaign {
     Author: string;
     TilesetID: string;
     MapURL: string;
+    StartMoney: number;
     Waves: Wave[];
     CreepStats: CreepData[];
     TowerStats: TowerData[];
@@ -26,6 +27,7 @@ export class CreepData {
     AssetID: string;
     HitPoints: number;
     WalkSpeed: number;
+    KillValue: number;
 }
 
 // campaign variables for towers
@@ -35,6 +37,7 @@ export class TowerData {
     FireRate: number;
     Damage: number;
     Range: number;
+    Cost: number;
 }
 
 

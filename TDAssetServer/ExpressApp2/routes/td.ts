@@ -1,6 +1,15 @@
 ﻿import express = require("express");
 import nodefs = require("../NodeFS");
 import goc = require("../GameObjectClasses");
+import sqldb = require("../Data");
+
+// db test
+export function DBTest(req: express.Request, res: express.Response) {
+    "use strict";
+    var db: sqldb.DataStorage = sqldb.DataStorage.Instance();
+    db.InsertNewAuthor("test", "test@gmail.com");
+    res.json("DBTest");
+};
 
 // asset path for verification
 export function AssetPath(req: express.Request, res: express.Response) {
@@ -24,7 +33,7 @@ export function TileSetGetByID(req: express.Request, res: express.Response) {
     // res.json(ts);
     var tilesetJSON: string = global.ASSETPATH + "\\TILESETS\\" + id + "\\tileset.json";
 
-    if (nodefs.Exists(tilesetJSON) != true) {
+    if (nodefs.Exists(tilesetJSON) !== true) {
         GenerateTilesetJSON(id);
     }
 
@@ -72,7 +81,7 @@ export function CreateDemoCampaign(req: express.Request, res: express.Response) 
     demoCampaign.MapURL = global.ASSETURL + "/CAMPAIGNS/" + demoCampaign.ID + "/map.csv";
     demoCampaign.TilesetID = "TS_00000";
 
-    //build a demo wave
+    // build a demo wave
     var wave1: goc.Wave = new goc.Wave;
     wave1.CreepCount = 3;
     wave1.CreepIndex = 0;
@@ -82,7 +91,7 @@ export function CreateDemoCampaign(req: express.Request, res: express.Response) 
     demoCampaign.Waves = [];
     demoCampaign.Waves.push(wave1);
 
-    //build a demo set of creep stats
+    // build a demo set of creep stats
     demoCampaign.CreepStats = [];
     for (var i = 0; i < 8; i++) {
         var cs: goc.CreepData = new goc.CreepData();
@@ -96,10 +105,10 @@ export function CreateDemoCampaign(req: express.Request, res: express.Response) 
 
     // build a demo set of tower stats
     demoCampaign.TowerStats = [];
-    for (var i = 0; i < 8; i++) {
+    for (var i2 = 0; i2 < 8; i2++) {
         var ts: goc.TowerData = new goc.TowerData();
-        ts.AssetID = "TOWER00" + i;
-        ts.Index = i;
+        ts.AssetID = "TOWER00" + i2;
+        ts.Index = i2;
         ts.Damage = 3;
         ts.FireRate = 1;
         ts.Range = 96;
@@ -138,6 +147,7 @@ function GenerateTilesetJSON(TilesetID: string) {
 }
 
 function CreepAssetLoader(TilesetID: string): goc.CreepAssets[]{
+    "use strict";
     var creeps: goc.CreepAssets[] = [];
 
     var searchPath: string = global.ASSETPATH + "\\TILESETS\\" + TilesetID + "\\CREEPS";
@@ -165,7 +175,8 @@ function CreepAssetLoader(TilesetID: string): goc.CreepAssets[]{
     return creeps;
 }
 
-function TowerAssetLoader(TilesetID: string): goc.TowerAssets[] {
+function TowerAssetLoader(TilesetID: string): goc.TowerAssets[]{
+    "use strict";
     var towers: goc.TowerAssets[] = [];
 
     var searchPath: string = global.ASSETPATH + "\\TILESETS\\" + TilesetID + "\\TOWERS";
