@@ -80,6 +80,10 @@ export function CreateDemoCampaign(req: express.Request, res: express.Response) 
     demoCampaign.ID = "C_00000";
     demoCampaign.MapURL = global.ASSETURL + "/CAMPAIGNS/" + demoCampaign.ID + "/map.csv";
     demoCampaign.TilesetID = "TS_00000";
+    demoCampaign.CreepEntranceX = 2;
+    demoCampaign.CreepEntranceY = 2;
+    demoCampaign.CreepExitX = 20;
+    demoCampaign.CreepExitY = 20;
 
     // build a demo wave
     var wave1: goc.Wave = new goc.Wave;
@@ -98,6 +102,7 @@ export function CreateDemoCampaign(req: express.Request, res: express.Response) 
         cs.AssetID = "CREEP00" + i;
         cs.Index = i;
         cs.HitPoints = 40;
+        cs.KillValue = 5;
         cs.WalkSpeed = 2000;
         // push into campaign
         demoCampaign.CreepStats.push(cs);
@@ -138,6 +143,8 @@ function GenerateTilesetJSON(TilesetID: string) {
 
     TilesetToGen.BackgroundURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/background.png";
     TilesetToGen.WallURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/walls.png";
+    TilesetToGen.EntranceURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/entrance.png";
+    TilesetToGen.ExitURL = global.ASSETURL + "/TILESETS/" + TilesetID + "/exit.png";
 
     TilesetToGen.Creeps = CreepAssetLoader(TilesetID);
     TilesetToGen.Towers = TowerAssetLoader(TilesetID);

@@ -5,6 +5,9 @@
     _game: Phaser.Game;
     _map: TDMap;
 
+    // signals
+    SignalCreepKilled: Phaser.Signal = new Phaser.Signal();
+
     constructor(ThisGame: Phaser.Game, Wave: GameObjectClasses.Wave, CreepGroup: Phaser.Group, Map: TDMap) {
         this._game = ThisGame;
         this._wave = Wave;
@@ -23,6 +26,10 @@
     private createCreep() {
         console.log("creating new creep at: " + this._map.PathThrough[0]);
         var creep: Creep = new Creep(this._game, this._wave.CreepIndex, this.PathNewCopy(), this._map);
+        creep.SignalKilled.add((value: number) => {
+            console.log("Kill trigger passed value to dispatch: " + value);
+            this.SignalCreepKilled.dispatch(value);
+        }, this);
         this._creepGroup.add(creep);
     }
 

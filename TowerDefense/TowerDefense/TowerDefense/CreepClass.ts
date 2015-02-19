@@ -12,6 +12,9 @@
     private _pathReset: boolean;
     private _killValue: number;
 
+    // signals
+    SignalKilled: Phaser.Signal = new Phaser.Signal();
+
     constructor(ThisGame: Phaser.Game, CreepIndex: number, StartPath: Phaser.Point[], Map: TDMap) {
         super(ThisGame, 0, 0, null, 0);
 
@@ -113,6 +116,8 @@
         if (this.health <= 0) {
             this.health = 0;
             if (this.alive) {
+                console.log("Creep Kill Value:" + this._killValue);
+                this.SignalKilled.dispatch(this._killValue);
                 this.Die();
             }
         }

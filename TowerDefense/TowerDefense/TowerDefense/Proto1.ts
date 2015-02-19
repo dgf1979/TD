@@ -11,8 +11,7 @@
             this._background = this.add.sprite(0, 0, "background");
 
             // set up the map
-            this._tdmap = new TDMap(this.game, new Phaser.Point(1, 1), new Phaser.Point(20, 20));
-
+            this._tdmap = new TDMap(this.game);
 
             // handle the mouse
             this._mouseHandler = new UI.MouseHandler(this.game, TDGame.ui);
@@ -27,6 +26,9 @@
             // creep factory
             var CF: CreepFactory = new CreepFactory(this.game, wave, creepGroup, this._tdmap);
             CF.Start();
+
+            // subscribe to creep factory's bubble-through of creep death signal
+            CF.SignalCreepKilled.add((value: number) => { statsInfoDisplayArea.Money = (value + statsInfoDisplayArea.Money); });
 
             // set up info display area
             var towerInfoDisplayArea = new DisplayArea(this.game, TDGame.ui.displayArea1UL, TDGame.ui.displayArea1BR);
@@ -54,7 +56,7 @@
             // tower factory
             var TF: TowerFactory = new TowerFactory(this.game, creepGroup, this._tdmap);
 
-            //subscript to tower-dropped on tower factory
+            // subscript to tower-dropped on tower factory
             var towerDropped = () => {
                 var towerCost = TDGame.currentCampaign.TowerStats[towerMenu.SelectedTowerIndex].Cost;
                 statsInfoDisplayArea.Money = (statsInfoDisplayArea.Money - towerCost); //subtract money

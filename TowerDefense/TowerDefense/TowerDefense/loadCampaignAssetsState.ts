@@ -57,6 +57,8 @@
             this.load.image("background", currentTileset.BackgroundURL);
             this.load.image("tileIMG", currentTileset.WallURL);
             this.load.tilemap("tileDEF", currentCampaign.MapURL, null, Phaser.Tilemap.CSV);
+            this.load.image("tileEntrance", currentTileset.EntranceURL);
+            this.load.image("tileExit", currentTileset.ExitURL);
 
             // load tower assets
             var oTowers: GameObjectClasses.TowerAssets[] = currentTileset.Towers;

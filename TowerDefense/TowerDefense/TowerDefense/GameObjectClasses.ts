@@ -13,6 +13,10 @@
         Waves: Wave[];
         CreepStats: CreepData[];
         TowerStats: TowerData[];
+        CreepEntranceX: number;
+        CreepEntranceY: number;
+        CreepExitX: number;
+        CreepExitY: number;
     }
 
     // a wave, each consisting of a number of creeps of a specific type
@@ -52,6 +56,8 @@
         Author: string;
         WallURL: string;
         BackgroundURL: string;
+        EntranceURL: string;
+        ExitURL: string;
         Creeps: CreepAssets[];
         Towers: TowerAssets[];
     }

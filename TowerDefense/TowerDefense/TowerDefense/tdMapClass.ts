@@ -15,7 +15,7 @@
     SignalMapChangeFailed: Phaser.Signal = new Phaser.Signal();
 
     // constructor
-    constructor(ThisGame: Phaser.Game, CreepSpawn: Phaser.Point, CreepExit: Phaser.Point) {
+    constructor(ThisGame: Phaser.Game) {
         this._game = ThisGame;
 
         // set up Phaser tilemap
@@ -26,9 +26,14 @@
         layer.resizeWorld();
         // layer.debug = true;
 
-        // set up pathing
-        this._creepSpawn = CreepSpawn;
-        this._creepExit = CreepExit;
+        // set up exit and entrance
+        var CampaignJSONData: GameObjectClasses.Campaign = TDGame.currentCampaign;
+        this._creepSpawn = new Phaser.Point(CampaignJSONData.CreepEntranceX, CampaignJSONData.CreepEntranceY);
+        var pixelSpawn = Helper.TileToPixelUpperLeft(this._creepSpawn);
+        this._game.add.sprite(pixelSpawn.x, pixelSpawn.y,"tileEntrance");
+        this._creepExit = new Phaser.Point(CampaignJSONData.CreepExitX, CampaignJSONData.CreepExitY);
+        var pixelExit = Helper.TileToPixelUpperLeft(this._creepExit);
+        this._game.add.sprite(pixelExit.x, pixelExit.y, "tileExit");
 
         // get walkable 
         this.GetWalkable(layer);
