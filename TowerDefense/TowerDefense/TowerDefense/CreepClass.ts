@@ -10,8 +10,11 @@
     private _healthBar: HPBar;
     private _pather: PathHelper;
     private _pathReset: boolean;
+    private _killValue: number;
 
     constructor(ThisGame: Phaser.Game, CreepIndex: number, StartPath: Phaser.Point[], Map: TDMap) {
+        super(ThisGame, 0, 0, null, 0);
+
         var CreepJSONData: GameObjectClasses.CreepData = TDGame.currentCampaign.CreepStats[CreepIndex];
         var CreepJSONAssets: GameObjectClasses.CreepAssets = TDGame.currentTileset.Creeps[CreepIndex];
 
@@ -22,9 +25,10 @@
         this._walkTextureKey = this.Name + ".walk";
         this._dieTextureKey = this.Name + ".die";
 
-        super(ThisGame, 0, 0, this._walkTextureKey, 0);
+        this.loadTexture(this._walkTextureKey, 0, false);
 
         this.health = CreepJSONData.HitPoints;
+        this._killValue = CreepJSONData.KillValue;
         this._velocity = CreepJSONData.WalkSpeed;
         this.anchor.setTo(0.5, 0.5);
         this._path = StartPath; // duplication handled by factory

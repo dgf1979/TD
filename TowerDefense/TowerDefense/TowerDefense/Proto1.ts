@@ -30,14 +30,24 @@
 
             // set up info display area
             var towerInfoDisplayArea = new DisplayArea(this.game, TDGame.ui.displayArea1UL, TDGame.ui.displayArea1BR);
+            var statsInfoDisplayArea = new DisplayArea2(this.game, TDGame.ui.displayArea2UL, TDGame.ui.displayArea2BR);
+            statsInfoDisplayArea.Money = 29; //demo starting money
 
             // create menu from avail. towers
             var towerMenu: TowerMenu = new TowerMenu(this.game);
 
             // subscribe to onselected of tower menu
             var updateTowerDisplay = (TowerIndex: number) => {
-                this._mouseHandler.SetSpriteCursor(towerMenu.SelectedSpriteGroup);
-                towerInfoDisplayArea.SetAll(TowerIndex);
+                var towerCost = TDGame.currentCampaign.TowerStats[TowerIndex].Cost;
+                if (towerCost <= statsInfoDisplayArea.Money) {
+                    towerInfoDisplayArea.SetAll(TowerIndex);
+                    this._mouseHandler.SetSpriteCursor(towerMenu.SelectedSpriteGroup);
+                } else {
+                    console.log("Not enough money!");
+                    console.log("Tower Cost: " + towerCost);
+                    console.log("Money Avail: " + statsInfoDisplayArea.Money);
+                    towerMenu.ClearSelectedTower();
+                }
             };
             towerMenu.ItemSelectedSignal.add(updateTowerDisplay);
 
@@ -46,6 +56,8 @@
 
             //subscript to tower-dropped on tower factory
             var towerDropped = () => {
+                var towerCost = TDGame.currentCampaign.TowerStats[towerMenu.SelectedTowerIndex].Cost;
+                statsInfoDisplayArea.Money = (statsInfoDisplayArea.Money - towerCost); //subtract money
                 towerMenu.ClearSelectedTower();
                 this._mouseHandler.ClearSpriteCursor();
             }
@@ -57,7 +69,7 @@
                 console.log("ClickSignalXY: " + X + "," + Y + "; (TileXY: " + tileX + "," + tileY + ")");               
                 TF.PlaceTower(towerMenu.SelectedTowerIndex, new Phaser.Point(X, Y));                
             };
-            this._mouseHandler.ClickSignal.add(dropTower);
+            this._mouseHandler.ClickSignal.add(dropTower);          
 
         }
 

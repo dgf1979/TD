@@ -10,6 +10,7 @@
     private _txtDamage: Phaser.Text;
     private _txtRate: Phaser.Text;
     private _txtName: Phaser.Text;
+    private _txtCost: Phaser.Text;
 
     // constructor
     constructor(ThisGame: Phaser.Game, UpperLeft: Phaser.Point, LowerRight: Phaser.Point) {
@@ -61,6 +62,9 @@
         var lblTurretDamage: Phaser.Text = this.Text("DAMAGE");
         lblTurretDamage.position.y = 80;
 
+        var lblTurretCost: Phaser.Text = this.Text("COST");
+        lblTurretCost.position.y = 100;
+
         this._txtName = this.Text("Undefined");
         this._txtName.align = "center";
         this._txtName.anchor.set(0.5, 0);
@@ -77,6 +81,9 @@
         this._txtDamage = this.RightAlignedText("999");
         this._txtDamage.position.y = 80;
 
+        this._txtCost = this.RightAlignedText("999");
+        this._txtCost.position.y = 100;
+
     }
 
     HideAll() {
@@ -90,6 +97,7 @@
         this.Range = TowerJSONData.Range;
         this.Rate = TowerJSONData.FireRate;
         this.Damage = TowerJSONData.Damage;
+        this.Cost = TowerJSONData.Cost;
     }
 
     set Range(Range: number) {
@@ -106,6 +114,10 @@
 
     set Name(TowerType: string) {
         this._txtName.text = TowerType;
+    }
+
+    set Cost(Amount: number) {
+        this._txtCost.text = Amount.toString();
     }
      
 } 

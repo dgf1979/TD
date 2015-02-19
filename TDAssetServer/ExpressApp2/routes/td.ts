@@ -7,7 +7,7 @@ import sqldb = require("../Data");
 export function DBTest(req: express.Request, res: express.Response) {
     "use strict";
     var db: sqldb.DataStorage = sqldb.DataStorage.Instance();
-    db.InsertNewAuthor("test", "test@gmail.com");
+    db.InsertNewAuthor("testXXX", "testXXX@gmail.com");
     res.json("DBTest");
 };
 
@@ -112,6 +112,7 @@ export function CreateDemoCampaign(req: express.Request, res: express.Response) 
         ts.Damage = 3;
         ts.FireRate = 1;
         ts.Range = 96;
+        ts.Cost = 10;
         // push into campaign
         demoCampaign.TowerStats.push(ts);
     }

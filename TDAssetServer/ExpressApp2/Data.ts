@@ -55,26 +55,13 @@ export class DataStorage {
             var stmt: sqlite3.Statement = this._db.prepare(sql1);
             stmt.run(null, Username, Email);
             stmt.finalize();
-        });
-
-        this.GetLastInsertedRow();
-    }
-
-    // get last inserted row id
-    GetLastInsertedRow() {
-        this._db.get("SELECT last_insert_rowid() as id", function (err, row) {
-            console.log("1: " + row["id"]);
-            console.log("2: " + row.id);
-        });
-
-        this._db.all("SELECT * FROM Authors", function (err, rows) {
-            rows.forEach(function (row) {
-                // console.log(row);
-                console.log("Username: " + row["UserName"]);
+            this._db.get("SELECT last_insert_rowid() as id", function (err, row) {
+                console.log("ROWID: " + row["id"]);
             });
-            
         });
     }
+
+    
 }
 
 
