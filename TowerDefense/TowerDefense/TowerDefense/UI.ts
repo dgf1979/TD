@@ -36,6 +36,7 @@
         private _isBlocked: boolean;
         private _cursorSpriteGroup: Phaser.Group;
         private _cursor: Phaser.Graphics;
+        private _cursorRangeFinder: Phaser.Graphics;
 
         constructor(ThisGame: Phaser.Game, UIPosition: UI.Positioning) {
             this._game = ThisGame;
@@ -43,13 +44,18 @@
                 UIPosition.playAreaUL.y,
                 UIPosition.tileSize.x * UIPosition.playAreaTiles.x,
                 UIPosition.tileSize.y * UIPosition.playAreaTiles.y);
-
+            // cursor
             this._cursor = ThisGame.add.graphics(0, 0);
             this._cursor.visible = false;
             this._cursor.lineStyle(2,0xffffff, 0.50);
             this._cursor.beginFill(0xffffff, 0.25);
             this._cursor.drawRect(0, 0, TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
             this._cursor.endFill();
+
+            // rangefinder (circle)
+            this._cursorRangeFinder = this._game.add.graphics(0, 0);
+            this._cursorRangeFinder.lineStyle(2, 0xff0000, 0.2);
+            this._cursorRangeFinder.visible = false;
 
             this._debugText = Helper.CreateUpdateableDebugText("",
                 this._game, TDGame.ui.screenSize.x - 128,
@@ -95,6 +101,12 @@
             }
         }
 
+        // set rangefinder
+        SetRangeFinder(Range: number) {
+            this._cursorRangeFinder.drawCircle(TDGame.ui.tileSize.x / 2, TDGame.ui.tileSize.y / 2, Range * 2);
+            this._cursorRangeFinder.visible = true;
+        }
+
         update(PlayArea: Phaser.Tilemap) {
             var mouse: Phaser.Pointer = this._game.input.mousePointer;
             if (this._playarea.contains(mouse.position.x, mouse.position.y)) {
@@ -116,19 +128,24 @@
                     this._cursor.position = currentXY;
                     this._cursor.tint = 0x00ff00;
                     if (this._cursorSpriteGroup) {
-                        this._cursorSpriteGroup.position = currentXY;    
+                        this._cursorSpriteGroup.position = currentXY;
                         this._cursorSpriteGroup.visible = true;
                         // console.log("SpriteCursor at: " + this._cursorSpriteGroup.position);
+                        this._cursorRangeFinder.position = currentXY;
                     }
                     this._isBlocked = false;
-                }   
+                }
                 this._cursor.visible = true;
             } else {
                 this._cursor.visible = false;
-                if(this._cursorSpriteGroup) { this._cursorSpriteGroup.visible = false; }
+                if (this._cursorSpriteGroup) { this._cursorSpriteGroup.visible = false; }
                 this._debugText.text = "";
             }
-
+            if (this._cursorSpriteGroup) {
+                this._cursorRangeFinder.visible = this._cursorSpriteGroup.visible;
+            } else {
+                this._cursorRangeFinder.visible = false;
+            }
         }
     }
 } 

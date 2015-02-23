@@ -73,7 +73,7 @@
     }
 
     get Money(): number {
-        return parseInt(this._txtMoney.text);
+        return parseInt(this._txtMoney.text, 10);
     }
 
 }  

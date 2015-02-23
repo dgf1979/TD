@@ -24,6 +24,7 @@
         this._bmd.clear();
         this._bmd.ctx.beginPath();
         this._bmd.ctx.strokeStyle = this._color;
+        this._bmd.ctx.globalAlpha = 0.5;
         this._bmd.ctx.fill();
         this._bmd.ctx.lineWidth = this._width;
         this._bmd.ctx.moveTo(From.x, From.y);

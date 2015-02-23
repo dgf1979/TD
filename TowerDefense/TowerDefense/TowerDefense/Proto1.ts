@@ -33,7 +33,7 @@
             // set up info display area
             var towerInfoDisplayArea = new DisplayArea(this.game, TDGame.ui.displayArea1UL, TDGame.ui.displayArea1BR);
             var statsInfoDisplayArea = new DisplayArea2(this.game, TDGame.ui.displayArea2UL, TDGame.ui.displayArea2BR);
-            statsInfoDisplayArea.Money = 29; //demo starting money
+            statsInfoDisplayArea.Money = 29; // demo starting money
 
             // create menu from avail. towers
             var towerMenu: TowerMenu = new TowerMenu(this.game);
@@ -44,6 +44,7 @@
                 if (towerCost <= statsInfoDisplayArea.Money) {
                     towerInfoDisplayArea.SetAll(TowerIndex);
                     this._mouseHandler.SetSpriteCursor(towerMenu.SelectedSpriteGroup);
+                    this._mouseHandler.SetRangeFinder(TDGame.currentCampaign.TowerStats[TowerIndex].Range);
                 } else {
                     console.log("Not enough money!");
                     console.log("Tower Cost: " + towerCost);
