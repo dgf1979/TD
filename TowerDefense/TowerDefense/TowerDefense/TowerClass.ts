@@ -48,8 +48,8 @@
         this._hasTurret = this.game.cache.checkImageKey(this._rotatorTextureKey);
         if (this._hasTurret) {
             console.log("adding tower turret");
-            this._turret = this.game.add.sprite(this.position.x + TDGame.Globals.UI.TileSize.x / 2,
-                this.position.y + TDGame.Globals.UI.TileSize.x / 2,
+            this._turret = this.game.add.sprite(this.position.x + TDGame.Globals.Settings.TileSize.x / 2,
+                this.position.y + TDGame.Globals.Settings.TileSize.x / 2,
                 this._rotatorTextureKey);
             this._turret.anchor.setTo(0.5, 0.5);
             // this._turretTween = this.game.add.tween(this._turret);
@@ -63,8 +63,8 @@
 
     // range setter
     public set Range(Dist: number) {
-        this._range = new Phaser.Circle(this.position.x + TDGame.Globals.UI.TileSize.x / 2,
-            this.position.y + TDGame.Globals.UI.TileSize.x / 2,
+        this._range = new Phaser.Circle(this.position.x + TDGame.Globals.Settings.TileSize.x / 2,
+            this.position.y + TDGame.Globals.Settings.TileSize.x / 2,
             Dist * 2);
     }
 
@@ -122,8 +122,8 @@
     private trackTarget() {
         if (this._hasTurret && this._targetCreep !== null) {
             // calculate angle in degrees between tower and targreted creep
-            var creepCenter: Phaser.Point = new Phaser.Point(this._targetCreep.position.x - TDGame.Globals.UI.TileSize.x / 2,
-                this._targetCreep.position.y - TDGame.Globals.UI.TileSize.y /2);
+            var creepCenter: Phaser.Point = new Phaser.Point(this._targetCreep.position.x - TDGame.Globals.Settings.TileSize.x / 2,
+                this._targetCreep.position.y - TDGame.Globals.Settings.TileSize.y /2);
             var lookAtAngle: number = Phaser.Math.angleBetweenPoints(this.position, creepCenter);
             this._turret.rotation = lookAtAngle;
         }
@@ -132,8 +132,8 @@
     // shoot at target
     private shootTarget() {
         if (this._targetCreep !== null || typeof (this._targetCreep) === "undefined") {
-            var from: Phaser.Point = new Phaser.Point(this.position.x + TDGame.Globals.UI.TileSize.x / 2,
-                this.position.y + TDGame.Globals.UI.TileSize.y / 2);
+            var from: Phaser.Point = new Phaser.Point(this.position.x + TDGame.Globals.Settings.TileSize.x / 2,
+                this.position.y + TDGame.Globals.Settings.TileSize.y / 2);
             var to: Phaser.Point = new Phaser.Point(this._targetCreep.position.x, this._targetCreep.position.y);
             this._laserLine.Draw(from, to);
             this.damagePerMS(this._targetCreep);

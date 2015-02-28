@@ -7,7 +7,7 @@
     export class Game extends Phaser.Game {
         constructor() {
             TDGame.Globals = new Global();
-            super(1024, 768, Phaser.AUTO, "game", null);
+            super(TDGame.Globals.Settings.ScreenSize.x, TDGame.Globals.Settings.ScreenSize.y, Phaser.AUTO, "game", null);
             this.state.add("BootState", BootState, true);
             this.state.add("PreloadState", PreloadState, false);
             this.state.add("StartMenu", StartMenu, false);

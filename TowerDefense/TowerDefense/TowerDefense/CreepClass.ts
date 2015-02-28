@@ -52,7 +52,7 @@
     // update with new path
     private SetNewPath() {
         // this._movementTween.stop();
-        this._path = this._pather.GetPixelPathCentered(TDGame.Globals.UI.TileSize.x, TDGame.Globals.UI.TileSize.y);
+        this._path = this._pather.GetPixelPathCentered(TDGame.Globals.Settings.TileSize.x, TDGame.Globals.Settings.TileSize.y);
         console.log("Creep on new path.");
         this._pathReset = true;
         // this._movementTween.start();

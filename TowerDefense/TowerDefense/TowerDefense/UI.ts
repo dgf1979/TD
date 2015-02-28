@@ -7,10 +7,6 @@
         DisplayAreas: uiDisplayAreas;
         TowerMenu: TowerMenu;
         Input: Input.MouseHandler;
-
-        private _playAreaUL: Phaser.Point = new Phaser.Point(32, 32);
-        private _playAreaTiles: Phaser.Point = new Phaser.Point(22, 20);
-        private _tileSize: Phaser.Point = new Phaser.Point(32, 32);
         
         constructor(Game: Phaser.Game) {
             // add the background
@@ -20,7 +16,10 @@
             this.TowerMenu = new TowerMenu(Game);
             this.Buttons = new uiButtons(Game);
             // handle the mouse
-            this.Input = new Input.MouseHandler(Game, this._playAreaUL, this._playAreaTiles, this._tileSize);
+            this.Input = new Input.MouseHandler(Game,
+                Globals.Settings.PlayAreaUL,
+                Globals.Settings.PlayAreaTiles,
+                Globals.Settings.TileSize);
 
             //event subscriptions
             this.TowerMenu.SignalItemSelected.add((TowerIndex: number) => this.reactToMenuItemSelected(TowerIndex));
@@ -43,21 +42,6 @@
                 console.log("Money Avail: " + this.DisplayAreas.GameInfo.Money);
                 this.TowerMenu.ClearSelectedTower();
             }
-        }
-
-        // tile size
-        get TileSize(): Phaser.Point {
-            return this._tileSize;
-        }
-
-        // tiles in the play area
-        get PlayAreaTiles(): Phaser.Point {
-            return this._playAreaTiles;
-        }
-
-        // upper left corner of play area
-        get PlayAreaUL(): Phaser.Point {
-            return this._playAreaUL;
         }
 
     }

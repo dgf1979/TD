@@ -25,7 +25,9 @@
             this._creepFactory = new CreepFactory(this.game, wave, creepGroup, this._campaign.Map);
 
             // subscribe to creep factory's bubble-through of creep death signal
-            this._creepFactory.SignalCreepKilled.add((value: number) => { TDGame.Globals.UI.DisplayAreas.GameInfo.Money = (value + TDGame.Globals.UI.DisplayAreas.GameInfo.Money); });
+            this._creepFactory.SignalCreepKilled.add((value: number) => {
+                TDGame.Globals.UI.DisplayAreas.GameInfo.Money = (value + TDGame.Globals.UI.DisplayAreas.GameInfo.Money);
+            });
 
 
             // tower factory
@@ -34,7 +36,7 @@
             // subscript to tower-dropped on tower factory
             var towerDropped = () => {
                 var towerCost = TDGame.Globals.CampaignJSON.TowerStats[TDGame.Globals.UI.TowerMenu.SelectedTowerIndex].Cost;
-                TDGame.Globals.UI.DisplayAreas.GameInfo.Money = (TDGame.Globals.UI.DisplayAreas.GameInfo.Money - towerCost); //subtract money
+                TDGame.Globals.UI.DisplayAreas.GameInfo.Money = (TDGame.Globals.UI.DisplayAreas.GameInfo.Money - towerCost); // subtract money
                 TDGame.Globals.UI.TowerMenu.ClearSelectedTower();
                 TDGame.Globals.UI.Input.ClearSpriteCursor();
             }

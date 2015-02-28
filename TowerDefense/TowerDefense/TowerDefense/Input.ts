@@ -46,13 +46,13 @@
                 var ypos: number = this._game.input.activePointer.position.y;
                 if (this._playarea.contains(xpos, ypos)) {
                     var x, y: number;
-                    x = Phaser.Math.snapToFloor(xpos, TDGame.Globals.UI.TileSize.x);
-                    y = Phaser.Math.snapToFloor(ypos, TDGame.Globals.UI.TileSize.y);
+                    x = Phaser.Math.snapToFloor(xpos, TDGame.Globals.Settings.TileSize.x);
+                    y = Phaser.Math.snapToFloor(ypos, TDGame.Globals.Settings.TileSize.y);
                     // only register click if the tile isn't blocked
                     if (!this._isBlocked) {
                         var tileX, tileY: number;
-                        tileX = x / TDGame.Globals.UI.TileSize.x;
-                        tileY = y / TDGame.Globals.UI.TileSize.y;
+                        tileX = x / TDGame.Globals.Settings.TileSize.x;
+                        tileY = y / TDGame.Globals.Settings.TileSize.y;
                         this.SignalGridClicked.dispatch(x, y, tileX, tileY);
                     }
                 }
@@ -78,7 +78,7 @@
 
         // set rangefinder
         SetRangeFinder(Range: number) {
-            this._cursorRangeFinder.drawCircle(TDGame.Globals.UI.TileSize.x / 2, TDGame.Globals.UI.TileSize.y / 2, Range * 2);
+            this._cursorRangeFinder.drawCircle(TDGame.Globals.Settings.TileSize.x / 2, TDGame.Globals.Settings.TileSize.y / 2, Range * 2);
             this._cursorRangeFinder.visible = true;
         }
 
@@ -97,8 +97,8 @@
                     this._isBlocked = true;
                 } else {
                     var x, y: number;
-                    x = Phaser.Math.snapToFloor(mouse.position.x, TDGame.Globals.UI.TileSize.x);
-                    y = Phaser.Math.snapToFloor(mouse.position.y, TDGame.Globals.UI.TileSize.y);
+                    x = Phaser.Math.snapToFloor(mouse.position.x, TDGame.Globals.Settings.TileSize.x);
+                    y = Phaser.Math.snapToFloor(mouse.position.y, TDGame.Globals.Settings.TileSize.y);
                     var currentXY: Phaser.Point = new Phaser.Point(x, y);
                     this._cursor.position = currentXY;
                     this._cursor.tint = 0x00ff00;
