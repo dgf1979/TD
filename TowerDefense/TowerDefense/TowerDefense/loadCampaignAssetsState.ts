@@ -23,8 +23,8 @@
                         dataType: "json",
                         async: false,
                         success: (json: GameObjectClasses.Campaign) => {
-                            currentCampaign = json;
-                            console.log("AJAX campaign ID: " + currentCampaign.Name);
+                            Globals.CampaignJSON = json;
+                            console.log("AJAX campaign ID: " + Globals.CampaignJSON.Name);
                         },
                         error: (xhr: any, ajaxOptions: any, thrownError: any) => {
                             alert(xhr.status);
@@ -37,12 +37,12 @@
             $(document).ready(() => {
                 $.ajax(
                     {
-                        url: "http://localhost:1337/tileset/" + currentCampaign.TilesetID,
+                        url: "http://localhost:1337/tileset/" + Globals.CampaignJSON.TilesetID,
                         dataType: "json",
                         async: false,
                         success: (json: GameObjectClasses.Tileset) => {
-                            currentTileset = json;
-                            console.log("Tileset: " + currentTileset.Name);
+                            Globals.TilesetJSON = json;
+                            console.log("Tileset: " + Globals.TilesetJSON.Name);
                         },
                         error: (xhr: any, ajaxOptions: any, thrownError: any) => {
                             alert(xhr.status);
@@ -54,40 +54,40 @@
             this.load.crossOrigin = "anonymous";
 
             // load background, tileset, and CSV map
-            this.load.image("background", currentTileset.BackgroundURL);
-            this.load.image("tileIMG", currentTileset.WallURL);
-            this.load.tilemap("tileDEF", currentCampaign.MapURL, null, Phaser.Tilemap.CSV);
-            this.load.image("tileEntrance", currentTileset.EntranceURL);
-            this.load.image("tileExit", currentTileset.ExitURL);
+            this.load.image("background", Globals.TilesetJSON.BackgroundURL);
+            this.load.image("tileIMG", Globals.TilesetJSON.WallURL);
+            this.load.tilemap("tileDEF", Globals.CampaignJSON.MapURL, null, Phaser.Tilemap.CSV);
+            this.load.image("tileEntrance", Globals.TilesetJSON.EntranceURL);
+            this.load.image("tileExit", Globals.TilesetJSON.ExitURL);
 
             // load tower assets
-            var oTowers: GameObjectClasses.TowerAssets[] = currentTileset.Towers;
+            var oTowers: GameObjectClasses.TowerAssets[] = Globals.TilesetJSON.Towers;
             for (var i = 0; i < oTowers.length; i++) {
                 if (oTowers[i].BaseURL !== "") {
-                    this.load.spritesheet(oTowers[i].Name + ".base", oTowers[i].BaseURL, TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
+                    this.load.spritesheet(oTowers[i].Name + ".base", oTowers[i].BaseURL, 32, 32);
                     console.log("ASSET ADDED: " + oTowers[i].Name + ".base");
                 } else {
-                    this.load.spritesheet(oTowers[i].Name + ".base", "img/32x32.png", TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
+                    this.load.spritesheet(oTowers[i].Name + ".base", "img/32x32.png", 32, 32);
                     console.log("ASSET ADDED: " + oTowers[i].Name + ".base");
                 }
                 if (oTowers[i].RotatorURL !== "") {
-                    this.load.spritesheet(oTowers[i].Name + ".rotator", oTowers[i].RotatorURL, TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
+                    this.load.spritesheet(oTowers[i].Name + ".rotator", oTowers[i].RotatorURL, 32, 32);
                     console.log("ASSET ADDED: " + oTowers[i].Name + ".rotator");
                 }   
             } 
 
             // load creep assets
-            var oCreeps: GameObjectClasses.CreepAssets[] = currentTileset.Creeps;
+            var oCreeps: GameObjectClasses.CreepAssets[] = Globals.TilesetJSON.Creeps;
             for (var i2 = 0; i2 < oCreeps.length; i2++) {
-                var walk = this.load.spritesheet(oCreeps[i2].Name + ".walk",
+                this.load.spritesheet(oCreeps[i2].Name + ".walk",
                     oCreeps[i2].WalkAnimationURL,
-                    TDGame.ui.tileSize.x,
-                    TDGame.ui.tileSize.y);
+                    32,
+                    32);
                 if (oCreeps[i2].DieAnimationURL !== undefined) {
                     var die = this.load.spritesheet(oCreeps[i2].Name + ".die",
                         oCreeps[i2].DieAnimationURL,
-                        TDGame.ui.tileSize.x,
-                        TDGame.ui.tileSize.y);
+                        32,
+                        32);
                 }
             }
 

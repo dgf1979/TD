@@ -18,8 +18,8 @@
     constructor(ThisGame: Phaser.Game, CreepIndex: number, StartPath: Phaser.Point[], Map: TDMap) {
         super(ThisGame, 0, 0, null, 0);
 
-        var CreepJSONData: GameObjectClasses.CreepData = TDGame.currentCampaign.CreepStats[CreepIndex];
-        var CreepJSONAssets: GameObjectClasses.CreepAssets = TDGame.currentTileset.Creeps[CreepIndex];
+        var CreepJSONData: GameObjectClasses.CreepData = TDGame.Globals.CampaignJSON.CreepStats[CreepIndex];
+        var CreepJSONAssets: GameObjectClasses.CreepAssets = TDGame.Globals.TilesetJSON.Creeps[CreepIndex];
 
         this._pather = new PathHelper(Map);
         this._pathReset = false;
@@ -45,14 +45,14 @@
         this._healthBar = new HPBar(this);
         // alert("creep starting with " + this.health + " hp");
 
-        //subscribe to path updates
+        // subscribe to path updates
         this._pather.SignalNewPathOK.add(() => { this.SetNewPath(); }); 
     }
 
     // update with new path
     private SetNewPath() {
         // this._movementTween.stop();
-        this._path = this._pather.GetPixelPathCentered(TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
+        this._path = this._pather.GetPixelPathCentered(TDGame.Globals.UI.TileSize.x, TDGame.Globals.UI.TileSize.y);
         console.log("Creep on new path.");
         this._pathReset = true;
         // this._movementTween.start();

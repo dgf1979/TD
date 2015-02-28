@@ -29,19 +29,19 @@
     // convert pixel location to tile location
     export function PixelToTile(PixelPostion: Phaser.Point): Phaser.Point {
         var x, y: number;
-        x = Phaser.Math.snapToFloor(PixelPostion.x, TDGame.ui.tileSize.x) / TDGame.ui.tileSize.x;
-        y = Phaser.Math.snapToFloor(PixelPostion.y, TDGame.ui.tileSize.y) / TDGame.ui.tileSize.y;
+        x = Phaser.Math.snapToFloor(PixelPostion.x, TDGame.Globals.UI.TileSize.x) / TDGame.Globals.UI.TileSize.x;
+        y = Phaser.Math.snapToFloor(PixelPostion.y, TDGame.Globals.UI.TileSize.y) / TDGame.Globals.UI.TileSize.y;
         return new Phaser.Point(x, y);
     }
 
     // conver tile to pixel (upper left corner)
     export function TileToPixelUpperLeft(TilePosition: Phaser.Point): Phaser.Point {
-        return new Phaser.Point(TilePosition.x * TDGame.ui.tileSize.x, TilePosition.y * TDGame.ui.tileSize.y);
+        return new Phaser.Point(TilePosition.x * TDGame.Globals.UI.TileSize.x, TilePosition.y * TDGame.Globals.UI.TileSize.y);
     }
 
-    //convert the center of a tile ot pixel
+    // convert the center of a tile ot pixel
     export function TileCenterToPixel(TilePosition: Phaser.Point): Phaser.Point {
-        return new Phaser.Point(TilePosition.x * TDGame.ui.tileSize.x + TDGame.ui.tileSize.x /2,
-            TilePosition.y * TDGame.ui.tileSize.y + TDGame.ui.tileSize.y / 2);
+        return new Phaser.Point(TilePosition.x * TDGame.Globals.UI.TileSize.x + TDGame.Globals.UI.TileSize.x /2,
+            TilePosition.y * TDGame.Globals.UI.TileSize.y + TDGame.Globals.UI.TileSize.y / 2);
     }
 }

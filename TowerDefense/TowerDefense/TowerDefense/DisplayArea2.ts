@@ -61,8 +61,8 @@
     }
 
     SetAll(TowerIndex: number) {
-        var TowerJSONData: GameObjectClasses.TowerData = TDGame.currentCampaign.TowerStats[TowerIndex];
-        var TowerJSONAssets: GameObjectClasses.TowerAssets = TDGame.currentTileset.Towers[TowerIndex];
+        var TowerJSONData: GameObjectClasses.TowerData = TDGame.Globals.CampaignJSON.TowerStats[TowerIndex];
+        var TowerJSONAssets: GameObjectClasses.TowerAssets = TDGame.Globals.TilesetJSON.Towers[TowerIndex];
     }
 
     set Money(Amount: number) {

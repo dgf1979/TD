@@ -91,8 +91,8 @@
     }
 
     SetAll(TowerIndex: number) {
-        var TowerJSONData: GameObjectClasses.TowerData = TDGame.currentCampaign.TowerStats[TowerIndex];
-        var TowerJSONAssets: GameObjectClasses.TowerAssets = TDGame.currentTileset.Towers[TowerIndex];
+        var TowerJSONData: GameObjectClasses.TowerData = TDGame.Globals.CampaignJSON.TowerStats[TowerIndex];
+        var TowerJSONAssets: GameObjectClasses.TowerAssets = TDGame.Globals.TilesetJSON.Towers[TowerIndex];
         this.Name = TowerJSONAssets.Name;
         this.Range = TowerJSONData.Range;
         this.Rate = TowerJSONData.FireRate;

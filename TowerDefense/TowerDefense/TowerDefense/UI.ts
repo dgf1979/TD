@@ -1,151 +1,135 @@
-﻿module UI {
+﻿module TDGame {
     "use strict";
-    export class Positioning {
-        tileSize: Phaser.Point = new Phaser.Point(32, 32);
-        screenSize: Phaser.Point = new Phaser.Point(1024, 768);
-        playAreaUL: Phaser.Point = new Phaser.Point(32, 32);
-        playAreaTiles: Phaser.Point = new Phaser.Point(22, 20);
-        iconAreaUL: Phaser.Point = new Phaser.Point(768, 32);
 
-        towerTilesUL: Phaser.Point[] = [
-            new Phaser.Point(784, 48), 
-            new Phaser.Point(832, 48),
-            new Phaser.Point(880, 48),
-            new Phaser.Point(928, 48),
-            new Phaser.Point(784, 96),
-            new Phaser.Point(832, 96),
-            new Phaser.Point(880, 96),
-            new Phaser.Point(928, 96)
-        ];
+    // collector for UI elements
+    export class UI {
+        Buttons: uiButtons;
+        DisplayAreas: uiDisplayAreas;
+        TowerMenu: TowerMenu;
+        Input: Input.MouseHandler;
 
-        displayArea1UL: Phaser.Point = new Phaser.Point(784, 160);
-        displayArea1BR: Phaser.Point = new Phaser.Point(959, 319);
+        private _playAreaUL: Phaser.Point = new Phaser.Point(32, 32);
+        private _playAreaTiles: Phaser.Point = new Phaser.Point(22, 20);
+        private _tileSize: Phaser.Point = new Phaser.Point(32, 32);
+        
+        constructor(Game: Phaser.Game) {
+            // add the background
+            Game.add.sprite(0, 0, "background");
+            // set public UI
+            this.DisplayAreas = new uiDisplayAreas(Game);
+            this.TowerMenu = new TowerMenu(Game);
+            this.Buttons = new uiButtons(Game);
+            // handle the mouse
+            this.Input = new Input.MouseHandler(Game, this._playAreaUL, this._playAreaTiles, this._tileSize);
 
-        displayArea2UL: Phaser.Point = new Phaser.Point(784, 336);
-        displayArea2BR: Phaser.Point = new Phaser.Point(959, 495);
+            //event subscriptions
+            this.TowerMenu.SignalItemSelected.add((TowerIndex: number) => this.reactToMenuItemSelected(TowerIndex));
+        }
+
+        Update(TileMap: Phaser.Tilemap) {
+            this.Input.Update(TileMap);
+        }
+
+        // tower menu item selected
+        reactToMenuItemSelected(TowerIndex: number) {
+            var towerCost = TDGame.Globals.CampaignJSON.TowerStats[TowerIndex].Cost;
+            this.DisplayAreas.TowerInfo.SetAll(TowerIndex);
+            if (towerCost <= this.DisplayAreas.GameInfo.Money) {
+                this.Input.SetSpriteCursor(this.TowerMenu.SelectedSpriteGroup);
+                this.Input.SetRangeFinder(TDGame.Globals.CampaignJSON.TowerStats[TowerIndex].Range);
+            } else {
+                console.log("Not enough money!");
+                console.log("Tower Cost: " + towerCost);
+                console.log("Money Avail: " + this.DisplayAreas.GameInfo.Money);
+                this.TowerMenu.ClearSelectedTower();
+            }
+        }
+
+        // tile size
+        get TileSize(): Phaser.Point {
+            return this._tileSize;
+        }
+
+        // tiles in the play area
+        get PlayAreaTiles(): Phaser.Point {
+            return this._playAreaTiles;
+        }
+
+        // upper left corner of play area
+        get PlayAreaUL(): Phaser.Point {
+            return this._playAreaUL;
+        }
+
     }
 
-    // pointer control and cursor handling
-    export class MouseHandler {
-        // signals
-        ClickSignal: Phaser.Signal = new Phaser.Signal();
-        // vars
+    // buttons
+    export class uiButtons {
         private _game: Phaser.Game;
-        private _playarea: Phaser.Rectangle;
-        private _debugText: Phaser.Text;
-        private _isBlocked: boolean;
-        private _cursorSpriteGroup: Phaser.Group;
-        private _cursor: Phaser.Graphics;
-        private _cursorRangeFinder: Phaser.Graphics;
+        StartButton: Phaser.Button;
+        // signals
 
-        constructor(ThisGame: Phaser.Game, UIPosition: UI.Positioning) {
-            this._game = ThisGame;
-            this._playarea = new Phaser.Rectangle(UIPosition.playAreaUL.x,
-                UIPosition.playAreaUL.y,
-                UIPosition.tileSize.x * UIPosition.playAreaTiles.x,
-                UIPosition.tileSize.y * UIPosition.playAreaTiles.y);
-            // cursor
-            this._cursor = ThisGame.add.graphics(0, 0);
-            this._cursor.visible = false;
-            this._cursor.lineStyle(2,0xffffff, 0.50);
-            this._cursor.beginFill(0xffffff, 0.25);
-            this._cursor.drawRect(0, 0, TDGame.ui.tileSize.x, TDGame.ui.tileSize.y);
-            this._cursor.endFill();
+        // constructor
+        constructor(Game: Phaser.Game) {
+            this._game = Game;
 
-            // rangefinder (circle)
-            this._cursorRangeFinder = this._game.add.graphics(0, 0);
-            this._cursorRangeFinder.lineStyle(2, 0xff0000, 0.2);
-            this._cursorRangeFinder.visible = false;
-
-            this._debugText = Helper.CreateUpdateableDebugText("",
-                this._game, TDGame.ui.screenSize.x - 128,
-                TDGame.ui.screenSize.y - 64);
-
-            var clicked = this.gridClicked();
-            this._game.input.onDown.add(clicked);
-        }
-
-        private gridClicked() {
-            return () => {
-                var xpos: number = this._game.input.activePointer.position.x;
-                var ypos: number = this._game.input.activePointer.position.y;
-                if (this._playarea.contains(xpos, ypos)) {
-                    var x, y: number;
-                    x = Phaser.Math.snapToFloor(xpos, TDGame.ui.tileSize.x);
-                    y = Phaser.Math.snapToFloor(ypos, TDGame.ui.tileSize.y);
-                    // only register click if the tile isn't blocked
-                    if (!this._isBlocked) {
-                        var tileX, tileY: number;
-                        tileX = x / TDGame.ui.tileSize.x;
-                        tileY = y / TDGame.ui.tileSize.y;
-                        this.ClickSignal.dispatch(x, y, tileX, tileY);
-                    }
-                }
-            }
-        }
-
-        // set a sprite group as a cursor
-        SetSpriteCursor(SpriteGroup: Phaser.Group) {
-            var internal: Phaser.Group;
-            internal = SpriteGroup;
-            this._cursorSpriteGroup = internal;
-            // console.log("sprite cursor set to: " + internal.name + " at " + internal.position); 
-        }
-
-        // clear a sprite group as a cursor
-        ClearSpriteCursor() {
-            if (this._cursorSpriteGroup) {
-                this._cursorSpriteGroup.position.set(0, 0);
-                this._cursorSpriteGroup.visible = false;
-                this._cursorSpriteGroup = null;
-            }
-        }
-
-        // set rangefinder
-        SetRangeFinder(Range: number) {
-            this._cursorRangeFinder.drawCircle(TDGame.ui.tileSize.x / 2, TDGame.ui.tileSize.y / 2, Range * 2);
-            this._cursorRangeFinder.visible = true;
-        }
-
-        update(PlayArea: Phaser.Tilemap) {
-            var mouse: Phaser.Pointer = this._game.input.mousePointer;
-            if (this._playarea.contains(mouse.position.x, mouse.position.y)) {
-                this._debugText.text = "Tracking Mouse at: " + mouse.position.x + "," + mouse.position.y;
-                var currentTile: Phaser.Tile = PlayArea.getTileWorldXY(mouse.position.x, mouse.position.y);
-                if (currentTile !== null) {
-                    var currentXY: Phaser.Point = new Phaser.Point(currentTile.worldX, currentTile.worldY);
-                    this._cursor.position = currentXY;
-                    this._cursor.tint = 0xff0000;
-                    if (this._cursorSpriteGroup) {
-                        this._cursorSpriteGroup.visible = false;
-                    }
-                    this._isBlocked = true;
-                } else {
-                    var x, y: number;
-                    x = Phaser.Math.snapToFloor(mouse.position.x, TDGame.ui.tileSize.x);
-                    y = Phaser.Math.snapToFloor(mouse.position.y, TDGame.ui.tileSize.y);
-                    var currentXY: Phaser.Point = new Phaser.Point(x, y);
-                    this._cursor.position = currentXY;
-                    this._cursor.tint = 0x00ff00;
-                    if (this._cursorSpriteGroup) {
-                        this._cursorSpriteGroup.position = currentXY;
-                        this._cursorSpriteGroup.visible = true;
-                        // console.log("SpriteCursor at: " + this._cursorSpriteGroup.position);
-                        this._cursorRangeFinder.position = currentXY;
-                    }
-                    this._isBlocked = false;
-                }
-                this._cursor.visible = true;
-            } else {
-                this._cursor.visible = false;
-                if (this._cursorSpriteGroup) { this._cursorSpriteGroup.visible = false; }
-                this._debugText.text = "";
-            }
-            if (this._cursorSpriteGroup) {
-                this._cursorRangeFinder.visible = this._cursorSpriteGroup.visible;
-            } else {
-                this._cursorRangeFinder.visible = false;
-            }
+            // add start button
+            this.StartButton = MakeButton(Game, "Start", new Phaser.Point(32, 688));
+            console.log("Start button at: " + this.StartButton.position);
         }
     }
+
+    // info display areas
+    export class uiDisplayAreas {
+        TowerInfo: DisplayArea;
+        GameInfo: DisplayArea2;
+
+        constructor(Game: Phaser.Game) {
+            var displayArea1UL: Phaser.Point = new Phaser.Point(784, 160);
+            var displayArea1BR: Phaser.Point = new Phaser.Point(959, 319);
+            this.TowerInfo = new DisplayArea(Game, displayArea1UL, displayArea1BR);
+
+            var displayArea2UL: Phaser.Point = new Phaser.Point(784, 336);
+            var displayArea2BR: Phaser.Point = new Phaser.Point(959, 495); 
+            this.GameInfo = new DisplayArea2(Game, displayArea2UL, displayArea2BR);
+        }
+    }
+
+    // generate buttons dynamically using generated bitmaps
+    function MakeButton(Game: Phaser.Game, ButtonText: string, Position: Phaser.Point): Phaser.Button {
+        var style: {};
+        var txt: Phaser.Text = new Phaser.Text(Game, 0, 0, ButtonText, style);
+        txt.font = "Lucida Console";
+        txt.fontSize = 18;
+        txt.fontWeight = "bold";
+        txt.stroke = "#000000";
+        txt.strokeThickness = 3;
+        txt.fill = "#ffffff";
+        txt.align = "left";
+        txt.anchor.set(0.5, 0.5);
+        // generate button width from text width plus some margin buffer
+        var buttonWidth = txt.width + 8;
+        var buttonHeight = txt.height;
+        console.log("button HxW: " + buttonHeight + "x" + buttonWidth);
+        // create some bitmap data to serve as background
+        var bmd: Phaser.BitmapData = new Phaser.BitmapData(Game, "btn_" + ButtonText, buttonWidth, buttonHeight);
+        bmd.ctx.fillStyle = "#404040";
+        bmd.ctx.beginPath();
+        bmd.ctx.fillRect(0, 0, buttonWidth, buttonHeight);
+        bmd.ctx.closePath();
+        var grd = bmd.ctx.createLinearGradient(0, 0, buttonWidth, buttonHeight);
+        grd.addColorStop(0, "black");
+        grd.addColorStop(1, "#808080");
+        bmd.ctx.fillStyle = grd;
+        bmd.ctx.beginPath();
+        bmd.ctx.fillRect(2, 2, buttonWidth - 4, buttonHeight - 4);
+        bmd.ctx.closePath();
+        // add text
+        txt.position = new Phaser.Point(buttonWidth / 2, buttonHeight / 2 + 3); // seems arbitrary, unsure why adjusments are needed.
+        bmd.draw(txt);
+        console.log("bitmap key name: " + bmd.key);
+        // create the button and return it
+        var button: Phaser.Button = Game.add.button(Position.x, Position.y);
+        button.setTexture(bmd.texture);  // add button texture
+        return button;
+    } 
 } 

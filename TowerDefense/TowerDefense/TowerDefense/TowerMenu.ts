@@ -1,12 +1,22 @@
 ﻿class TowerMenu {
     // signals
-    ItemSelectedSignal: Phaser.Signal = new Phaser.Signal();
+    SignalItemSelected: Phaser.Signal = new Phaser.Signal();
 
     // vars
     private _game: Phaser.Game;
     private _towers: Phaser.Group[]; // array of sprite groups
     private _cursorCopies: Phaser.Group[];
     private _selected: number;
+    private _towerTilesUL: Phaser.Point[] = [
+        new Phaser.Point(784, 48),
+        new Phaser.Point(832, 48),
+        new Phaser.Point(880, 48),
+        new Phaser.Point(928, 48),
+        new Phaser.Point(784, 96),
+        new Phaser.Point(832, 96),
+        new Phaser.Point(880, 96),
+        new Phaser.Point(928, 96)
+    ];
     
     // constructor
     constructor(ThisGame: Phaser.Game) {
@@ -18,10 +28,10 @@
 
     private load() {
         // load towers images into selection tiles
-        var TowerJSONAssets: GameObjectClasses.TowerAssets[] = TDGame.currentTileset.Towers;
+        var TowerJSONAssets: GameObjectClasses.TowerAssets[] = TDGame.Globals.TilesetJSON.Towers;
 
         for (var i = 0; i < TowerJSONAssets.length; i++) {
-            var TowerJSONData: GameObjectClasses.TowerData = TDGame.currentCampaign.TowerStats[i];
+            var TowerJSONData: GameObjectClasses.TowerData = TDGame.Globals.CampaignJSON.TowerStats[i];
             var name: string = TowerJSONAssets[i].Name;
             var base = name + ".base";
             var rotator = name + ".rotator";
@@ -31,7 +41,7 @@
                 var newGroup: Phaser.Group = new Phaser.Group(this._game, null, name, true);
                 var newCursorGroup: Phaser.Group = new Phaser.Group(this._game, null, name, true);
                 newCursorGroup.visible = false;
-                newGroup.position = TDGame.ui.towerTilesUL[i];
+                newGroup.position = this._towerTilesUL[i];
                 if (hasBase) {
                     // menu copy
                     var TMIbase = new Phaser.Sprite(this._game, 0, 0, base, 0);
@@ -99,14 +109,14 @@
                 s.tint = 16777215;
             }, this);
         };
-        // ThisSprite.tint = 16777215;
+        // thisSprite.tint = 16777215;
     }
 
     private menuItemOnMouseClick(TowerIndex: number) {
         return () => {
             this._selected = TowerIndex;
             console.log("Selected Tower Index: " + TowerIndex);
-            this.ItemSelectedSignal.dispatch(this._selected);
+            this.SignalItemSelected.dispatch(this._selected);
         };
     }
 }
