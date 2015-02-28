@@ -1,5 +1,5 @@
 ﻿module GameObjectClasses {
-
+    "use strict";
     // campaign classes //
 
     // a campaign, consisting of multiple waves

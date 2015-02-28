@@ -21,7 +21,7 @@
                 Globals.Settings.PlayAreaTiles,
                 Globals.Settings.TileSize);
 
-            //event subscriptions
+            // event subscriptions
             this.TowerMenu.SignalItemSelected.add((TowerIndex: number) => this.reactToMenuItemSelected(TowerIndex));
         }
 

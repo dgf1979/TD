@@ -1,7 +1,7 @@
 ﻿class Creep extends Phaser.Sprite {
     private _name: string;
-    private _cost: number;
-    private _payout: number;
+    // private _cost: number;
+    // private _payout: number;
     private _velocity: number;
     private _path: Phaser.Point[];
     private _walkTextureKey: string;

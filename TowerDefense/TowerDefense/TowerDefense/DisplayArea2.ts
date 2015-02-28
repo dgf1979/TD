@@ -7,6 +7,8 @@
     private _marginR: number;
 
     private _txtMoney: Phaser.Text;
+    private _txtWave: Phaser.Text;
+    private _txtNextWave: Phaser.Text;
 
     // constructor
     constructor(ThisGame: Phaser.Game, UpperLeft: Phaser.Point, LowerRight: Phaser.Point) {
@@ -54,15 +56,22 @@
 
         this._txtMoney = this.RightAlignedText("");
         this._txtMoney.position.y = 10;
+
+        var lblWave: Phaser.Text = this.Text("WAVE:");
+        lblWave.position.y = 30;
+
+        this._txtWave = this.RightAlignedText("");
+        this._txtWave.position.y = 30
+
+        var lblNextWave: Phaser.Text = this.Text("Next Wave In:");
+        lblNextWave.position.y = 50;
+
+        this._txtNextWave = this.RightAlignedText("");
+        this._txtNextWave.position.y = 50;
     }
 
     HideAll() {
         this._textGroup.visible = false;
-    }
-
-    SetAll(TowerIndex: number) {
-        var TowerJSONData: GameObjectClasses.TowerData = TDGame.Globals.CampaignJSON.TowerStats[TowerIndex];
-        var TowerJSONAssets: GameObjectClasses.TowerAssets = TDGame.Globals.TilesetJSON.Towers[TowerIndex];
     }
 
     set Money(Amount: number) {
@@ -74,6 +83,14 @@
 
     get Money(): number {
         return parseInt(this._txtMoney.text, 10);
+    }
+
+    set CurrentWave(Wave: string) {
+        this._txtWave.text = Wave;
+    }
+
+    set WaveCountdown(SecondsRemaining: number) {
+        this._txtNextWave.text = SecondsRemaining.toString();
     }
 
 }  

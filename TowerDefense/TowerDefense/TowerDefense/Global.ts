@@ -1,7 +1,7 @@
 ﻿class Global {
     CampaignJSON: GameObjectClasses.Campaign;
     TilesetJSON: GameObjectClasses.Tileset;
-    UI: TDGame.UI;
+    // UI: TDGame.UI;
     Settings: settings = new settings();
 }
 

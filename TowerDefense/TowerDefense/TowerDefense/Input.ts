@@ -1,4 +1,5 @@
 ﻿module Input {
+    "use strict";
 
     // pointer control and cursor handling
     export class MouseHandler {
@@ -13,7 +14,7 @@
         private _cursor: Phaser.Graphics;
         private _cursorRangeFinder: Phaser.Graphics;
 
-        constructor(ThisGame: Phaser.Game, PlayAreaUL, PlayAreaTiles, TileSize) {
+        constructor(ThisGame: Phaser.Game, PlayAreaUL: Phaser.Point, PlayAreaTiles: Phaser.Point, TileSize: Phaser.Point) {
             this._game = ThisGame;
             this._playarea = new Phaser.Rectangle(PlayAreaUL.x,
                 PlayAreaUL.y,
@@ -56,7 +57,7 @@
                         this.SignalGridClicked.dispatch(x, y, tileX, tileY);
                     }
                 }
-            }
+            };
         }
 
         // set a sprite group as a cursor
