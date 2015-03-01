@@ -69,6 +69,18 @@
         return this._name;
     }
 
+    Pause() {
+        if (this._movementTween.isRunning) {
+            this._movementTween.pause();
+        }
+    }
+
+    Unpause() {
+        if (!this._movementTween.isRunning) {
+            this._movementTween.resume();
+        }
+    }
+
     // phaser update loop
     update() {
         if (this.alive) {

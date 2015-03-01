@@ -9,7 +9,6 @@
         create() {
             // set up UI
             var UI = new TDGame.UI(this.game);
-            UI.DisplayAreas.GameInfo.Money = 29; // demo money setup
 
             // load campaign
             this._campaign = new Campaign(this.game, UI);
@@ -25,7 +24,8 @@
 
             // subscribe to creep factory's bubble-through of creep death signal
             this._creepFactory.SignalCreepKilled.add((value: number) => {
-               UI.DisplayAreas.GameInfo.Money = (value + UI.DisplayAreas.GameInfo.Money);
+                UI.DisplayAreas.GameInfo.Money = (value + UI.DisplayAreas.GameInfo.Money);
+                UI.DisplayAreas.GameInfo.Score = (value + UI.DisplayAreas.GameInfo.Score);
             });
 
             // tower factory
@@ -50,8 +50,8 @@
 
             UI.Buttons.StartButton.onInputUp.addOnce(() => this.start());
 
-            UI.Buttons.PauseButton.onInputUp.add(() => this.pause());
-            UI.Buttons.ResumeButton.onInputUp.add(() => this.pause());
+            UI.Buttons.PauseMenuButton.onInputUp.add(() => this.pause());
+
         }
 
         // begin the game
@@ -62,16 +62,7 @@
         // pause the game
         pause() {
             this._campaign.Pause();
-        }
-
-        // game over - won
-        gameWon() {
-
-        }
-
-        // game over - lost
-        gameLost() {
-
+            this._creepFactory.PauseAllCreeps();
         }
 
         update() {

@@ -46,6 +46,20 @@
         this.CreepGroup.forEachAlive((c: Creep) => { c.UpdatePath(this._map); }, this);
     }
 
+    // signal each living creep to pause
+    PauseAllCreeps() {
+        this.CreepGroup.forEachAlive((c: Creep) => {
+            c.Pause();
+        }, this);
+    }
+
+    // signal each living creep to resume
+    UnpauseAllCreeps() {
+        this.CreepGroup.forEachAlive((c: Creep) => {
+            c.Unpause();
+        }, this);
+    }
+
     // clone path array - because JavaScript.
     private PathNewCopy(): Phaser.Point[]{
         var startingPath = this._map.PathThrough;

@@ -7,6 +7,7 @@
         DisplayAreas: uiDisplayAreas;
         TowerMenu: TowerMenu;
         Input: Input.MouseHandler;
+        OverlayMenus: TDGame.OverlayMenus;
         
         constructor(Game: Phaser.Game) {
             // add the background
@@ -15,6 +16,7 @@
             this.DisplayAreas = new uiDisplayAreas(Game);
             this.TowerMenu = new TowerMenu(Game);
             this.Buttons = new uiButtons(Game);
+            this.OverlayMenus = new TDGame.OverlayMenus(Game);
             // handle the mouse
             this.Input = new Input.MouseHandler(Game,
                 Globals.Settings.PlayAreaUL,
@@ -50,8 +52,7 @@
     export class uiButtons {
         private _game: Phaser.Game;
         StartButton: Phaser.Button;
-        PauseButton: Phaser.Button;
-        ResumeButton: Phaser.Button;
+        PauseMenuButton: Phaser.Button;
         // signals
 
         // constructor
@@ -59,14 +60,10 @@
             this._game = Game;
 
             // add start button
-            this.StartButton = MakeButton(Game, "Start", new Phaser.Point(32, 688));
+            this.StartButton = MakeButton(Game, "Start", new Phaser.Point(64, 700));
 
-            // add pause button
-            this.PauseButton = MakeButton(Game, "Pause", new Phaser.Point(128, 688));
-
-            // add resume button
-            this.ResumeButton = MakeButton(Game, "Resume", this.PauseButton.position);
-            this.ResumeButton.visible = false;
+            // add quit button
+            this.PauseMenuButton = MakeButton(Game, "MENU", new Phaser.Point(880, 700));
         }
 
         // start button state control
@@ -77,21 +74,6 @@
             } else {
                 this.StartButton.tint = parseInt("404040", 16);
                 this.StartButton.inputEnabled = false;
-            }
-        }
-
-        // pause button state control
-        PauseButtonToggle(SetToResume: boolean) {
-            if (SetToResume) {
-                this.PauseButton.visible = false;
-                this.PauseButton.inputEnabled = false;
-                this.ResumeButton.visible = true;
-                this.ResumeButton.inputEnabled = true;
-            } else {
-                this.ResumeButton.visible = false;
-                this.ResumeButton.inputEnabled = false;
-                this.PauseButton.visible = true;
-                this.PauseButton.inputEnabled = true;
             }
         }
     }

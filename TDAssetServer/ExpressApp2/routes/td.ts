@@ -85,6 +85,7 @@ export function CreateDemoCampaign(req: express.Request, res: express.Response) 
     demoCampaign.CreepExitX = 20;
     demoCampaign.CreepExitY = 20;
     demoCampaign.WaveDelay = 12;
+    demoCampaign.StartMoney = 26;
 
     // build a demo wave
     var wave1: goc.Wave = new goc.Wave;

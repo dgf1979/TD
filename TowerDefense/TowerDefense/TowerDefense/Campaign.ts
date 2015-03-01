@@ -15,6 +15,9 @@
         this._started = false;
         this._campaignData = TDGame.Globals.CampaignJSON;
 
+        // load initial game data
+        this._ui.DisplayAreas.GameInfo.Money = this._campaignData.StartMoney;
+
         // set up the map
         this.Map = new TDMap(this._game);
 
@@ -32,16 +35,10 @@
 
     // pause 
     Pause() {
-        this._paused = !this._paused;
-        if (this._paused) {
-            console.log("Campaign Paused");
-            this.WaveMgr.Pause();
-            this._ui.Buttons.PauseButtonToggle(true);
-        } else {
-            console.log("Campaign UN-Paused");
-            this.WaveMgr.Unpause();
-            this._ui.Buttons.PauseButtonToggle(false);
-        }
+        this._paused = true;
+        console.log("Campaign Paused");
+        this.WaveMgr.Pause();
+        this._ui.OverlayMenus.ShowQuitMenu();
     }
 
     // call during game udpate for sub-componenets
