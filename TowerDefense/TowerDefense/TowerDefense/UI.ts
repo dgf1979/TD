@@ -50,6 +50,7 @@
     export class uiButtons {
         private _game: Phaser.Game;
         StartButton: Phaser.Button;
+        PauseButton: Phaser.Button;
         // signals
 
         // constructor
@@ -58,7 +59,10 @@
 
             // add start button
             this.StartButton = MakeButton(Game, "Start", new Phaser.Point(32, 688));
-            console.log("Start button at: " + this.StartButton.position);
+
+            // add pause button
+            this.PauseButton = MakeButton(Game, "Pause", new Phaser.Point(128, 688));
+
         }
     }
 

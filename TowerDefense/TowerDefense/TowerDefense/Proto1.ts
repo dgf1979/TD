@@ -14,27 +14,24 @@
             // load campaign
             this._campaign = new Campaign(this.game, UI);
 
-            // loop waves
-            // var wave: GameObjectClasses.Wave = TDGame.Globals.CampaignJSON.Waves[0];
-
-            // make a creep group
-            var creepGroup: Phaser.Group = this.game.add.group();
-            creepGroup.name = "creeps";
-
             // creep factory
-            // this._creepFactory = new CreepFactory(this.game, wave, creepGroup, this._campaign.Map);
+            this._creepFactory = new CreepFactory(this.game, this._campaign.Map);
+
+            // subscribe to wave's signal to deploy creeps
+            var deployCreeps = (Wave: GameObjectClasses.Wave) => {
+                this._creepFactory.DeployCreeps(Wave);
+            }
+            this._campaign.WaveMgr.SignalDeployCreeps.add(deployCreeps);
 
             // subscribe to creep factory's bubble-through of creep death signal
-            // this._creepFactory.SignalCreepKilled.add((value: number) => {
-            //    UI.DisplayAreas.GameInfo.Money = (value + UI.DisplayAreas.GameInfo.Money);
-            // });
-
-            
+            this._creepFactory.SignalCreepKilled.add((value: number) => {
+               UI.DisplayAreas.GameInfo.Money = (value + UI.DisplayAreas.GameInfo.Money);
+            });
 
             // tower factory
-            var TF: TowerFactory = new TowerFactory(this.game, creepGroup, this._campaign.Map);
+            var TF: TowerFactory = new TowerFactory(this.game, this._creepFactory.CreepGroup, this._campaign.Map);
 
-            // subscript to tower-dropped on tower factory
+            // subscripe to tower-dropped on tower factory
             var towerDropped = () => {
                 var towerCost = TDGame.Globals.CampaignJSON.TowerStats[UI.TowerMenu.SelectedTowerIndex].Cost;
                 UI.DisplayAreas.GameInfo.Money = (UI.DisplayAreas.GameInfo.Money - towerCost); // subtract money
@@ -52,17 +49,18 @@
             UI.Input.SignalGridClicked.add(dropTower);
 
             UI.Buttons.StartButton.onInputUp.addOnce(() => this.start());
+
+            UI.Buttons.PauseButton.onInputUp.add(() => this.pause());
         }
 
         // begin the game
         start() {
-            // this._creepFactory.Start();
             this._campaign.Start();
         }
 
         // pause the game
         pause() {
-            // this._campaign.Pause();
+            this._campaign.Pause();
         }
 
         // game over - won
@@ -77,7 +75,6 @@
 
         update() {
             this._campaign.Update();
-            // UI.Update(this._campaign.Map.TileMap);
         }
 
     }

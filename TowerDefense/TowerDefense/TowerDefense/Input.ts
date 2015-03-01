@@ -100,14 +100,14 @@
                     var x, y: number;
                     x = Phaser.Math.snapToFloor(mouse.position.x, TDGame.Globals.Settings.TileSize.x);
                     y = Phaser.Math.snapToFloor(mouse.position.y, TDGame.Globals.Settings.TileSize.y);
-                    var currentXY: Phaser.Point = new Phaser.Point(x, y);
-                    this._cursor.position = currentXY;
+                    var currentXY2: Phaser.Point = new Phaser.Point(x, y);
+                    this._cursor.position = currentXY2;
                     this._cursor.tint = 0x00ff00;
                     if (this._cursorSpriteGroup) {
-                        this._cursorSpriteGroup.position = currentXY;
+                        this._cursorSpriteGroup.position = currentXY2;
                         this._cursorSpriteGroup.visible = true;
                         // console.log("SpriteCursor at: " + this._cursorSpriteGroup.position);
-                        this._cursorRangeFinder.position = currentXY;
+                        this._cursorRangeFinder.position = currentXY2;
                     }
                     this._isBlocked = false;
                 }

@@ -11,6 +11,7 @@
         MapURL: string;
         StartMoney: number;
         Waves: Wave[];
+        WaveDelay: number;
         CreepStats: CreepData[];
         TowerStats: TowerData[];
         CreepEntranceX: number;

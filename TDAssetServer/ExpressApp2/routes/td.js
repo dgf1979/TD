@@ -90,17 +90,26 @@ function CreateDemoCampaign(req, res) {
     demoCampaign.CreepEntranceY = 2;
     demoCampaign.CreepExitX = 20;
     demoCampaign.CreepExitY = 20;
+    demoCampaign.WaveDelay = 12;
 
     // build a demo wave
     var wave1 = new goc.Wave;
-    wave1.CreepCount = 3;
+    wave1.CreepCount = 4;
     wave1.CreepIndex = 0;
-    wave1.CreepSpeed = 1000;
-    wave1.SpawnDelay = 6;
+    wave1.CreepSpeed = 1500;
+    wave1.SpawnDelay = 2;
+
+    // build a demo wave 2
+    var wave2 = new goc.Wave;
+    wave2.CreepCount = 2;
+    wave2.CreepIndex = 0;
+    wave2.CreepSpeed = 1000;
+    wave2.SpawnDelay = 8;
 
     // push wave into campaign
     demoCampaign.Waves = [];
     demoCampaign.Waves.push(wave1);
+    demoCampaign.Waves.push(wave2);
 
     // build a demo set of creep stats
     demoCampaign.CreepStats = [];

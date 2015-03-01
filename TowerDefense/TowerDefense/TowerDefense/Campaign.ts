@@ -19,7 +19,7 @@
         this.Map = new TDMap(this._game);
 
         // add wave manager
-        this.WaveMgr = new WaveManager(Game, UI, this._campaignData.Waves);
+        this.WaveMgr = new WaveManager(Game, UI, this._campaignData.Waves, this._campaignData.WaveDelay);
     }
 
     // begin campaign
@@ -31,8 +31,14 @@
 
     // pause 
     Pause() {
-        console.log("Campaign Pause");
-        this._paused = true;
+        this._paused = !this._paused;
+        if (this._paused) {
+            console.log("Campaign Paused");
+            this.WaveMgr.Pause();
+        } else {
+            console.log("Campaign UN-Paused");
+            this.WaveMgr.Unpause();
+        }
     }
 
     // call during game udpate for sub-componenets
