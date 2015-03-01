@@ -51,6 +51,7 @@
             UI.Buttons.StartButton.onInputUp.addOnce(() => this.start());
 
             UI.Buttons.PauseButton.onInputUp.add(() => this.pause());
+            UI.Buttons.ResumeButton.onInputUp.add(() => this.pause());
         }
 
         // begin the game

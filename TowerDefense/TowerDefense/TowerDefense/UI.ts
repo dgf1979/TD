@@ -51,6 +51,7 @@
         private _game: Phaser.Game;
         StartButton: Phaser.Button;
         PauseButton: Phaser.Button;
+        ResumeButton: Phaser.Button;
         // signals
 
         // constructor
@@ -63,6 +64,35 @@
             // add pause button
             this.PauseButton = MakeButton(Game, "Pause", new Phaser.Point(128, 688));
 
+            // add resume button
+            this.ResumeButton = MakeButton(Game, "Resume", this.PauseButton.position);
+            this.ResumeButton.visible = false;
+        }
+
+        // start button state control
+        StartButtonState(Enable: boolean) {
+            if (Enable) {
+                this.StartButton.tint = parseInt("ffffff", 16);
+                this.StartButton.inputEnabled = true;
+            } else {
+                this.StartButton.tint = parseInt("404040", 16);
+                this.StartButton.inputEnabled = false;
+            }
+        }
+
+        // pause button state control
+        PauseButtonToggle(SetToResume: boolean) {
+            if (SetToResume) {
+                this.PauseButton.visible = false;
+                this.PauseButton.inputEnabled = false;
+                this.ResumeButton.visible = true;
+                this.ResumeButton.inputEnabled = true;
+            } else {
+                this.ResumeButton.visible = false;
+                this.ResumeButton.inputEnabled = false;
+                this.PauseButton.visible = true;
+                this.PauseButton.inputEnabled = true;
+            }
         }
     }
 

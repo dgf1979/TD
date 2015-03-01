@@ -27,6 +27,7 @@
         console.log("Campaign Start");
         this._started = true;
         this.WaveMgr.Start();
+        this._ui.Buttons.StartButtonState(false);
     }
 
     // pause 
@@ -35,9 +36,11 @@
         if (this._paused) {
             console.log("Campaign Paused");
             this.WaveMgr.Pause();
+            this._ui.Buttons.PauseButtonToggle(true);
         } else {
             console.log("Campaign UN-Paused");
             this.WaveMgr.Unpause();
+            this._ui.Buttons.PauseButtonToggle(false);
         }
     }
 
