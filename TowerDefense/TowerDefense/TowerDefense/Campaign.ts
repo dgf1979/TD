@@ -17,12 +17,14 @@
 
         // load initial game data
         this._ui.DisplayAreas.GameInfo.Money = this._campaignData.StartMoney;
+        this._ui.DisplayAreas.GameInfo.HP = this._campaignData.HP;
 
         // set up the map
         this.Map = new TDMap(this._game);
 
         // add wave manager
         this.WaveMgr = new WaveManager(Game, UI, this._campaignData.Waves, this._campaignData.WaveDelay);
+
     }
 
     // begin campaign
@@ -38,7 +40,14 @@
         this._paused = true;
         console.log("Campaign Paused");
         this.WaveMgr.Pause();
-        this._ui.OverlayMenus.ShowQuitMenu();
+        this._ui.OverlayMenus.PauseQuit.Show();
+    }
+
+    // unpause (resume if you're fancy)
+    Unpause() {
+        this._paused = false;
+        this.WaveMgr.Unpause();
+        this._ui.OverlayMenus.PauseQuit.Hide();
     }
 
     // call during game udpate for sub-componenets

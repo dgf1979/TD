@@ -3,12 +3,14 @@
     private _game: Phaser.Game;
     private _map: TDMap;
     private _wave: GameObjectClasses.Wave;
+    private _spawner: Phaser.TimerEvent;
 
     // public objects
     CreepGroup: Phaser.Group;
 
     // signals
     SignalCreepKilled: Phaser.Signal = new Phaser.Signal();
+    SignalCreepEscaped: Phaser.Signal = new Phaser.Signal();
 
     constructor(Game: Phaser.Game, Map: TDMap) {
         this._game = Game;
@@ -26,7 +28,7 @@
         this.createCreep(Wave);
         console.log("should see " + Wave.CreepCount + " creeps, spawned " + Wave.SpawnDelay + " seconds apart.");
         var createCreep = (Wave: GameObjectClasses.Wave) => { this.createCreep(Wave); };
-        this._game.time.events.repeat(Phaser.Timer.SECOND * Wave.SpawnDelay, Wave.CreepCount - 1, createCreep, this);
+        this._spawner = this._game.time.events.repeat(Phaser.Timer.SECOND * Wave.SpawnDelay, Wave.CreepCount - 1, createCreep, this);
     }
 
     private createCreep(Wave: GameObjectClasses.Wave) {
@@ -37,6 +39,7 @@
             console.log("Kill trigger passed value to dispatch: " + value);
             this.SignalCreepKilled.dispatch(value);
         }, this);
+        creep.SignalEscaped.add(() => this.SignalCreepEscaped.dispatch());
         this.CreepGroup.add(creep);
     }
 
@@ -48,6 +51,9 @@
 
     // signal each living creep to pause
     PauseAllCreeps() {
+        if (this._spawner) {
+            this._spawner.timer.pause();
+        }
         this.CreepGroup.forEachAlive((c: Creep) => {
             c.Pause();
         }, this);
@@ -55,6 +61,9 @@
 
     // signal each living creep to resume
     UnpauseAllCreeps() {
+        if (this._spawner) {
+            this._spawner.timer.resume();
+        }
         this.CreepGroup.forEachAlive((c: Creep) => {
             c.Unpause();
         }, this);

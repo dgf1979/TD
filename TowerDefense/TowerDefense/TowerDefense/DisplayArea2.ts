@@ -10,6 +10,7 @@
     private _txtWave: Phaser.Text;
     private _txtNextWave: Phaser.Text;
     private _txtScore: Phaser.Text;
+    private _txtEscapesRemaining: Phaser.Text;
 
     // constructor
     constructor(ThisGame: Phaser.Game, UpperLeft: Phaser.Point, LowerRight: Phaser.Point) {
@@ -75,6 +76,12 @@
 
         this._txtScore = this.RightAlignedText("0");
         this._txtScore.position.y = 70;
+
+        var lblEscapesRemaining: Phaser.Text = this.Text("Remaining:");
+        lblEscapesRemaining.position.y = 90;
+
+        this._txtEscapesRemaining = this.RightAlignedText("");
+        this._txtEscapesRemaining.position.y = 90;
     }
 
     HideAll() {
@@ -98,6 +105,14 @@
 
     get Score(): number {
         return parseInt(this._txtScore.text, 10);
+    }
+
+    set HP(Total: number) {
+        this._txtEscapesRemaining.text = Total.toString();
+    }
+
+    get HP(): number {
+        return parseInt(this._txtEscapesRemaining.text, 10);
     }
 
     set CurrentWave(Wave: string) {

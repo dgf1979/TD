@@ -92,6 +92,7 @@ function CreateDemoCampaign(req, res) {
     demoCampaign.CreepExitY = 20;
     demoCampaign.WaveDelay = 12;
     demoCampaign.StartMoney = 26;
+    demoCampaign.HP = 3;
 
     // build a demo wave
     var wave1 = new goc.Wave;

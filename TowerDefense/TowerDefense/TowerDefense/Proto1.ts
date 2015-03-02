@@ -4,6 +4,7 @@
 
         private _campaign: Campaign;
         private _creepFactory: CreepFactory;
+        private _towerFactory: TowerFactory;
 
         // run-up
         create() {
@@ -28,8 +29,13 @@
                 UI.DisplayAreas.GameInfo.Score = (value + UI.DisplayAreas.GameInfo.Score);
             });
 
+            // subscribe to creep factory's bubble-through of creep escape signal
+            this._creepFactory.SignalCreepEscaped.add(() => {
+                UI.DisplayAreas.GameInfo.HP--;
+            });
+
             // tower factory
-            var TF: TowerFactory = new TowerFactory(this.game, this._creepFactory.CreepGroup, this._campaign.Map);
+            this._towerFactory = new TowerFactory(this.game, this._creepFactory.CreepGroup, this._campaign.Map);
 
             // subscripe to tower-dropped on tower factory
             var towerDropped = () => {
@@ -38,19 +44,19 @@
                 UI.TowerMenu.ClearSelectedTower();
                 UI.Input.ClearSpriteCursor();
             };
-            TF.SignalTowerDropped.add(towerDropped);
+            this._towerFactory.SignalTowerDropped.add(towerDropped);
 
             // subscribing to grid-click event on mouse.
             var dropTower = (X: number, Y: number, tileX: number, tileY: number) =>
             {
                 console.log("ClickSignalXY: " + X + "," + Y + "; (TileXY: " + tileX + "," + tileY + ")");               
-                TF.PlaceTower(UI.TowerMenu.SelectedTowerIndex, new Phaser.Point(X, Y));                
+                this._towerFactory.PlaceTower(UI.TowerMenu.SelectedTowerIndex, new Phaser.Point(X, Y));                
             };
             UI.Input.SignalGridClicked.add(dropTower);
-
             UI.Buttons.StartButton.onInputUp.addOnce(() => this.start());
-
             UI.Buttons.PauseMenuButton.onInputUp.add(() => this.pause());
+
+            UI.OverlayMenus.PauseQuit.SignalResume.add(() => { this.unpause() }, this);
 
         }
 
@@ -63,6 +69,14 @@
         pause() {
             this._campaign.Pause();
             this._creepFactory.PauseAllCreeps();
+            this._towerFactory.PauseAllTowers();
+        }
+
+        // resume the game after pause
+        unpause() {
+            this._campaign.Unpause();
+            this._creepFactory.UnpauseAllCreeps();
+            this._towerFactory.UnpauseAllTowers();
         }
 
         update() {

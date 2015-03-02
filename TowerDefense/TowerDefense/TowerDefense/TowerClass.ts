@@ -13,6 +13,7 @@
     private _damagePer: number;
     private _nextFire: number;
     private _fireRate: number;
+    private _paused: boolean;
     // private _turretTween: Phaser.Tween;
 
     constructor(ThisGame: Phaser.Game, TowerIndex: number, Location: Phaser.Point, CreepGroup: Phaser.Group) {
@@ -22,6 +23,7 @@
         this._name = TowerJSONAssets.Name;
         this._targetCreep = null;
         this._creepList = CreepGroup;
+        this._paused = false;
 
         // get the tower data
         console.log("adding tower: " + this._name);
@@ -83,6 +85,14 @@
         this.trackTarget();
         // shoot target
         this.shootTarget();
+    }
+
+    Pause() {
+        this._paused = true;
+    }
+
+    Unpause() {
+        this._paused = false;
     }
 
     // set the nearest in-range creep as target

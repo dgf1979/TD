@@ -16,6 +16,7 @@ export class Campaign {
     CreepEntranceY: number;
     CreepExitX: number;
     CreepExitY: number;
+    HP: number;
 }
 
 // a wave, each consisting of a number of creeps of a specific type

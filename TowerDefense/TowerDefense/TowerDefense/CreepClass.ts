@@ -14,6 +14,7 @@
 
     // signals
     SignalKilled: Phaser.Signal = new Phaser.Signal();
+    SignalEscaped: Phaser.Signal = new Phaser.Signal();
 
     constructor(ThisGame: Phaser.Game, CreepIndex: number, StartPath: Phaser.Point[], Map: TDMap) {
         super(ThisGame, 0, 0, null, 0);
@@ -70,13 +71,15 @@
     }
 
     Pause() {
-        if (this._movementTween.isRunning) {
+        if (this._movementTween) {
+            console.log("Creep PAUSED");
             this._movementTween.pause();
         }
     }
 
     Unpause() {
-        if (!this._movementTween.isRunning) {
+        if (this._movementTween) {
+            console.log("Creep RESUMED FROM PAUSE");
             this._movementTween.resume();
         }
     }
@@ -110,6 +113,7 @@
     private Exit() {
         if (this.health > 0) {
             console.log("creep escaped with " + this.health + " hp.");
+            this.SignalEscaped.dispatch();
             this.health = 0;
         }
         var fadeOut: Phaser.Tween = this.game.add.tween(this).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
