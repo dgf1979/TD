@@ -92,14 +92,12 @@ export function CreateDemoCampaign(req: express.Request, res: express.Response) 
     var wave1: goc.Wave = new goc.Wave;
     wave1.CreepCount = 4;
     wave1.CreepIndex = 0;
-    wave1.CreepSpeed = 1500;
     wave1.SpawnDelay = 2;
 
     // build a demo wave 2
     var wave2: goc.Wave = new goc.Wave;
     wave2.CreepCount = 2;
-    wave2.CreepIndex = 0;
-    wave2.CreepSpeed = 1000;
+    wave2.CreepIndex = 1;
     wave2.SpawnDelay = 8;
 
     // push wave into campaign
@@ -109,16 +107,24 @@ export function CreateDemoCampaign(req: express.Request, res: express.Response) 
 
     // build a demo set of creep stats
     demoCampaign.CreepStats = [];
-    for (var i = 0; i < 8; i++) {
-        var cs: goc.CreepData = new goc.CreepData();
-        cs.AssetID = "CREEP00" + i;
-        cs.Index = i;
-        cs.HitPoints = 40;
-        cs.KillValue = 5;
-        cs.WalkSpeed = 2000;
-        // push into campaign
-        demoCampaign.CreepStats.push(cs);
-    }
+
+    var cs1: goc.CreepData = new goc.CreepData();
+    cs1.AssetID = "CREEP000";
+    cs1.Index = 0;
+    cs1.HitPoints = 40;
+    cs1.KillValue = 5;
+    cs1.WalkSpeed = 16;
+    // push into campaign
+    demoCampaign.CreepStats.push(cs1);
+
+    var cs2: goc.CreepData = new goc.CreepData();
+    cs2.AssetID = "CREEP001";
+    cs2.Index = 1;
+    cs2.HitPoints = 20;
+    cs2.KillValue = 10;
+    cs2.WalkSpeed = 32;
+    // push into campaign
+    demoCampaign.CreepStats.push(cs2);
 
     // build a demo set of tower stats
     demoCampaign.TowerStats = [];

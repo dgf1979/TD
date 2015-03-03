@@ -26,7 +26,7 @@
         SpawnDelay: number;
         CreepIndex: number;
         CreepCount: number;
-        CreepSpeed: number;
+        // CreepSpeed: number;
     }
 
     // campaign variables for creeps

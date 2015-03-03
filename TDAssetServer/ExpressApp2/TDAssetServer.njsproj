@@ -47,6 +47,8 @@
     <Content Include="ASSETS\TILESETS\TS_00000\background.png" />
     <Content Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP000\die_anim.png" />
     <Content Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP000\walk_anim.png" />
+    <Content Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP001\die_anim.png" />
+    <Content Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP001\walk_anim.png" />
     <Content Include="ASSETS\TILESETS\TS_00000\entrance.png" />
     <Content Include="ASSETS\TILESETS\TS_00000\exit.png" />
     <Content Include="ASSETS\TILESETS\TS_00000\TOWERS\TOWER000\base.png" />

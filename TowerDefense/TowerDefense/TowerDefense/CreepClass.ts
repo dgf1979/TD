@@ -99,8 +99,10 @@
             if (this._path.length > 1) {
                 var nextPos: Phaser.Point = this._path[1];
                 var angle: number = Phaser.Point.angle(nextPos, this.position);
+                var dist: number = Phaser.Point.distance(this.position, nextPos);
+                var duration: number = (1000 * dist) / this._velocity;
                 this.rotation = angle;
-                this._movementTween = this.game.add.tween(this.position).to(nextPos, this._velocity, Phaser.Easing.Linear.None, true);
+                this._movementTween = this.game.add.tween(this.position).to(nextPos, duration, Phaser.Easing.Linear.None, true);
                 this._path.shift();
             } else {
                 this.Exit();
