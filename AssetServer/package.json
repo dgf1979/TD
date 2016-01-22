@@ -1,0 +1,14 @@
+{
+  "name": "AssetServer",
+  "version": "0.0.1",
+  "description": "AssetServer",
+  "main": "app.js",
+  "author": {
+    "name": "Drew",
+    "email": "drew@finstrom.us"
+  },
+  "dependencies": {
+    "express": "3.4.4",
+    "sqlite3": "3.1.1"
+  }
+}
