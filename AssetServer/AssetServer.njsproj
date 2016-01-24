@@ -33,6 +33,16 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="ASSETS\TILESETS\TS_00000\background.png" />
+    <Content Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP000\die_anim.png" />
+    <Content Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP000\walk_anim.png" />
+    <Content Include="ASSETS\TILESETS\TS_00000\tileset.json" />
+    <Content Include="ASSETS\TILESETS\TS_00000\TOWERS\TOWER000\BASE.png" />
+    <Content Include="ASSETS\TILESETS\TS_00000\TOWERS\TOWER000\rotator.png" />
+    <Content Include="ASSETS\TILESETS\TS_00000\TOWERS\TOWER001\base.png" />
+    <Content Include="ASSETS\TILESETS\TS_00000\TOWERS\TOWER002\rotator.png" />
+    <Content Include="ASSETS\TILESETS\TS_00000\walls.png" />
+    <Content Include="ASSETS\TILESETS\TS_00000\WALLS\wall.png" />
     <Content Include="SQL\td_create_tables.sql" />
     <Content Include="SQL\towerdefense.db.old" />
     <TypeScriptCompile Include="app.ts" />
@@ -52,7 +62,6 @@
     <Content Include="ASSETS\TILESETS\TS_00000\exit.png" />
     <Content Include="DebugGenerateTileset.html" />
     <Content Include="package.json" />
-    <Content Include="README.md" />
     <TypeScriptCompile Include="Scripts\typings\sqlite3\sqlite3.d.ts" />
   </ItemGroup>
   <ItemGroup>
@@ -61,8 +70,18 @@
     <Folder Include="ASSETS\CAMPAIGNS\C_00000\" />
     <Folder Include="ASSETS\TILESETS\" />
     <Folder Include="ASSETS\TILESETS\TS_00000\" />
+    <Folder Include="ASSETS\TILESETS\TS_00000\BULLETS\" />
+    <Folder Include="ASSETS\TILESETS\TS_00000\BULLETS\BULLET000\" />
+    <Folder Include="ASSETS\TILESETS\TS_00000\BULLETS\BULLET001\" />
     <Folder Include="ASSETS\TILESETS\TS_00000\CREEPS\" />
+    <Folder Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP000\" />
     <Folder Include="ASSETS\TILESETS\TS_00000\CREEPS\CREEP001\" />
+    <Folder Include="ASSETS\TILESETS\TS_00000\MISSLES\" />
+    <Folder Include="ASSETS\TILESETS\TS_00000\TOWERS\" />
+    <Folder Include="ASSETS\TILESETS\TS_00000\TOWERS\TOWER000\" />
+    <Folder Include="ASSETS\TILESETS\TS_00000\TOWERS\TOWER001\" />
+    <Folder Include="ASSETS\TILESETS\TS_00000\TOWERS\TOWER002\" />
+    <Folder Include="ASSETS\TILESETS\TS_00000\WALLS\" />
     <Folder Include="routes\" />
     <Folder Include="Scripts\" />
     <Folder Include="Scripts\typings\" />
